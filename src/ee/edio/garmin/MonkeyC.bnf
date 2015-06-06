@@ -1,0 +1,153 @@
+{
+  parserClass="ee.edio.garmin.parser.MonkeyCParser"
+  parserUtilClass="ee.edio.garmin.parser.MonkeyCParserUtil"
+
+  implements="ee.edio.garmin.psi.MonkeyCPsiCompositeElement"
+  extends="ee.edio.garmin.psi.impl.MonkeyCPsiCompositeElementImpl"
+
+  elementTypeHolderClass="ee.edio.garmin.psi.MonkeyCTypes"
+  elementTypePrefix=""
+  elementTypeClass="ee.edio.garmin.psi.MonkeyCElementType"
+  tokenTypeClass="ee.edio.garmin.psi.MonkeyCTokenType"
+
+  psiClassPrefix="MonkeyC"
+  psiImplClassSuffix="Impl"
+  psiPackage="ee.edio.garmin.psi"
+  psiImplPackage="ee.edio.garmin.psi.impl"
+  psiImplUtilClass="ee.edio.garmin.psi.impl.MonkeyCPsiImplUtil"
+
+tokens = [
+    STATEMENT_END = ";"
+    CLASS = "class"
+    FUNCTION = "function"
+    RETURN = "return"
+    NEW = "new"
+    VAR = "var"
+    CONST = "const"
+    MODULE = "module"
+    USING = "using"
+    AS = "as"
+    ENUM = "enum"
+    EXTENDS = "extends"
+    NULL = "null"
+    NATIVE = "native"
+    HIDDEN = "hidden"
+    STATIC = "static"
+    INSTANCEOF = "instanceof"
+    HAS = "has"
+    IF = "if"
+    ELSE = "else"
+    DO = "do"
+    WHILE = "while"
+    FOR = "for"
+    BREAK = "break"
+    CONTINUE = "continue"
+    SWITCH = "switch"
+    DEFAULT = "default"
+    CASE = "case"
+    TRY = "try"
+    CATCH = "catch"
+    FINALLY = "finally"
+    THROW = "throw"
+    AND = "and"
+    OR = "or"
+    TRUE = "true"
+    FALSE = "false"
+    //SINGLE_LINE_COMMENT = "//"
+    MULTI_LINE_COMMENT_START = "/*"
+    MULTI_LINE_COMMENT_END = "*/"
+    STRING_A = "\""
+    STRING_B = "\'"
+
+    BLOCK_START = "{"
+    BLOCK_END = "}"
+
+    LPAREN = "("
+    RPAREN = ")"
+    COMMA = ","
+
+    OP_PLUS = "+"
+    OP_MINUS = "-"
+    OP_MULTIPLY = "*"
+    OP_DIVIDE = "/"
+
+    // WHITE_SPACE is overwritten by JFlex, this here is only for Live Preview
+    WHITE_SPACE='regexp:\s+'
+
+    SINGLE_LINE_COMMENT='regexp://.*'
+    BLOCK_COMMENT='regexp:/\*([^*]|\*+[^*/])*(\*+/)?'
+    number='regexp:\d+(\.\d*)?'
+    alphanum='regexp:\p{Alpha}\w*'
+    string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
+
+    symbol='regexp:\:\p{Alpha}\w*'
+  ]
+
+
+  // extends(".*Expression")="expression"
+}
+
+monkeyCFile ::= topLevelDefinition*
+private topLevelDefinition ::= usingStatement
+                             | classDefinition
+                             //| enumDefinition
+                             //| functionTypeAlias
+                             //| getterOrSetterDeclaration
+                             //| functionDeclarationWithBodyOrNative
+                             //| varDeclarationListWithSemicolon
+
+
+
+usingStatement ::= USING packageName (AS id)? STATEMENT_END {pin=1}
+classDefinition ::= CLASS className withExtends? classBody
+
+withExtends ::= EXTENDS classType
+classBody ::= BLOCK_START classMembers* BLOCK_END {pin=1}
+classMembers ::= variableDefinition | functionDefinition
+
+variableDefinition ::= VAR variableName ('=' expressionB)? STATEMENT_END {pin=1}
+expressionB ::= newDefinition | opExpression
+opExpression ::= number operator number
+operator ::= OP_PLUS | OP_MINUS | OP_MULTIPLY | OP_DIVIDE
+
+newDefinition ::= NEW className LPAREN argumentList? RPAREN {pin=1}
+argumentList ::= variableName (COMMA variableName)*
+returnStatement ::= RETURN whatever STATEMENT_END {pin=1}
+
+whatever ::= array
+array ::= '[' exp (COMMA exp)* ']'
+exp ::= variableName | newDefinition
+
+functionDefinition ::= FUNCTION functionName LPAREN functionArgs? RPAREN functionBody {pin=1}
+functionArgs ::= variableName COMMA variableName | variableName
+functionBody ::= BLOCK_START functionMembers* BLOCK_END {pin=1}
+functionMembers ::= variableDefinition | callExpression | ifStatement |returnStatement
+
+//Types
+ifStatement ::= IF LPAREN booleanExpression RPAREN
+
+
+booleanExpression ::= literal booleanOperator literal
+
+booleanOperator ::= relationalOperator | equalityOperator
+
+relationalOperator ::= '>=' | '>' | '<=' | '<'
+equalityOperator ::= '==' | '!='
+
+callExpression ::= classType LPAREN callArgs? RPAREN STATEMENT_END {pin=2}
+callArgs ::= possibleArgs (COMMA possibleArgs)?
+possibleArgs ::= alphanum | string
+
+classType ::= id '.' id | id
+
+// e: Toybox.Application or Toybox
+packageName ::=  id '.' id | id
+className ::= id
+variableName ::= id
+functionName ::= id
+
+
+literal ::= string | number | id
+
+
+id ::= alphanum
