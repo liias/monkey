@@ -1256,8 +1256,7 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LBRACE (enumConstants)?
-  //              COMMA? (enumBodyDeclarations)? RBRACE
+  // LBRACE enumConstants? COMMA? enumBodyDeclarations? RBRACE
   public static boolean enumBody(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "enumBody")) return false;
     if (!nextTokenIs(b, LBRACE)) return false;
@@ -1272,21 +1271,11 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (enumConstants)?
+  // enumConstants?
   private static boolean enumBody_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "enumBody_1")) return false;
-    enumBody_1_0(b, l + 1);
+    enumConstants(b, l + 1);
     return true;
-  }
-
-  // (enumConstants)
-  private static boolean enumBody_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "enumBody_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = enumConstants(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
   }
 
   // COMMA?
@@ -1296,21 +1285,11 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (enumBodyDeclarations)?
+  // enumBodyDeclarations?
   private static boolean enumBody_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "enumBody_3")) return false;
-    enumBody_3_0(b, l + 1);
+    enumBodyDeclarations(b, l + 1);
     return true;
-  }
-
-  // (enumBodyDeclarations)
-  private static boolean enumBody_3_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "enumBody_3_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = enumBodyDeclarations(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
   }
 
   /* ********************************************************** */
@@ -1423,15 +1402,13 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // modifiers (ENUM) IDENTIFIER enumBody
+  // modifiers ENUM IDENTIFIER enumBody
   public static boolean enumDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "enumDeclaration")) return false;
-    if (!nextTokenIs(b, "<enum declaration>", ENUM, STATIC)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<enum declaration>");
     r = modifiers(b, l + 1);
-    r = r && consumeToken(b, ENUM);
-    r = r && consumeToken(b, IDENTIFIER);
+    r = r && consumeTokens(b, 0, ENUM, IDENTIFIER);
     r = r && enumBody(b, l + 1);
     exit_section_(b, l, m, ENUM_DECLARATION, r, false, null);
     return r;
@@ -1622,14 +1599,14 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // modifiers type variableDeclarator
+  // modifiers VAR variableDeclarator
   //                     (COMMA variableDeclarator)* SEMI
   public static boolean fieldDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "fieldDeclaration")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<field declaration>");
     r = modifiers(b, l + 1);
-    r = r && type(b, l + 1);
+    r = r && consumeToken(b, VAR);
     r = r && variableDeclarator(b, l + 1);
     r = r && fieldDeclaration_3(b, l + 1);
     r = r && consumeToken(b, SEMI);
@@ -2175,17 +2152,33 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (STATIC)*
+  // STATIC* HIDDEN?
   public static boolean modifiers(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "modifiers")) return false;
+    boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<modifiers>");
+    r = modifiers_0(b, l + 1);
+    r = r && modifiers_1(b, l + 1);
+    exit_section_(b, l, m, MODIFIERS, r, false, null);
+    return r;
+  }
+
+  // STATIC*
+  private static boolean modifiers_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "modifiers_0")) return false;
     int c = current_position_(b);
     while (true) {
       if (!consumeToken(b, STATIC)) break;
-      if (!empty_element_parsed_guard_(b, "modifiers", c)) break;
+      if (!empty_element_parsed_guard_(b, "modifiers_0", c)) break;
       c = current_position_(b);
     }
-    exit_section_(b, l, m, MODIFIERS, true, false, null);
+    return true;
+  }
+
+  // HIDDEN?
+  private static boolean modifiers_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "modifiers_1")) return false;
+    consumeToken(b, HIDDEN);
     return true;
   }
 
@@ -2309,7 +2302,6 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   // modifiers CLASS IDENTIFIER (EXTENDS type)? classBody
   public static boolean normalClassDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normalClassDeclaration")) return false;
-    if (!nextTokenIs(b, "<normal class declaration>", CLASS, STATIC)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<normal class declaration>");
     r = modifiers(b, l + 1);

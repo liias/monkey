@@ -149,12 +149,11 @@ classDeclaration ::= normalClassDeclaration | enumDeclaration
 
 normalClassDeclaration ::= modifiers CLASS IDENTIFIER (EXTENDS type)? classBody
 
-modifiers ::= (STATIC)*
+modifiers ::= STATIC* HIDDEN?
 
-enumDeclaration ::= modifiers (ENUM) IDENTIFIER enumBody
+enumDeclaration ::= modifiers ENUM IDENTIFIER enumBody
 
-enumBody ::= LBRACE (enumConstants)?
-             COMMA? (enumBodyDeclarations)? RBRACE
+enumBody ::= LBRACE enumConstants? COMMA? enumBodyDeclarations? RBRACE
 
 enumConstants ::= enumConstant (COMMA enumConstant)*
 
@@ -173,7 +172,7 @@ memberDecl ::= fieldDeclaration | functionDeclaration | classDeclaration
 functionDeclaration ::= FUNCTION IDENTIFIER formalParameters (THROWS qualifiedNameList)?
                         LBRACE (explicitConstructorInvocation)? (blockStatement)* RBRACE
 
-fieldDeclaration ::= modifiers type variableDeclarator
+fieldDeclaration ::= modifiers VAR variableDeclarator
                     (COMMA variableDeclarator)* SEMI
 
 variableDeclarator ::= IDENTIFIER (LBRACKET RBRACKET)* (EQ variableInitializer)?
