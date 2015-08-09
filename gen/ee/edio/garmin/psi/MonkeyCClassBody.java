@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyCClassBody extends MonkeyCPsiCompositeElement {
 
   @NotNull
-  List<MonkeyCClassMembers> getClassMembersList();
+  List<MonkeyCClassBodyDeclaration> getClassBodyDeclarationList();
 
 }

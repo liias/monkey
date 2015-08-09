@@ -119,9 +119,10 @@ tokens = [
     // a letter following by X letters or numbers, where 0 <= X <= 30
     // [_a-zA-Z][_a-zA-Z0-9]{0,30}
 
+    IDENTIFIER = 'regexp:[a-zA-Z0-9$_]*'
+
     INTEGER = 'regexp:\d+'
     NUMBER = 'regexp:\d+(\.\d*)?'
-    IDENTIFIER = 'regexp:^[a-zA-Z0-9$_]*'
     STRINGLITERAL = "regexp:(\"([^\"\\]|\\.)*\")"
     CHARLITERAL = "regexp:('([^'\\]|\\.)*')"
 
@@ -197,7 +198,7 @@ formalParameters ::= LPAREN (formalParameterDecls)? RPAREN
 
 formalParameterDecls ::= normalParameterDecl (COMMA normalParameterDecl)*
 
-normalParameterDecl ::= type IDENTIFIER (LBRACKET RBRACKET)*
+normalParameterDecl ::= IDENTIFIER (LBRACKET RBRACKET)*
 
 //NOTE: the position of Identifier 'super' is set to the type args position here
 explicitConstructorInvocation ::= SUPER arguments SEMI
@@ -218,7 +219,7 @@ blockStatement ::= localVariableDeclarationStatement
 
 localVariableDeclarationStatement ::= localVariableDeclaration SEMI
 
-localVariableDeclaration ::= type variableDeclarator (COMMA variableDeclarator)*
+localVariableDeclaration ::= VAR variableDeclarator (COMMA variableDeclarator)*
 
 statement ::= block
             | IF parExpression statement (ELSE statement)?
@@ -245,12 +246,12 @@ tryStatement ::= TRY block (catches FINALLY block | catches | FINALLY block)
 
 catches ::= catchClause (catchClause)*
 
-catchClause ::= CATCH LPAREN formalParameter RPAREN block
+catchClause ::= CATCH LPAREN catchParameter RPAREN block
 
-formalParameter ::= type IDENTIFIER (LBRACKET RBRACKET)*
+catchParameter ::= IDENTIFIER (LBRACKET RBRACKET)*
 
 forStatement ::= // enhanced for loop
-        FOR LPAREN type IDENTIFIER COLON expression RPAREN statement
+        FOR LPAREN VAR IDENTIFIER COLON expression RPAREN statement
         // normal for loop
         | FOR LPAREN (forInit)? SEMI (expression)? SEMI (expressionList)? RPAREN statement
 

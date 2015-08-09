@@ -8,12 +8,21 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyCLiteral extends MonkeyCPsiCompositeElement {
 
   @Nullable
-  MonkeyCId getId();
+  MonkeyCDoubleliteral getDoubleliteral();
 
   @Nullable
-  PsiElement getNumber();
+  MonkeyCFloatliteral getFloatliteral();
 
   @Nullable
-  PsiElement getString();
+  MonkeyCIntliteral getIntliteral();
+
+  @Nullable
+  MonkeyCLongliteral getLongliteral();
+
+  @Nullable
+  PsiElement getCharliteral();
+
+  @Nullable
+  PsiElement getStringliteral();
 
 }

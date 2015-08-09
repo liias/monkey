@@ -25,16 +25,20 @@ WHITE_SPACE=({LINE_WS}|{EOL})+
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 SINGLE_LINE_COMMENT="//".*
 BLOCK_COMMENT="/"\*([^*]|\*+[^*/])*(\*+"/")?
+IDENTIFIER=[a-zA-Z0-9$_]*
+INTEGER=[0-9]+
 NUMBER=[0-9]+(\.[0-9]*)?
-ALPHANUM=[:letter:][a-zA-Z_0-9]*
-STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
-SYMBOL=\:[:letter:][a-zA-Z_0-9]*
+STRINGLITERAL=(\"([^\"\\]|\\.)*\")
+CHARLITERAL=('([^'\\]|\\.)*')
 
 %%
 <YYINITIAL> {
   {WHITE_SPACE}              { return com.intellij.psi.TokenType.WHITE_SPACE; }
 
-  ";"                        { return STATEMENT_END; }
+  "."                        { return DOT; }
+  ";"                        { return SEMI; }
+  "?"                        { return QUES; }
+  ":"                        { return COLON; }
   "class"                    { return CLASS; }
   "function"                 { return FUNCTION; }
   "return"                   { return RETURN; }
@@ -74,23 +78,64 @@ SYMBOL=\:[:letter:][a-zA-Z_0-9]*
   "*/"                       { return MULTI_LINE_COMMENT_END; }
   "\""                       { return STRING_A; }
   "'"                        { return STRING_B; }
-  "{"                        { return BLOCK_START; }
-  "}"                        { return BLOCK_END; }
+  "{"                        { return LBRACE; }
+  "}"                        { return RBRACE; }
+  "["                        { return LBRACKET; }
+  "]"                        { return RBRACKET; }
   "("                        { return LPAREN; }
   ")"                        { return RPAREN; }
   ","                        { return COMMA; }
+  "*"                        { return OP_MULTIPLY; }
+  "|"                        { return BAR; }
+  "<"                        { return LT; }
+  ">"                        { return GT; }
+  "||"                       { return BARBAR; }
+  "&&"                       { return AMPAMP; }
+  "++"                       { return PLUSPLUS; }
+  "--"                       { return SUBSUB; }
+  "="                        { return EQ; }
+  "=="                       { return EQEQ; }
+  "!="                       { return BANGEQ; }
+  "+="                       { return PLUSEQ; }
+  "-="                       { return SUBEQ; }
+  "*="                       { return STAREQ; }
+  "/="                       { return SLASHEQ; }
+  "&="                       { return AMPEQ; }
+  "|="                       { return CARETEQ; }
+  "%="                       { return PERCENTEQ; }
+  "^"                        { return CARET; }
+  "%"                        { return PERCENT; }
+  "~"                        { return TILDE; }
+  "!"                        { return BANG; }
   "+"                        { return OP_PLUS; }
   "-"                        { return OP_MINUS; }
-  "*"                        { return OP_MULTIPLY; }
   "/"                        { return OP_DIVIDE; }
+  "THROWS"                   { return THROWS; }
+  "BOOLEAN"                  { return BOOLEAN; }
+  "CHAR"                     { return CHAR; }
+  "BYTE"                     { return BYTE; }
+  "SHORT"                    { return SHORT; }
+  "INT"                      { return INT; }
+  "LONG"                     { return LONG; }
+  "FLOAT"                    { return FLOAT; }
+  "DOUBLE"                   { return DOUBLE; }
+  "SUPER"                    { return SUPER; }
+  "BAREQ"                    { return BAREQ; }
+  "AMP"                      { return AMP; }
+  "PLUS"                     { return PLUS; }
+  "SUB"                      { return SUB; }
+  "STAR"                     { return STAR; }
+  "SLASH"                    { return SLASH; }
+  "VOID"                     { return VOID; }
 
   {WHITE_SPACE}              { return WHITE_SPACE; }
   {SINGLE_LINE_COMMENT}      { return SINGLE_LINE_COMMENT; }
   {BLOCK_COMMENT}            { return BLOCK_COMMENT; }
+  {IDENTIFIER}               { return IDENTIFIER; }
+  {INTEGER}                  { return INTEGER; }
   {NUMBER}                   { return NUMBER; }
-  {ALPHANUM}                 { return ALPHANUM; }
-  {STRING}                   { return STRING; }
-  {SYMBOL}                   { return SYMBOL; }
+  {STRINGLITERAL}            { return STRINGLITERAL; }
+  {CHARLITERAL}              { return CHARLITERAL; }
 
   [^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }

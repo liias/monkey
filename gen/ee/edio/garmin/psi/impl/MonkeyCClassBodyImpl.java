@@ -23,8 +23,8 @@ public class MonkeyCClassBodyImpl extends MonkeyCPsiCompositeElementImpl impleme
 
   @Override
   @NotNull
-  public List<MonkeyCClassMembers> getClassMembersList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyCClassMembers.class);
+  public List<MonkeyCClassBodyDeclaration> getClassBodyDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyCClassBodyDeclaration.class);
   }
 
 }
