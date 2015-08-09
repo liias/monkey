@@ -17,7 +17,8 @@
   psiImplUtilClass="ee.edio.garmin.psi.impl.MonkeyCPsiImplUtil"
 
 tokens = [
-    STATEMENT_END = ";"
+    DOT = "."
+    SEMI = ";"
     CLASS = "class"
     FUNCTION = "function"
     RETURN = "return"
@@ -65,6 +66,7 @@ tokens = [
     LPAREN = "("
     RPAREN = ")"
     COMMA = ","
+    STAR = "*"
 
     OP_PLUS = "+"
     OP_MINUS = "-"
@@ -81,73 +83,371 @@ tokens = [
     string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
 
     symbol='regexp:\:\p{Alpha}\w*'
+
+// alpha = letters
+
+    // a letter following by X letters or numbers, where 0 <= X <= 30
+    // [_a-zA-Z][_a-zA-Z0-9]{0,30}
+    IDENTIFIER='regexp:^[^\d\W]\w*\Z*'
+
+
+
   ]
 
 
   // extends(".*Expression")="expression"
 }
 
-monkeyCFile ::= topLevelDefinition*
-private topLevelDefinition ::= usingStatement
-                             | classDefinition
-                             //| enumDefinition
-                             //| functionTypeAlias
-                             //| getterOrSetterDeclaration
-                             //| functionDeclarationWithBodyOrNative
-                             //| varDeclarationListWithSemicolon
 
 
-
-usingStatement ::= USING packageName (AS id)? STATEMENT_END {pin=1}
-classDefinition ::= CLASS className withExtends? classBody
-
-withExtends ::= EXTENDS classType
-classBody ::= BLOCK_START classMembers* BLOCK_END {pin=1}
-classMembers ::= variableDefinition | functionDefinition
-
-variableDefinition ::= VAR variableName ('=' expressionB)? STATEMENT_END {pin=1}
-expressionB ::= newDefinition | opExpression
-opExpression ::= number operator number
-operator ::= OP_PLUS | OP_MINUS | OP_MULTIPLY | OP_DIVIDE
-
-newDefinition ::= NEW className LPAREN argumentList? RPAREN {pin=1}
-argumentList ::= variableName (COMMA variableName)*
-returnStatement ::= RETURN whatever STATEMENT_END {pin=1}
-
-whatever ::= array
-array ::= '[' exp (COMMA exp)* ']'
-exp ::= variableName | newDefinition
-
-functionDefinition ::= FUNCTION functionName LPAREN functionArgs? RPAREN functionBody {pin=1}
-functionArgs ::= variableName COMMA variableName | variableName
-functionBody ::= BLOCK_START functionMembers* BLOCK_END {pin=1}
-functionMembers ::= variableDefinition | callExpression | ifStatement |returnStatement
-
-//Types
-ifStatement ::= IF LPAREN booleanExpression RPAREN
+monkeyCFile ::= compilationUnit*
 
 
-booleanExpression ::= literal booleanOperator literal
+//compilationUnit ::= ((annotations)? packageDeclaration)? (usingDeclaration)* (typeDeclaration)*
 
-booleanOperator ::= relationalOperator | equalityOperator
-
-relationalOperator ::= '>=' | '>' | '<=' | '<'
-equalityOperator ::= '==' | '!='
-
-callExpression ::= classType LPAREN callArgs? RPAREN STATEMENT_END {pin=2}
-callArgs ::= possibleArgs (COMMA possibleArgs)?
-possibleArgs ::= alphanum | string
-
-classType ::= id '.' id | id
-
-// e: Toybox.Application or Toybox
-packageName ::=  id '.' id | id
-className ::= id
-variableName ::= id
-functionName ::= id
+private compilationUnit ::= usingDeclaration* typeDeclaration*
 
 
-literal ::= string | number | id
+//packageDeclaration ::= MODULE qualifiedName SEMI
+
+//usingStatement ::= USING packageName (AS id)? STATEMENT_END {pin=1}
+
+usingDeclaration ::= USING (STATIC)? IDENTIFIER DOT STAR (AS IDENTIFIER)? SEMI
+                    | USING (STATIC)? IDENTIFIER (DOT IDENTIFIER)+ (DOT STAR)? (AS IDENTIFIER)? SEMI
+
+//qualifiedImportName ::= IDENTIFIER (DOT IDENTIFIER)*
+
+typeDeclaration ::= classOrInterfaceDeclaration | SEMI
+
+classOrInterfaceDeclaration ::= classDeclaration | interfaceDeclaration
+
+modifiers ::= (annotation | PUBLIC | PROTECTED
+            | PRIVATE | STATIC | ABSTRACT | FINAL | NATIVE
+            | SYNCHRONIZED | TRANSIENT | VOLATILE | STRICTFP)*
+
+variableModifiers ::= (FINAL | annotation)*
+
+classDeclaration ::= normalClassDeclaration | enumDeclaration
+
+normalClassDeclaration ::= modifiers CLASS IDENTIFIER (typeParameters)?
+                           (EXTENDS type)? (IMPLEMENTS typeList)? classBody
+
+typeParameters ::= LT typeParameter (COMMA typeParameter)* GT
+
+typeParameter ::= IDENTIFIER (EXTENDS typeBound)?
+
+typeBound ::= type (AMP type)*
+
+enumDeclaration ::= modifiers (ENUM) IDENTIFIER (IMPLEMENTS typeList)? enumBody
+
+enumBody ::= LBRACE (enumConstants)?
+             COMMA? (enumBodyDeclarations)? RBRACE
+
+enumConstants ::= enumConstant (COMMA enumConstant)*
+
+/**
+ * NOTE: here differs from the javac grammar, missing TypeArguments.
+ * EnumeratorDeclaration = AnnotationsOpt [TypeArguments] IDENTIFIER [ Arguments ] [ "{" ClassBody "}" ]
+ */
+
+/* TODO: $GScope::name = names.empty. enum constant body is actually
+ an anonymous class, where constructor isn't allowed, have to add this check*/
+enumConstant ::= (annotations)? IDENTIFIER (arguments)? (classBody)?
+
+enumBodyDeclarations ::= SEMI (classBodyDeclaration)*
+
+interfaceDeclaration ::= normalInterfaceDeclaration | annotationTypeDeclaration
+
+normalInterfaceDeclaration ::= modifiers INTERFACE IDENTIFIER (typeParameters)?
+                               (EXTENDS typeList)? interfaceBody
+
+typeList ::= type (COMMA type)*
+
+classBody ::= LBRACE (classBodyDeclaration)* RBRACE
+
+interfaceBody ::= LBRACE (interfaceBodyDeclaration)* RBRACE
+
+classBodyDeclaration ::= SEMI | (STATIC)? block | memberDecl
+
+memberDecl ::= fieldDeclaration | methodDeclaration | classDeclaration | interfaceDeclaration
+
+/* For constructor, return type is null, name is 'init' */
+methodDeclaration ::= modifiers (typeParameters)? IDENTIFIER
+                      formalParameters (THROWS qualifiedNameList)?
+                      LBRACE (explicitConstructorInvocation)? (blockStatement)* RBRACE
+                    | modifiers
+                     (typeParameters)?
+                     (type | VOID)
+                     IDENTIFIER
+                     formalParameters
+                     (LBRACKET RBRACKET)*
+                     (THROWS qualifiedNameList)?
+                     (block | SEMI)
+
+fieldDeclaration ::= modifiers type variableDeclarator
+                    (COMMA variableDeclarator)* SEMI
+
+variableDeclarator ::= IDENTIFIER (LBRACKET RBRACKET)* (EQ variableInitializer)?
+
+/**
+ *TODO: add predicates
+ */
+interfaceBodyDeclaration ::= interfaceFieldDeclaration
+                           | interfaceMethodDeclaration
+                           | interfaceDeclaration
+                           | classDeclaration
+                           | SEMI
+
+interfaceMethodDeclaration ::= modifiers
+                              (typeParameters)?
+                              (type | VOID)
+                              IDENTIFIER
+                              formalParameters
+                              (LBRACKET RBRACKET)*
+                              (THROWS qualifiedNameList)? SEMI
+
+/**
+ * NOTE, should not use variableDeclarator here, as it doesn't necessary require
+ * an initializer, while an interface field does, or judge by the returned value.
+ * But this gives better diagnostic message, or antlr won't predict this rule.
+ */
+interfaceFieldDeclaration ::= modifiers type variableDeclarator (COMMA variableDeclarator)* SEMI
+
+type ::= classOrInterfaceType (LBRACKET RBRACKET)*
+       | primitiveType (LBRACKET RBRACKET)*
+
+classOrInterfaceType ::= IDENTIFIER (typeArguments)? (DOT IDENTIFIER (typeArguments)? )*
+
+primitiveType ::= BOOLEAN
+                | CHAR
+                | BYTE
+                | SHORT
+                | INT
+                | LONG
+                | FLOAT
+                | DOUBLE
+
+typeArguments ::= LT typeArgument (COMMA typeArgument)* GT
+
+typeArgument ::= type
+               | QUES ((EXTENDS | SUPER) type)?
+
+qualifiedNameList ::= qualifiedName (COMMA qualifiedName)*
+
+formalParameters ::= LPAREN (formalParameterDecls)? RPAREN
+
+formalParameterDecls ::= ellipsisParameterDecl
+                       | normalParameterDecl (COMMA normalParameterDecl)*
+                       | (normalParameterDecl COMMA)+ ellipsisParameterDecl
+
+normalParameterDecl ::= variableModifiers type IDENTIFIER (LBRACKET RBRACKET)*
+
+ellipsisParameterDecl ::= variableModifiers type ELLIPSIS IDENTIFIER
+
+//NOTE: the position of Identifier 'super' is set to the type args position here
+explicitConstructorInvocation ::=  (THIS | SUPER) arguments SEMI
+                                | primary DOT SUPER arguments SEMI
+
+qualifiedName ::= IDENTIFIER (DOT IDENTIFIER)*
+
+annotations ::= (annotation)+
+
+/**
+ *  Using an annotation.
+ * '@' is flagged in modifier
+ */
+annotation ::= MONKEYS_AT qualifiedName
+               (LPAREN (elementValuePairs | elementValue)? RPAREN)?
+
+elementValuePairs ::= elementValuePair (COMMA elementValuePair)*
+
+elementValuePair ::= IDENTIFIER EQ elementValue
+
+elementValue ::= conditionalExpression | annotation | elementValueArrayInitializer
+
+elementValueArrayInitializer ::= LBRACE ( elementValue (COMMA elementValue)* )? (COMMA)? RBRACE
+
+/**
+ * Annotation declaration.
+ */
+annotationTypeDeclaration ::= modifiers MONKEYS_AT INTERFACE IDENTIFIER annotationTypeBody
+
+annotationTypeBody ::= LBRACE (annotationTypeElementDeclaration)* RBRACE
+
+/**
+ * NOTE: here use interfaceFieldDeclaration for field declared inside annotation.
+ they are syntactically the same.
+ */
+annotationTypeElementDeclaration ::= annotationMethodDeclaration
+                                   | interfaceFieldDeclaration
+                                   | normalClassDeclaration
+                                   | normalInterfaceDeclaration
+                                   | enumDeclaration
+                                   | annotationTypeDeclaration
+                                   | SEMI
+
+annotationMethodDeclaration ::= modifiers type IDENTIFIER LPAREN RPAREN (DEFAULT elementValue)? SEMI
+
+block ::= LBRACE (blockStatement)* RBRACE
+
+blockStatement ::= localVariableDeclarationStatement
+                 | classOrInterfaceDeclaration
+                 | statement
+
+localVariableDeclarationStatement ::= localVariableDeclaration SEMI
+
+localVariableDeclaration ::= variableModifiers type variableDeclarator (COMMA variableDeclarator)*
+
+statement ::= block
+    | ASSERT  expression (COLON expression)? SEMI
+    | IF parExpression statement (ELSE statement)?
+    | forstatement
+    | WHILE parExpression statement
+    | DO statement WHILE parExpression SEMI
+    | trystatement
+    | SWITCH parExpression LBRACE switchBlockStatementGroups RBRACE
+    | SYNCHRONIZED parExpression block
+    | RETURN (expression )? SEMI
+    | THROW expression SEMI
+    | BREAK (IDENTIFIER)? SEMI
+    | CONTINUE (IDENTIFIER)? SEMI
+    | expression SEMI
+    | IDENTIFIER COLON statement
+    | SEMI
+
+switchBlockStatementGroups ::= (switchBlockStatementGroup)*
+
+switchBlockStatementGroup ::= switchLabel (blockStatement)*
+
+switchLabel ::= CASE expression COLON | DEFAULT COLON
+
+trystatement ::= TRY block (catches FINALLY block | catches | FINALLY block)
+
+catches ::= catchClause (catchClause)*
+
+catchClause ::= CATCH LPAREN formalParameter RPAREN block
+
+formalParameter ::= variableModifiers type IDENTIFIER (LBRACKET RBRACKET)*
+
+forstatement ::= // enhanced for loop
+        FOR LPAREN variableModifiers type IDENTIFIER COLON expression RPAREN statement
+        // normal for loop
+        | FOR LPAREN (forInit)? SEMI (expression)? SEMI (expressionList)? RPAREN statement
+
+forInit ::= localVariableDeclaration| expressionList
+
+parExpression ::= LPAREN expression RPAREN
+
+expressionList ::= expression (COMMA expression)*
+
+expression ::= conditionalExpression (assignmentOperator expression)?
+
+assignmentOperator ::= EQ
+                     | PLUSEQ
+                     | SUBEQ
+                     | STAREQ
+                     | SLASHEQ
+                     | AMPEQ
+                     | BAREQ
+                     | CARETEQ
+                     | PERCENTEQ
+                     | LT LT EQ
+                     | GT GT GT EQ
+                     | GT GT EQ
+
+conditionalExpression ::= conditionalOrExpression (QUES expression COLON conditionalExpression)?
+
+conditionalOrExpression ::= conditionalAndExpression (BARBAR conditionalAndExpression)*
+
+conditionalAndExpression ::= inclusiveOrExpression (AMPAMP inclusiveOrExpression)*
+
+inclusiveOrExpression ::= exclusiveOrExpression (BAR exclusiveOrExpression)*
+
+exclusiveOrExpression ::= andExpression (CARET andExpression)*
+
+andExpression ::= equalityExpression (AMP equalityExpression)*
+
+equalityExpression ::= instanceOfExpression ((EQEQ | BANGEQ) instanceOfExpression)*
+
+instanceOfExpression ::= relationalExpression (INSTANCEOF type)?
+
+relationalExpression ::= shiftExpression (relationalOp shiftExpression)*
+
+relationalOp ::= LT EQ | GT EQ | LT | GT
+
+shiftExpression ::= additiveExpression (shiftOp additiveExpression)*
+
+shiftOp ::= LT LT | GT GT GT | GT GT
+
+additiveExpression ::= multiplicativeExpression
+                        ( (PLUS | SUB) multiplicativeExpression )*
+
+multiplicativeExpression ::= unaryExpression ((STAR | SLASH | PERCENT) unaryExpression)*
+
+/**
+ * NOTE: for '+' and '-', if the next token is int or long interal, then it's not a unary expression.
+ *       it's a literal with signed value. INTLTERAL AND LONG LITERAL are added here for this.
+ */
+unaryExpression ::= PLUS unaryExpression
+                  | SUB unaryExpression
+                  | PLUSPLUS unaryExpression
+                  | SUBSUB unaryExpression
+                  | unaryExpressionNotPlusMinus
+
+unaryExpressionNotPlusMinus ::= TILDE unaryExpression
+                              | BANG unaryExpression
+                              | primary (selector)* (PLUSPLUS | SUBSUB)?
+
+/**
+ * have to use scope here, parameter passing isn't well supported in antlr.
+ */
+primary ::= parExpression
+          | THIS (DOT IDENTIFIER)* (identifierSuffix)?
+          | IDENTIFIER (DOT IDENTIFIER)* (identifierSuffix)?
+          | literal
+          | creator
+          | primitiveType (LBRACKET RBRACKET)* DOT CLASS
+          | VOID DOT CLASS
 
 
-id ::= alphanum
+identifierSuffix ::= (LBRACKET RBRACKET) + DOT CLASS
+                   | (LBRACKET expression RBRACKET)+
+                   | arguments
+                   | DOT CLASS
+                   | DOT IDENTIFIER arguments
+                   | DOT THIS
+                   | DOT SUPER arguments
+
+selector ::= DOT IDENTIFIER (arguments)?
+           | DOT THIS
+           | LBRACKET expression RBRACKET
+
+creator ::= NEW classOrInterfaceType classCreatorRest
+          | arrayCreator
+
+arrayCreator ::= NEW createdName LBRACKET RBRACKET (LBRACKET RBRACKET)* arrayInitializer
+               | NEW createdName LBRACKET expression RBRACKET (LBRACKET expression RBRACKET)* (LBRACKET RBRACKET)*
+
+variableInitializer ::= arrayInitializer
+                      | expression
+
+arrayInitializer ::= LBRACE
+                    (variableInitializer (COMMA variableInitializer)*)?
+                    (COMMA)? RBRACE
+
+createdName ::=   classOrInterfaceType
+              |   primitiveType
+
+classCreatorRest ::= arguments (classBody)?
+
+arguments ::= LPAREN (expressionList)? RPAREN
+
+literal ::= INTLITERAL
+          | LONGLITERAL
+          | FLOATLITERAL
+          | DOUBLELITERAL
+          | CHARLITERAL
+          | STRINGLITERAL
+          | TRUE
+          | FALSE
+          | NULL
