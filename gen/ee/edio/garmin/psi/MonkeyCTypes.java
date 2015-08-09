@@ -65,7 +65,6 @@ public interface MonkeyCTypes {
   IElementType NORMAL_PARAMETER_DECL = new MonkeyCElementType("NORMAL_PARAMETER_DECL");
   IElementType PAR_EXPRESSION = new MonkeyCElementType("PAR_EXPRESSION");
   IElementType PRIMARY = new MonkeyCElementType("PRIMARY");
-  IElementType PRIMITIVE_TYPE = new MonkeyCElementType("PRIMITIVE_TYPE");
   IElementType QUALIFIED_NAME = new MonkeyCElementType("QUALIFIED_NAME");
   IElementType QUALIFIED_NAME_LIST = new MonkeyCElementType("QUALIFIED_NAME_LIST");
   IElementType RELATIONAL_EXPRESSION = new MonkeyCElementType("RELATIONAL_EXPRESSION");
@@ -98,14 +97,11 @@ public interface MonkeyCTypes {
   IElementType BARBAR = new MonkeyCTokenType("||");
   IElementType BAREQ = new MonkeyCTokenType("BAREQ");
   IElementType BLOCK_COMMENT = new MonkeyCTokenType("BLOCK_COMMENT");
-  IElementType BOOLEAN = new MonkeyCTokenType("BOOLEAN");
   IElementType BREAK = new MonkeyCTokenType("break");
-  IElementType BYTE = new MonkeyCTokenType("BYTE");
   IElementType CARET = new MonkeyCTokenType("^");
   IElementType CARETEQ = new MonkeyCTokenType("|=");
   IElementType CASE = new MonkeyCTokenType("case");
   IElementType CATCH = new MonkeyCTokenType("catch");
-  IElementType CHAR = new MonkeyCTokenType("CHAR");
   IElementType CHARLITERAL = new MonkeyCTokenType("CHARLITERAL");
   IElementType CLASS = new MonkeyCTokenType("class");
   IElementType COLON = new MonkeyCTokenType(":");
@@ -115,7 +111,6 @@ public interface MonkeyCTypes {
   IElementType DEFAULT = new MonkeyCTokenType("default");
   IElementType DO = new MonkeyCTokenType("do");
   IElementType DOT = new MonkeyCTokenType(".");
-  IElementType DOUBLE = new MonkeyCTokenType("DOUBLE");
   IElementType ELSE = new MonkeyCTokenType("else");
   IElementType ENUM = new MonkeyCTokenType("enum");
   IElementType EQ = new MonkeyCTokenType("=");
@@ -124,7 +119,6 @@ public interface MonkeyCTypes {
   IElementType EXTENDS = new MonkeyCTokenType("extends");
   IElementType FALSE = new MonkeyCTokenType("false");
   IElementType FINALLY = new MonkeyCTokenType("finally");
-  IElementType FLOAT = new MonkeyCTokenType("FLOAT");
   IElementType FOR = new MonkeyCTokenType("for");
   IElementType FUNCTION = new MonkeyCTokenType("function");
   IElementType GT = new MonkeyCTokenType(">");
@@ -133,11 +127,9 @@ public interface MonkeyCTypes {
   IElementType IDENTIFIER = new MonkeyCTokenType("IDENTIFIER");
   IElementType IF = new MonkeyCTokenType("if");
   IElementType INSTANCEOF = new MonkeyCTokenType("instanceof");
-  IElementType INT = new MonkeyCTokenType("INT");
   IElementType INTEGER = new MonkeyCTokenType("INTEGER");
   IElementType LBRACE = new MonkeyCTokenType("{");
   IElementType LBRACKET = new MonkeyCTokenType("[");
-  IElementType LONG = new MonkeyCTokenType("LONG");
   IElementType LPAREN = new MonkeyCTokenType("(");
   IElementType LT = new MonkeyCTokenType("<");
   IElementType MODULE = new MonkeyCTokenType("module");
@@ -159,7 +151,6 @@ public interface MonkeyCTypes {
   IElementType RETURN = new MonkeyCTokenType("return");
   IElementType RPAREN = new MonkeyCTokenType(")");
   IElementType SEMI = new MonkeyCTokenType(";");
-  IElementType SHORT = new MonkeyCTokenType("SHORT");
   IElementType SINGLE_LINE_COMMENT = new MonkeyCTokenType("SINGLE_LINE_COMMENT");
   IElementType SLASH = new MonkeyCTokenType("/");
   IElementType SLASHEQ = new MonkeyCTokenType("/=");
@@ -357,9 +348,6 @@ public interface MonkeyCTypes {
       }
       else if (type == PRIMARY) {
         return new MonkeyCPrimaryImpl(node);
-      }
-      else if (type == PRIMITIVE_TYPE) {
-        return new MonkeyCPrimitiveTypeImpl(node);
       }
       else if (type == QUALIFIED_NAME) {
         return new MonkeyCQualifiedNameImpl(node);

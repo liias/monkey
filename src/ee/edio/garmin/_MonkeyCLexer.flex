@@ -25,7 +25,7 @@ WHITE_SPACE=({LINE_WS}|{EOL})+
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 SINGLE_LINE_COMMENT="//".*
 BLOCK_COMMENT="/"\*([^*]|\*+[^*/])*(\*+"/")?
-IDENTIFIER=[a-zA-Z0-9$_]*
+IDENTIFIER=[a-zA-Z$_][a-zA-Z0-9$_]*
 INTEGER=[0-9]+
 NUMBER=[0-9]+(\.[0-9]*)?
 STRINGLITERAL=(\"([^\"\\]|\\.)*\")
@@ -112,14 +112,6 @@ CHARLITERAL=('([^'\\]|\\.)*')
   "-"                        { return SUB; }
   "/"                        { return SLASH; }
   "THROWS"                   { return THROWS; }
-  "BOOLEAN"                  { return BOOLEAN; }
-  "CHAR"                     { return CHAR; }
-  "BYTE"                     { return BYTE; }
-  "SHORT"                    { return SHORT; }
-  "INT"                      { return INT; }
-  "LONG"                     { return LONG; }
-  "FLOAT"                    { return FLOAT; }
-  "DOUBLE"                   { return DOUBLE; }
   "SUPER"                    { return SUPER; }
   "BAREQ"                    { return BAREQ; }
   "AMP"                      { return AMP; }

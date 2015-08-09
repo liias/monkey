@@ -111,7 +111,7 @@ tokens = [
     WHITE_SPACE='regexp:\s+'
     SINGLE_LINE_COMMENT='regexp://.*'
     BLOCK_COMMENT='regexp:/\*([^*]|\*+[^*/])*(\*+/)?'
-    IDENTIFIER = 'regexp:[a-zA-Z0-9$_]*'
+    IDENTIFIER = 'regexp:[a-zA-Z$_][a-zA-Z0-9$_]*'
     INTEGER = 'regexp:\d+'
     NUMBER = 'regexp:\d+(\.\d*)?'
     STRINGLITERAL = "regexp:(\"([^\"\\]|\\.)*\")"
@@ -165,18 +165,8 @@ fieldDeclaration ::= modifiers VAR variableDeclarator
 variableDeclarator ::= IDENTIFIER (LBRACKET RBRACKET)* (EQ variableInitializer)?
 
 type ::= classOrInterfaceType (LBRACKET RBRACKET)*
-       | primitiveType (LBRACKET RBRACKET)*
 
 classOrInterfaceType ::= IDENTIFIER (DOT IDENTIFIER)*
-
-primitiveType ::= BOOLEAN
-                | CHAR
-                | BYTE
-                | SHORT
-                | INT
-                | LONG
-                | FLOAT
-                | DOUBLE
 
 qualifiedNameList ::= qualifiedName (COMMA qualifiedName)*
 
@@ -307,7 +297,6 @@ primary ::= parExpression
           | literal
           | symbol
           | creator
-          | primitiveType (LBRACKET RBRACKET)* DOT CLASS
           | VOID DOT CLASS
 
 identifierSuffix ::= (LBRACKET RBRACKET) + DOT CLASS
@@ -334,7 +323,7 @@ arrayInitializer ::= LBRACE (variableInitializer (COMMA variableInitializer)*)? 
 
 variableInitializer ::= arrayInitializer | expression
 
-createdName ::= classOrInterfaceType | primitiveType
+createdName ::= classOrInterfaceType
 
 classCreatorRest ::= arguments (classBody)?
 

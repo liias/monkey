@@ -234,10 +234,6 @@ public class MonkeyCVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
-  public void visitPrimitiveType(@NotNull MonkeyCPrimitiveType o) {
-    visitPsiCompositeElement(o);
-  }
-
   public void visitQualifiedName(@NotNull MonkeyCQualifiedName o) {
     visitPsiCompositeElement(o);
   }

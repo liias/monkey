@@ -194,9 +194,6 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     else if (t == PRIMARY) {
       r = primary(b, 0);
     }
-    else if (t == PRIMITIVE_TYPE) {
-      r = primitiveType(b, 0);
-    }
     else if (t == QUALIFIED_NAME) {
       r = qualifiedName(b, 0);
     }
@@ -1082,14 +1079,14 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // classOrInterfaceType | primitiveType
+  // classOrInterfaceType
   public static boolean createdName(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "createdName")) return false;
+    if (!nextTokenIs(b, IDENTIFIER)) return false;
     boolean r;
-    Marker m = enter_section_(b, l, _NONE_, "<created name>");
+    Marker m = enter_section_(b);
     r = classOrInterfaceType(b, l + 1);
-    if (!r) r = primitiveType(b, l + 1);
-    exit_section_(b, l, m, CREATED_NAME, r, false, null);
+    exit_section_(b, m, CREATED_NAME, r);
     return r;
   }
 
@@ -2323,7 +2320,6 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   //           | literal
   //           | symbol
   //           | creator
-  //           | primitiveType (LBRACKET RBRACKET)* DOT CLASS
   //           | VOID DOT CLASS
   public static boolean primary(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "primary")) return false;
@@ -2334,7 +2330,6 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     if (!r) r = literal(b, l + 1);
     if (!r) r = symbol(b, l + 1);
     if (!r) r = creator(b, l + 1);
-    if (!r) r = primary_5(b, l + 1);
     if (!r) r = parseTokens(b, 0, VOID, DOT, CLASS);
     exit_section_(b, l, m, PRIMARY, r, false, null);
     return r;
@@ -2388,65 +2383,6 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = identifierSuffix(b, l + 1);
     exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // primitiveType (LBRACKET RBRACKET)* DOT CLASS
-  private static boolean primary_5(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "primary_5")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = primitiveType(b, l + 1);
-    r = r && primary_5_1(b, l + 1);
-    r = r && consumeTokens(b, 0, DOT, CLASS);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (LBRACKET RBRACKET)*
-  private static boolean primary_5_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "primary_5_1")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!primary_5_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "primary_5_1", c)) break;
-      c = current_position_(b);
-    }
-    return true;
-  }
-
-  // LBRACKET RBRACKET
-  private static boolean primary_5_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "primary_5_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, LBRACKET, RBRACKET);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // BOOLEAN
-  //                 | CHAR
-  //                 | BYTE
-  //                 | SHORT
-  //                 | INT
-  //                 | LONG
-  //                 | FLOAT
-  //                 | DOUBLE
-  public static boolean primitiveType(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "primitiveType")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, "<primitive type>");
-    r = consumeToken(b, BOOLEAN);
-    if (!r) r = consumeToken(b, CHAR);
-    if (!r) r = consumeToken(b, BYTE);
-    if (!r) r = consumeToken(b, SHORT);
-    if (!r) r = consumeToken(b, INT);
-    if (!r) r = consumeToken(b, LONG);
-    if (!r) r = consumeToken(b, FLOAT);
-    if (!r) r = consumeToken(b, DOUBLE);
-    exit_section_(b, l, m, PRIMITIVE_TYPE, r, false, null);
     return r;
   }
 
@@ -3021,76 +2957,32 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // classOrInterfaceType (LBRACKET RBRACKET)*
-  //        | primitiveType (LBRACKET RBRACKET)*
   public static boolean type(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "type")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, "<type>");
-    r = type_0(b, l + 1);
-    if (!r) r = type_1(b, l + 1);
-    exit_section_(b, l, m, TYPE, r, false, null);
-    return r;
-  }
-
-  // classOrInterfaceType (LBRACKET RBRACKET)*
-  private static boolean type_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_0")) return false;
+    if (!nextTokenIs(b, IDENTIFIER)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = classOrInterfaceType(b, l + 1);
-    r = r && type_0_1(b, l + 1);
-    exit_section_(b, m, null, r);
+    r = r && type_1(b, l + 1);
+    exit_section_(b, m, TYPE, r);
     return r;
   }
 
   // (LBRACKET RBRACKET)*
-  private static boolean type_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_0_1")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!type_0_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "type_0_1", c)) break;
-      c = current_position_(b);
-    }
-    return true;
-  }
-
-  // LBRACKET RBRACKET
-  private static boolean type_0_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_0_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, LBRACKET, RBRACKET);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // primitiveType (LBRACKET RBRACKET)*
   private static boolean type_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "type_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = primitiveType(b, l + 1);
-    r = r && type_1_1(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (LBRACKET RBRACKET)*
-  private static boolean type_1_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_1_1")) return false;
     int c = current_position_(b);
     while (true) {
-      if (!type_1_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "type_1_1", c)) break;
+      if (!type_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "type_1", c)) break;
       c = current_position_(b);
     }
     return true;
   }
 
   // LBRACKET RBRACKET
-  private static boolean type_1_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "type_1_1_0")) return false;
+  private static boolean type_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "type_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeTokens(b, 0, LBRACKET, RBRACKET);
