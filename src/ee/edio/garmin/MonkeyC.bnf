@@ -97,10 +97,10 @@ tokens = [
     TILDE = "~"
     BANG = "!"
 
-    OP_PLUS = "+"
-    OP_MINUS = "-"
-    OP_MULTIPLY = "*"
-    OP_DIVIDE = "/"
+    PLUS = "+"
+    SUB = "-"
+    STAR = "*"
+    SLASH = "/"
 
     // WHITE_SPACE is overwritten by JFlex, this here is only for Live Preview
     WHITE_SPACE='regexp:\s+'

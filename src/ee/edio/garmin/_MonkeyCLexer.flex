@@ -85,7 +85,7 @@ CHARLITERAL=('([^'\\]|\\.)*')
   "("                        { return LPAREN; }
   ")"                        { return RPAREN; }
   ","                        { return COMMA; }
-  "*"                        { return OP_MULTIPLY; }
+  "*"                        { return STAR; }
   "|"                        { return BAR; }
   "<"                        { return LT; }
   ">"                        { return GT; }
@@ -107,9 +107,9 @@ CHARLITERAL=('([^'\\]|\\.)*')
   "%"                        { return PERCENT; }
   "~"                        { return TILDE; }
   "!"                        { return BANG; }
-  "+"                        { return OP_PLUS; }
-  "-"                        { return OP_MINUS; }
-  "/"                        { return OP_DIVIDE; }
+  "+"                        { return PLUS; }
+  "-"                        { return SUB; }
+  "/"                        { return SLASH; }
   "THROWS"                   { return THROWS; }
   "BOOLEAN"                  { return BOOLEAN; }
   "CHAR"                     { return CHAR; }
@@ -122,10 +122,6 @@ CHARLITERAL=('([^'\\]|\\.)*')
   "SUPER"                    { return SUPER; }
   "BAREQ"                    { return BAREQ; }
   "AMP"                      { return AMP; }
-  "PLUS"                     { return PLUS; }
-  "SUB"                      { return SUB; }
-  "STAR"                     { return STAR; }
-  "SLASH"                    { return SLASH; }
   "VOID"                     { return VOID; }
 
   {WHITE_SPACE}              { return WHITE_SPACE; }

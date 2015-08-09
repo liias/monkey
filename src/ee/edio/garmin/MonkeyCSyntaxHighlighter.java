@@ -57,10 +57,10 @@ public class MonkeyCSyntaxHighlighter extends SyntaxHighlighterBase {
   );
 
   private static final TokenSet OPERATOR_TOKENS = TokenSet.create(
-      MonkeyCTypes.OP_PLUS,
-      MonkeyCTypes.OP_MINUS,
-      MonkeyCTypes.OP_MULTIPLY,
-      MonkeyCTypes.OP_DIVIDE
+      MonkeyCTypes.PLUS,
+      MonkeyCTypes.SUB,
+      MonkeyCTypes.STAR,
+      MonkeyCTypes.SLASH
   );
 
   private static final Map<IElementType, TextAttributesKey> TYPE_KEY_MAP = createTypeKeyMap();
