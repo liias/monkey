@@ -30,8 +30,6 @@ public interface MonkeyCTypes {
   IElementType CREATED_NAME = new MonkeyCElementType("CREATED_NAME");
   IElementType CREATOR = new MonkeyCElementType("CREATOR");
   IElementType DOUBLELITERAL = new MonkeyCElementType("DOUBLELITERAL");
-  IElementType ELEMENT_VALUE = new MonkeyCElementType("ELEMENT_VALUE");
-  IElementType ELEMENT_VALUE_ARRAY_INITIALIZER = new MonkeyCElementType("ELEMENT_VALUE_ARRAY_INITIALIZER");
   IElementType ENUM_BODY = new MonkeyCElementType("ENUM_BODY");
   IElementType ENUM_BODY_DECLARATIONS = new MonkeyCElementType("ENUM_BODY_DECLARATIONS");
   IElementType ENUM_CONSTANT = new MonkeyCElementType("ENUM_CONSTANT");
@@ -53,6 +51,7 @@ public interface MonkeyCTypes {
   IElementType INCLUSIVE_OR_EXPRESSION = new MonkeyCElementType("INCLUSIVE_OR_EXPRESSION");
   IElementType INSTANCE_OF_EXPRESSION = new MonkeyCElementType("INSTANCE_OF_EXPRESSION");
   IElementType INTLITERAL = new MonkeyCElementType("INTLITERAL");
+  IElementType KEY_VALUE_INITIALIZER = new MonkeyCElementType("KEY_VALUE_INITIALIZER");
   IElementType LITERAL = new MonkeyCElementType("LITERAL");
   IElementType LOCAL_VARIABLE_DECLARATION = new MonkeyCElementType("LOCAL_VARIABLE_DECLARATION");
   IElementType LOCAL_VARIABLE_DECLARATION_STATEMENT = new MonkeyCElementType("LOCAL_VARIABLE_DECLARATION_STATEMENT");
@@ -61,6 +60,7 @@ public interface MonkeyCTypes {
   IElementType MODIFIERS = new MonkeyCElementType("MODIFIERS");
   IElementType MULTIPLICATIVE_EXPRESSION = new MonkeyCElementType("MULTIPLICATIVE_EXPRESSION");
   IElementType NEW_ARRAY_INITIALIZER = new MonkeyCElementType("NEW_ARRAY_INITIALIZER");
+  IElementType NEW_DICTIONARY_INITIALIZER = new MonkeyCElementType("NEW_DICTIONARY_INITIALIZER");
   IElementType NORMAL_CLASS_DECLARATION = new MonkeyCElementType("NORMAL_CLASS_DECLARATION");
   IElementType NORMAL_PARAMETER_DECL = new MonkeyCElementType("NORMAL_PARAMETER_DECL");
   IElementType PAR_EXPRESSION = new MonkeyCElementType("PAR_EXPRESSION");
@@ -77,6 +77,7 @@ public interface MonkeyCTypes {
   IElementType SWITCH_BLOCK_STATEMENT_GROUP = new MonkeyCElementType("SWITCH_BLOCK_STATEMENT_GROUP");
   IElementType SWITCH_BLOCK_STATEMENT_GROUPS = new MonkeyCElementType("SWITCH_BLOCK_STATEMENT_GROUPS");
   IElementType SWITCH_LABEL = new MonkeyCElementType("SWITCH_LABEL");
+  IElementType SYMBOL = new MonkeyCElementType("SYMBOL");
   IElementType TRY_STATEMENT = new MonkeyCElementType("TRY_STATEMENT");
   IElementType TYPE = new MonkeyCElementType("TYPE");
   IElementType TYPE_DECLARATION = new MonkeyCElementType("TYPE_DECLARATION");
@@ -119,6 +120,7 @@ public interface MonkeyCTypes {
   IElementType ENUM = new MonkeyCTokenType("enum");
   IElementType EQ = new MonkeyCTokenType("=");
   IElementType EQEQ = new MonkeyCTokenType("==");
+  IElementType EQGT = new MonkeyCTokenType("=>");
   IElementType EXTENDS = new MonkeyCTokenType("extends");
   IElementType FALSE = new MonkeyCTokenType("false");
   IElementType FINALLY = new MonkeyCTokenType("finally");
@@ -251,12 +253,6 @@ public interface MonkeyCTypes {
       else if (type == DOUBLELITERAL) {
         return new MonkeyCDoubleliteralImpl(node);
       }
-      else if (type == ELEMENT_VALUE) {
-        return new MonkeyCElementValueImpl(node);
-      }
-      else if (type == ELEMENT_VALUE_ARRAY_INITIALIZER) {
-        return new MonkeyCElementValueArrayInitializerImpl(node);
-      }
       else if (type == ENUM_BODY) {
         return new MonkeyCEnumBodyImpl(node);
       }
@@ -320,6 +316,9 @@ public interface MonkeyCTypes {
       else if (type == INTLITERAL) {
         return new MonkeyCIntliteralImpl(node);
       }
+      else if (type == KEY_VALUE_INITIALIZER) {
+        return new MonkeyCKeyValueInitializerImpl(node);
+      }
       else if (type == LITERAL) {
         return new MonkeyCLiteralImpl(node);
       }
@@ -343,6 +342,9 @@ public interface MonkeyCTypes {
       }
       else if (type == NEW_ARRAY_INITIALIZER) {
         return new MonkeyCNewArrayInitializerImpl(node);
+      }
+      else if (type == NEW_DICTIONARY_INITIALIZER) {
+        return new MonkeyCNewDictionaryInitializerImpl(node);
       }
       else if (type == NORMAL_CLASS_DECLARATION) {
         return new MonkeyCNormalClassDeclarationImpl(node);
@@ -391,6 +393,9 @@ public interface MonkeyCTypes {
       }
       else if (type == SWITCH_LABEL) {
         return new MonkeyCSwitchLabelImpl(node);
+      }
+      else if (type == SYMBOL) {
+        return new MonkeyCSymbolImpl(node);
       }
       else if (type == TRY_STATEMENT) {
         return new MonkeyCTryStatementImpl(node);

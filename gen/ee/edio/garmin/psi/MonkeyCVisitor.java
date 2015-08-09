@@ -106,14 +106,6 @@ public class MonkeyCVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
-  public void visitElementValue(@NotNull MonkeyCElementValue o) {
-    visitPsiCompositeElement(o);
-  }
-
-  public void visitElementValueArrayInitializer(@NotNull MonkeyCElementValueArrayInitializer o) {
-    visitPsiCompositeElement(o);
-  }
-
   public void visitEnumBody(@NotNull MonkeyCEnumBody o) {
     visitPsiCompositeElement(o);
   }
@@ -190,6 +182,10 @@ public class MonkeyCVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
+  public void visitKeyValueInitializer(@NotNull MonkeyCKeyValueInitializer o) {
+    visitPsiCompositeElement(o);
+  }
+
   public void visitLiteral(@NotNull MonkeyCLiteral o) {
     visitPsiCompositeElement(o);
   }
@@ -215,6 +211,10 @@ public class MonkeyCVisitor extends PsiElementVisitor {
   }
 
   public void visitNewArrayInitializer(@NotNull MonkeyCNewArrayInitializer o) {
+    visitPsiCompositeElement(o);
+  }
+
+  public void visitNewDictionaryInitializer(@NotNull MonkeyCNewDictionaryInitializer o) {
     visitPsiCompositeElement(o);
   }
 
@@ -279,6 +279,10 @@ public class MonkeyCVisitor extends PsiElementVisitor {
   }
 
   public void visitSwitchLabel(@NotNull MonkeyCSwitchLabel o) {
+    visitPsiCompositeElement(o);
+  }
+
+  public void visitSymbol(@NotNull MonkeyCSymbol o) {
     visitPsiCompositeElement(o);
   }
 

@@ -98,12 +98,6 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     else if (t == CREATOR) {
       r = creator(b, 0);
     }
-    else if (t == ELEMENT_VALUE) {
-      r = elementValue(b, 0);
-    }
-    else if (t == ELEMENT_VALUE_ARRAY_INITIALIZER) {
-      r = elementValueArrayInitializer(b, 0);
-    }
     else if (t == ENUM_BODY) {
       r = enumBody(b, 0);
     }
@@ -161,6 +155,9 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     else if (t == INSTANCE_OF_EXPRESSION) {
       r = instanceOfExpression(b, 0);
     }
+    else if (t == KEY_VALUE_INITIALIZER) {
+      r = keyValueInitializer(b, 0);
+    }
     else if (t == LITERAL) {
       r = literal(b, 0);
     }
@@ -181,6 +178,9 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     }
     else if (t == NEW_ARRAY_INITIALIZER) {
       r = newArrayInitializer(b, 0);
+    }
+    else if (t == NEW_DICTIONARY_INITIALIZER) {
+      r = newDictionaryInitializer(b, 0);
     }
     else if (t == NORMAL_CLASS_DECLARATION) {
       r = normalClassDeclaration(b, 0);
@@ -229,6 +229,9 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     }
     else if (t == SWITCH_LABEL) {
       r = switchLabel(b, 0);
+    }
+    else if (t == SYMBOL) {
+      r = symbol(b, 0);
     }
     else if (t == TRY_STATEMENT) {
       r = tryStatement(b, 0);
@@ -463,15 +466,15 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   /* ********************************************************** */
   // NEW createdName LBRACKET RBRACKET (LBRACKET RBRACKET)* arrayInitializer
   //                | NEW createdName LBRACKET expression RBRACKET (LBRACKET expression RBRACKET)* (LBRACKET RBRACKET)*
-  //                | newArrayInitializer
+  //                | newArrayInitializer | newDictionaryInitializer
   public static boolean arrayCreator(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "arrayCreator")) return false;
-    if (!nextTokenIs(b, "<array creator>", LBRACKET, NEW)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<array creator>");
     r = arrayCreator_0(b, l + 1);
     if (!r) r = arrayCreator_1(b, l + 1);
     if (!r) r = newArrayInitializer(b, l + 1);
+    if (!r) r = newDictionaryInitializer(b, l + 1);
     exit_section_(b, l, m, ARRAY_CREATOR, r, false, null);
     return r;
   }
@@ -1094,7 +1097,6 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   // NEW classOrInterfaceType classCreatorRest | arrayCreator
   public static boolean creator(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "creator")) return false;
-    if (!nextTokenIs(b, "<creator>", LBRACKET, NEW)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<creator>");
     r = creator_0(b, l + 1);
@@ -1111,146 +1113,6 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, NEW);
     r = r && classOrInterfaceType(b, l + 1);
     r = r && classCreatorRest(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // conditionalExpression | elementValueArrayInitializer
-  public static boolean elementValue(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValue")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, "<element value>");
-    r = conditionalExpression(b, l + 1);
-    if (!r) r = elementValueArrayInitializer(b, l + 1);
-    exit_section_(b, l, m, ELEMENT_VALUE, r, false, null);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // LBRACE ( elementValue (COMMA elementValue)* )? (COMMA)? RBRACE
-  //                                | LBRACKET ( elementValue (COMMA elementValue)* )? RBRACKET
-  public static boolean elementValueArrayInitializer(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValueArrayInitializer")) return false;
-    if (!nextTokenIs(b, "<element value array initializer>", LBRACE, LBRACKET)) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, "<element value array initializer>");
-    r = elementValueArrayInitializer_0(b, l + 1);
-    if (!r) r = elementValueArrayInitializer_1(b, l + 1);
-    exit_section_(b, l, m, ELEMENT_VALUE_ARRAY_INITIALIZER, r, false, null);
-    return r;
-  }
-
-  // LBRACE ( elementValue (COMMA elementValue)* )? (COMMA)? RBRACE
-  private static boolean elementValueArrayInitializer_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValueArrayInitializer_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, LBRACE);
-    r = r && elementValueArrayInitializer_0_1(b, l + 1);
-    r = r && elementValueArrayInitializer_0_2(b, l + 1);
-    r = r && consumeToken(b, RBRACE);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // ( elementValue (COMMA elementValue)* )?
-  private static boolean elementValueArrayInitializer_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValueArrayInitializer_0_1")) return false;
-    elementValueArrayInitializer_0_1_0(b, l + 1);
-    return true;
-  }
-
-  // elementValue (COMMA elementValue)*
-  private static boolean elementValueArrayInitializer_0_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValueArrayInitializer_0_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = elementValue(b, l + 1);
-    r = r && elementValueArrayInitializer_0_1_0_1(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (COMMA elementValue)*
-  private static boolean elementValueArrayInitializer_0_1_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValueArrayInitializer_0_1_0_1")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!elementValueArrayInitializer_0_1_0_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "elementValueArrayInitializer_0_1_0_1", c)) break;
-      c = current_position_(b);
-    }
-    return true;
-  }
-
-  // COMMA elementValue
-  private static boolean elementValueArrayInitializer_0_1_0_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValueArrayInitializer_0_1_0_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, COMMA);
-    r = r && elementValue(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (COMMA)?
-  private static boolean elementValueArrayInitializer_0_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValueArrayInitializer_0_2")) return false;
-    consumeToken(b, COMMA);
-    return true;
-  }
-
-  // LBRACKET ( elementValue (COMMA elementValue)* )? RBRACKET
-  private static boolean elementValueArrayInitializer_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValueArrayInitializer_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, LBRACKET);
-    r = r && elementValueArrayInitializer_1_1(b, l + 1);
-    r = r && consumeToken(b, RBRACKET);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // ( elementValue (COMMA elementValue)* )?
-  private static boolean elementValueArrayInitializer_1_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValueArrayInitializer_1_1")) return false;
-    elementValueArrayInitializer_1_1_0(b, l + 1);
-    return true;
-  }
-
-  // elementValue (COMMA elementValue)*
-  private static boolean elementValueArrayInitializer_1_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValueArrayInitializer_1_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = elementValue(b, l + 1);
-    r = r && elementValueArrayInitializer_1_1_0_1(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (COMMA elementValue)*
-  private static boolean elementValueArrayInitializer_1_1_0_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValueArrayInitializer_1_1_0_1")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!elementValueArrayInitializer_1_1_0_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "elementValueArrayInitializer_1_1_0_1", c)) break;
-      c = current_position_(b);
-    }
-    return true;
-  }
-
-  // COMMA elementValue
-  private static boolean elementValueArrayInitializer_1_1_0_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "elementValueArrayInitializer_1_1_0_1_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, COMMA);
-    r = r && elementValue(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -2062,6 +1924,19 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // primary EQGT primary
+  public static boolean keyValueInitializer(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "keyValueInitializer")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, "<key value initializer>");
+    r = primary(b, l + 1);
+    r = r && consumeToken(b, EQGT);
+    r = r && primary(b, l + 1);
+    exit_section_(b, l, m, KEY_VALUE_INITIALIZER, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // INTLITERAL
   //           | LONGLITERAL
   //           | FLOATLITERAL
@@ -2299,6 +2174,69 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // LBRACE (keyValueInitializer (COMMA keyValueInitializer)*)? (COMMA)? RBRACE
+  public static boolean newDictionaryInitializer(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "newDictionaryInitializer")) return false;
+    if (!nextTokenIs(b, LBRACE)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LBRACE);
+    r = r && newDictionaryInitializer_1(b, l + 1);
+    r = r && newDictionaryInitializer_2(b, l + 1);
+    r = r && consumeToken(b, RBRACE);
+    exit_section_(b, m, NEW_DICTIONARY_INITIALIZER, r);
+    return r;
+  }
+
+  // (keyValueInitializer (COMMA keyValueInitializer)*)?
+  private static boolean newDictionaryInitializer_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "newDictionaryInitializer_1")) return false;
+    newDictionaryInitializer_1_0(b, l + 1);
+    return true;
+  }
+
+  // keyValueInitializer (COMMA keyValueInitializer)*
+  private static boolean newDictionaryInitializer_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "newDictionaryInitializer_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = keyValueInitializer(b, l + 1);
+    r = r && newDictionaryInitializer_1_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (COMMA keyValueInitializer)*
+  private static boolean newDictionaryInitializer_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "newDictionaryInitializer_1_0_1")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!newDictionaryInitializer_1_0_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "newDictionaryInitializer_1_0_1", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // COMMA keyValueInitializer
+  private static boolean newDictionaryInitializer_1_0_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "newDictionaryInitializer_1_0_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, COMMA);
+    r = r && keyValueInitializer(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (COMMA)?
+  private static boolean newDictionaryInitializer_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "newDictionaryInitializer_2")) return false;
+    consumeToken(b, COMMA);
+    return true;
+  }
+
+  /* ********************************************************** */
   // modifiers CLASS IDENTIFIER (EXTENDS type)? classBody
   public static boolean normalClassDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "normalClassDeclaration")) return false;
@@ -2383,6 +2321,7 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   // parExpression
   //           | IDENTIFIER (DOT IDENTIFIER)* (identifierSuffix)?
   //           | literal
+  //           | symbol
   //           | creator
   //           | primitiveType (LBRACKET RBRACKET)* DOT CLASS
   //           | VOID DOT CLASS
@@ -2393,8 +2332,9 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     r = parExpression(b, l + 1);
     if (!r) r = primary_1(b, l + 1);
     if (!r) r = literal(b, l + 1);
+    if (!r) r = symbol(b, l + 1);
     if (!r) r = creator(b, l + 1);
-    if (!r) r = primary_4(b, l + 1);
+    if (!r) r = primary_5(b, l + 1);
     if (!r) r = parseTokens(b, 0, VOID, DOT, CLASS);
     exit_section_(b, l, m, PRIMARY, r, false, null);
     return r;
@@ -2452,32 +2392,32 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   // primitiveType (LBRACKET RBRACKET)* DOT CLASS
-  private static boolean primary_4(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "primary_4")) return false;
+  private static boolean primary_5(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "primary_5")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = primitiveType(b, l + 1);
-    r = r && primary_4_1(b, l + 1);
+    r = r && primary_5_1(b, l + 1);
     r = r && consumeTokens(b, 0, DOT, CLASS);
     exit_section_(b, m, null, r);
     return r;
   }
 
   // (LBRACKET RBRACKET)*
-  private static boolean primary_4_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "primary_4_1")) return false;
+  private static boolean primary_5_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "primary_5_1")) return false;
     int c = current_position_(b);
     while (true) {
-      if (!primary_4_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "primary_4_1", c)) break;
+      if (!primary_5_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "primary_5_1", c)) break;
       c = current_position_(b);
     }
     return true;
   }
 
   // LBRACKET RBRACKET
-  private static boolean primary_4_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "primary_4_1_0")) return false;
+  private static boolean primary_5_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "primary_5_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeTokens(b, 0, LBRACKET, RBRACKET);
@@ -3015,6 +2955,18 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     r = r && expression(b, l + 1);
     r = r && consumeToken(b, COLON);
     exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // COLON IDENTIFIER
+  public static boolean symbol(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "symbol")) return false;
+    if (!nextTokenIs(b, COLON)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeTokens(b, 0, COLON, IDENTIFIER);
+    exit_section_(b, m, SYMBOL, r);
     return r;
   }
 

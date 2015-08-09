@@ -89,6 +89,7 @@ CHARLITERAL=('([^'\\]|\\.)*')
   "|"                        { return BAR; }
   "<"                        { return LT; }
   ">"                        { return GT; }
+  "=>"                       { return EQGT; }
   "||"                       { return BARBAR; }
   "&&"                       { return AMPAMP; }
   "++"                       { return PLUSPLUS; }

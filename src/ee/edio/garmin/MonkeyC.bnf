@@ -16,6 +16,9 @@
   psiImplPackage="ee.edio.garmin.psi.impl"
   psiImplUtilClass="ee.edio.garmin.psi.impl.MonkeyCPsiImplUtil"
 
+// * 0 or more
+// ? optional
+
 tokens = [
     DOT = "."
     SEMI = ";"
@@ -76,6 +79,8 @@ tokens = [
     LT = "<"
     GT = ">"
 
+    EQGT = "=>"
+
     BARBAR = "||"
     AMPAMP = "&&"
     PLUSPLUS = "++"
@@ -104,31 +109,13 @@ tokens = [
 
     // WHITE_SPACE is overwritten by JFlex, this here is only for Live Preview
     WHITE_SPACE='regexp:\s+'
-
     SINGLE_LINE_COMMENT='regexp://.*'
     BLOCK_COMMENT='regexp:/\*([^*]|\*+[^*/])*(\*+/)?'
-
-    //number='regexp:\d+(\.\d*)?'
-    //alphanum='regexp:\p{Alpha}\w*'
-    //string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
-
-    //symbol='regexp:\:\p{Alpha}\w*'
-
-// alpha = letters
-
-    // a letter following by X letters or numbers, where 0 <= X <= 30
-    // [_a-zA-Z][_a-zA-Z0-9]{0,30}
-
     IDENTIFIER = 'regexp:[a-zA-Z0-9$_]*'
-
     INTEGER = 'regexp:\d+'
     NUMBER = 'regexp:\d+(\.\d*)?'
     STRINGLITERAL = "regexp:(\"([^\"\\]|\\.)*\")"
     CHARLITERAL = "regexp:('([^'\\]|\\.)*')"
-
-    //JavaLetter='regexp:[a-zA-Z$_]' // these are the "java letters" below 0xFF'
-    //JavaLetterOrDigit='regexp:[a-zA-Z0-9$_]'
-
   ]
 
 
@@ -204,11 +191,6 @@ explicitConstructorInvocation ::= SUPER arguments SEMI
                                 | primary DOT SUPER arguments SEMI
 
 qualifiedName ::= IDENTIFIER (DOT IDENTIFIER)*
-
-elementValue ::= conditionalExpression | elementValueArrayInitializer
-
-elementValueArrayInitializer ::= LBRACE ( elementValue (COMMA elementValue)* )? (COMMA)? RBRACE
-                               | LBRACKET ( elementValue (COMMA elementValue)* )? RBRACKET
 
 block ::= LBRACE (blockStatement)* RBRACE
 
@@ -323,6 +305,7 @@ unaryExpressionNotPlusMinus ::= TILDE unaryExpression
 primary ::= parExpression
           | IDENTIFIER (DOT IDENTIFIER)* (identifierSuffix)?
           | literal
+          | symbol
           | creator
           | primitiveType (LBRACKET RBRACKET)* DOT CLASS
           | VOID DOT CLASS
@@ -341,9 +324,11 @@ creator ::= NEW classOrInterfaceType classCreatorRest | arrayCreator
 
 arrayCreator ::= NEW createdName LBRACKET RBRACKET (LBRACKET RBRACKET)* arrayInitializer
                | NEW createdName LBRACKET expression RBRACKET (LBRACKET expression RBRACKET)* (LBRACKET RBRACKET)*
-               | newArrayInitializer
+               | newArrayInitializer | newDictionaryInitializer
 
 newArrayInitializer ::= LBRACKET (variableInitializer (COMMA variableInitializer)*)? (COMMA)? RBRACKET
+newDictionaryInitializer ::= LBRACE (keyValueInitializer (COMMA keyValueInitializer)*)? (COMMA)? RBRACE
+keyValueInitializer ::= primary EQGT primary
 
 arrayInitializer ::= LBRACE (variableInitializer (COMMA variableInitializer)*)? (COMMA)? RBRACE
 
@@ -354,6 +339,8 @@ createdName ::= classOrInterfaceType | primitiveType
 classCreatorRest ::= arguments (classBody)?
 
 arguments ::= LPAREN (expressionList)? RPAREN
+
+symbol ::= COLON IDENTIFIER
 
 literal ::= INTLITERAL
           | LONGLITERAL
