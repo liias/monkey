@@ -37,7 +37,6 @@ public class MonkeyCReference extends PsiReferenceBase<PsiElement> implements Ps
   public PsiElement resolve() {
     ResolveResult[] resolveResults = multiResolve(false);
     return resolveResults.length == 1 ? resolveResults[0].getElement() : null;
-
   }
 
   @NotNull

@@ -20,6 +20,10 @@
   <depends>com.intellij.modules.lang</depends>
 
   <extensions defaultExtensionNs="com.intellij">
+
+
+    <sdkType implementation="ee.edio.garmin.sdk.MonkeyCSdkType"/>
+
     <!-- Add your extensions here -->
     <fileTypeFactory implementation="ee.edio.garmin.MonkeyCFileTypeFactory"/>
     <lang.findUsagesProvider language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCFindUsagesProvider"/>
