@@ -307,10 +307,14 @@ public class MonkeyCVisitor extends PsiElementVisitor {
   }
 
   public void visitVariableDeclarator(@NotNull MonkeyCVariableDeclarator o) {
-    visitPsiCompositeElement(o);
+    visitNamedElement(o);
   }
 
   public void visitVariableInitializer(@NotNull MonkeyCVariableInitializer o) {
+    visitPsiCompositeElement(o);
+  }
+
+  public void visitNamedElement(@NotNull MonkeyCNamedElement o) {
     visitPsiCompositeElement(o);
   }
 

@@ -162,7 +162,10 @@ functionDeclaration ::= FUNCTION IDENTIFIER formalParameters (THROWS qualifiedNa
 fieldDeclaration ::= modifiers VAR variableDeclarator
                     (COMMA variableDeclarator)* SEMI
 
-variableDeclarator ::= IDENTIFIER (LBRACKET RBRACKET)* (EQ variableInitializer)?
+variableDeclarator ::= IDENTIFIER (LBRACKET RBRACKET)* (EQ variableInitializer)? {
+mixin="ee.edio.garmin.psi.impl.MonkeyCNamedElementImpl"
+implements="ee.edio.garmin.psi.MonkeyCNamedElement" methods=[getKey getValue setName getNameIdentifier]
+}
 
 type ::= classOrInterfaceType (LBRACKET RBRACKET)*
 
