@@ -6,27 +6,25 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.indexing.FileBasedIndex;
 import ee.edio.garmin.psi.MonkeyCFile;
-import ee.edio.garmin.psi.MonkeyCVariableDeclarator;
+import ee.edio.garmin.psi.MonkeyCNamedElement;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class MonkeyCUtil {
 
-  public static List<MonkeyCVariableDeclarator> findProperties(Project project, String key) {
-    List<MonkeyCVariableDeclarator> result = null;
+  public static List<MonkeyCNamedElement> findProperties(Project project, String key) {
+    List<MonkeyCNamedElement> result = null;
     Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, MonkeyCFileType.INSTANCE,
         GlobalSearchScope.allScope(project));
     for (VirtualFile virtualFile : virtualFiles) {
       MonkeyCFile monkeyFile = (MonkeyCFile) PsiManager.getInstance(project).findFile(virtualFile);
       if (monkeyFile != null) {
-        MonkeyCVariableDeclarator[] properties = PsiTreeUtil.getChildrenOfType(monkeyFile, MonkeyCVariableDeclarator.class);
+        MonkeyCNamedElement[] properties = PsiTreeUtil.getChildrenOfType(monkeyFile, MonkeyCNamedElement.class);
         if (properties != null) {
-          for (MonkeyCVariableDeclarator property : properties) {
+          for (MonkeyCNamedElement property : properties) {
             if (key.equals(property.getName())) {
               if (result == null) {
                 result = new ArrayList<>();
@@ -37,17 +35,17 @@ public class MonkeyCUtil {
         }
       }
     }
-    return result != null ? result : Collections.<MonkeyCVariableDeclarator>emptyList();
+    return result != null ? result : Collections.<MonkeyCNamedElement>emptyList();
   }
 
-  public static List<MonkeyCVariableDeclarator> findProperties(Project project) {
-    List<MonkeyCVariableDeclarator> result = new ArrayList<>();
+  public static List<MonkeyCNamedElement> findProperties(Project project) {
+    List<MonkeyCNamedElement> result = new ArrayList<>();
     Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, MonkeyCFileType.INSTANCE,
         GlobalSearchScope.allScope(project));
     for (VirtualFile virtualFile : virtualFiles) {
       MonkeyCFile simpleFile = (MonkeyCFile) PsiManager.getInstance(project).findFile(virtualFile);
       if (simpleFile != null) {
-        MonkeyCVariableDeclarator[] properties = PsiTreeUtil.getChildrenOfType(simpleFile, MonkeyCVariableDeclarator.class);
+        MonkeyCNamedElement[] properties = PsiTreeUtil.getChildrenOfType(simpleFile, MonkeyCNamedElement.class);
         if (properties != null) {
           Collections.addAll(result, properties);
         }
@@ -56,4 +54,12 @@ public class MonkeyCUtil {
     return result;
   }
 
+
+  private static final Set<String> keywords = ContainerUtil.immutableSet(
+      "and", "as", "class", "const", "do", "else", "enum", "extends", "false", "for", "function", "has", "hidden",
+      "if", "instanceof", "module", "native", "new", "null", "or", "return", "static", "true", "using", "var", "while");
+
+  public static Set<String> getKeywords() {
+    return keywords;
+  }
 }

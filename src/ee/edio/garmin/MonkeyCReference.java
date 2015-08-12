@@ -5,7 +5,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
-import ee.edio.garmin.psi.MonkeyCVariableDeclarator;
+import ee.edio.garmin.psi.MonkeyCNamedElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +15,7 @@ import java.util.List;
 public class MonkeyCReference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
   private String key;
 
-  public MonkeyCReference(PsiElement element, TextRange rangeInElement) {
+  public MonkeyCReference(@NotNull PsiElement element, TextRange rangeInElement) {
     super(element, rangeInElement);
     key = element.getText().substring(rangeInElement.getStartOffset(), rangeInElement.getEndOffset());
   }
@@ -25,9 +25,9 @@ public class MonkeyCReference extends PsiReferenceBase<PsiElement> implements Ps
   public ResolveResult[] multiResolve(boolean incompleteCode) {
     Project project = myElement.getProject();
     List<ResolveResult> results = new ArrayList<>();
-    final List<MonkeyCVariableDeclarator> properties = MonkeyCUtil.findProperties(project, key);
-    for (MonkeyCVariableDeclarator property : properties) {
-      results.add(new PsiElementResolveResult(property));
+    final List<MonkeyCNamedElement> namedElements = MonkeyCUtil.findProperties(project, key);
+    for (MonkeyCNamedElement namedEl : namedElements) {
+      results.add(new PsiElementResolveResult(namedEl));
     }
     return results.toArray(new ResolveResult[results.size()]);
   }
@@ -43,13 +43,13 @@ public class MonkeyCReference extends PsiReferenceBase<PsiElement> implements Ps
   @Override
   public Object[] getVariants() {
     Project project = myElement.getProject();
-    List<MonkeyCVariableDeclarator> properties = MonkeyCUtil.findProperties(project);
+    List<MonkeyCNamedElement> namedElements = MonkeyCUtil.findProperties(project);
     List<LookupElement> variants = new ArrayList<>();
-    for (final MonkeyCVariableDeclarator property : properties) {
-      if (property.getName() != null && property.getName().length() > 0) {
-        variants.add(LookupElementBuilder.create(property).
+    for (final MonkeyCNamedElement namedEl : namedElements) {
+      if (namedEl.getName() != null && namedEl.getName().length() > 0) {
+        variants.add(LookupElementBuilder.create(namedEl).
                 withIcon(MonkeyCIcons.FILE).
-                withTypeText(property.getContainingFile().getName())
+                withTypeText(namedEl.getContainingFile().getName())
         );
       }
     }

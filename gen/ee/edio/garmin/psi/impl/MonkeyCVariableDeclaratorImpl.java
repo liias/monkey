@@ -41,4 +41,12 @@ public class MonkeyCVariableDeclaratorImpl extends MonkeyCNamedElementImpl imple
     return MonkeyCPsiImplUtil.getValue(this);
   }
 
+  public PsiElement setName(String newName) {
+    return MonkeyCPsiImplUtil.setName(this, newName);
+  }
+
+  public PsiElement getNameIdentifier() {
+    return MonkeyCPsiImplUtil.getNameIdentifier(this);
+  }
+
 }

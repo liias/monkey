@@ -17,9 +17,8 @@ public interface MonkeyCVariableDeclarator extends MonkeyCNamedElement {
 
   String getValue();
 
-  PsiElement setName(String name);
+  PsiElement setName(String newName);
 
-  @Nullable
   PsiElement getNameIdentifier();
 
 }

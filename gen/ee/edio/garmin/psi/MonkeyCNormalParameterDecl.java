@@ -5,9 +5,17 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MonkeyCNormalParameterDecl extends MonkeyCPsiCompositeElement {
+public interface MonkeyCNormalParameterDecl extends MonkeyCNamedElement {
 
   @NotNull
   PsiElement getIdentifier();
+
+  String getKey();
+
+  String getValue();
+
+  PsiElement setName(String newName);
+
+  PsiElement getNameIdentifier();
 
 }

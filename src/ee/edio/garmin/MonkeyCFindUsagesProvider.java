@@ -19,8 +19,7 @@ public class MonkeyCFindUsagesProvider implements FindUsagesProvider {
 
   @Override
   public boolean canFindUsagesFor(@NotNull PsiElement psiElement) {
-    return true;
-    //return psiElement instanceof PsiNamedElement;
+    return psiElement instanceof PsiNamedElement;
   }
 
   @Nullable

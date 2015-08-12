@@ -177,7 +177,9 @@ formalParameters ::= LPAREN (formalParameterDecls)? RPAREN
 
 formalParameterDecls ::= normalParameterDecl (COMMA normalParameterDecl)*
 
-normalParameterDecl ::= IDENTIFIER (LBRACKET RBRACKET)*
+normalParameterDecl ::= IDENTIFIER (LBRACKET RBRACKET)* {mixin="ee.edio.garmin.psi.impl.MonkeyCNamedElementImpl"
+  implements="ee.edio.garmin.psi.MonkeyCNamedElement" methods=[getKey getValue setName getNameIdentifier]
+}
 
 //NOTE: the position of Identifier 'super' is set to the type args position here
 explicitConstructorInvocation ::= SUPER arguments SEMI

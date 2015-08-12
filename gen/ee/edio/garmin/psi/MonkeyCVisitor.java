@@ -223,7 +223,7 @@ public class MonkeyCVisitor extends PsiElementVisitor {
   }
 
   public void visitNormalParameterDecl(@NotNull MonkeyCNormalParameterDecl o) {
-    visitPsiCompositeElement(o);
+    visitNamedElement(o);
   }
 
   public void visitParExpression(@NotNull MonkeyCParExpression o) {
