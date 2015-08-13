@@ -5,7 +5,8 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MonkeyCLiteral extends MonkeyCPsiCompositeElement {
+public interface
+    MonkeyCLiteral extends MonkeyCPsiCompositeElement {
 
   @Nullable
   MonkeyCDoubleliteral getDoubleliteral();

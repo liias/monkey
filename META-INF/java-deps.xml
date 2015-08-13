@@ -1,0 +1,14 @@
+<idea-plugin version="2">
+  <extensions defaultExtensionNs="com.intellij">
+    <moduleType id="MONKEY_C_MODULE" implementationClass="ee.edio.garmin.MonkeyCModuleType"/>
+    <moduleConfigurationEditorProvider implementation="ee.edio.garmin.configuration.MonkeyCModuleEditorsProvider"
+                                       order="first"/>
+    <!--<editorNotificationProvider implementation="com.goide.inspections.WrongModuleTypeNotificationProvider"/>-->
+
+    <projectStructureDetector implementation="ee.edio.garmin.project.MonkeyCProjectStructureDetector"/>
+
+<!--    <projectService serviceInterface="com.goide.sdk.GoSdkService" serviceImplementation="com.goide.sdk.GoIdeaSdkService"
+                    overrides="true"/>-->
+
+  </extensions>
+</idea-plugin>

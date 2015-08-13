@@ -1,6 +1,7 @@
 package ee.edio.garmin.sdk;
 
 import com.intellij.openapi.projectRoots.*;
+import ee.edio.garmin.MonkeyCConstants;
 import ee.edio.garmin.MonkeyCIcons;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -10,7 +11,14 @@ import javax.swing.*;
 
 public class MonkeyCSdkType extends SdkType {
   public MonkeyCSdkType() {
-    super("MonkeyCSdkType");
+    super(MonkeyCConstants.SDK_TYPE_ID);
+  }
+
+  @NotNull
+  public static MonkeyCSdkType getInstance() {
+    final MonkeyCSdkType instance = SdkType.findInstance(MonkeyCSdkType.class);
+    assert instance != null;
+    return instance;
   }
 
   @Nullable

@@ -13,15 +13,15 @@
   </change-notes>
 
   <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-  <idea-version since-build="131"/>
+  <idea-version since-build="141.1532"/>
 
   <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
        on how to target different products -->
   <depends>com.intellij.modules.lang</depends>
 
+  <depends optional="true" config-file="java-deps.xml">com.intellij.modules.java</depends>
+
   <extensions defaultExtensionNs="com.intellij">
-
-
     <sdkType implementation="ee.edio.garmin.sdk.MonkeyCSdkType"/>
 
     <!-- Add your extensions here -->
@@ -36,9 +36,6 @@
                             implementationClass="ee.edio.garmin.completion.MonkeyCCompletionContributor"/>
 
     <gotoClassContributor implementation="ee.edio.garmin.MonkeyCGoToClassContributor"/>
-    <!--    <lang.elementManipulator forClass="com.intellij.psi.PsiLiteralExpression"
-                                 implementationClass="com.intellij.psi.impl.source.resolve.reference.impl.manipulators.StringLiteralManipulator"/>-->
-
   </extensions>
 
   <application-components>
