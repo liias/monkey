@@ -36,6 +36,14 @@
                             implementationClass="ee.edio.garmin.completion.MonkeyCCompletionContributor"/>
 
     <gotoClassContributor implementation="ee.edio.garmin.MonkeyCGoToClassContributor"/>
+
+
+    <!-- run application -->
+    <!--<programRunner implementation="com.goide.runconfig.GoBuildingRunner" order="before goRunner"/>-->
+    <programRunner id="goRunner" implementation="ee.edio.garmin.runconfig.MonkeyCProgramRunner"/>
+    <runConfigurationProducer implementation="ee.edio.garmin.runconfig.MonkeyCApplicationConfigurationProducer"/>
+    <configurationType implementation="ee.edio.garmin.runconfig.MonkeyCApplicationConfigurationType"/>
+
   </extensions>
 
   <application-components>
