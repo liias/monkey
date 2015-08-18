@@ -39,7 +39,6 @@
     <gotoClassContributor implementation="ee.edio.garmin.MonkeyCGoToClassContributor"/>
 
     <!-- run application -->
-    <programRunner implementation="ee.edio.garmin.runconfig.MonkeyCBuildingRunner" order="before MonkeyCRunner"/>
     <programRunner id="MonkeyCRunner" implementation="ee.edio.garmin.runconfig.MonkeyCProgramRunner"/>
     <runConfigurationProducer implementation="ee.edio.garmin.runconfig.MonkeyCApplicationConfigurationProducer"/>
     <configurationType implementation="ee.edio.garmin.runconfig.MonkeyCApplicationConfigurationType"/>

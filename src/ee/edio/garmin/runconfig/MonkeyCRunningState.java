@@ -30,7 +30,8 @@ public class MonkeyCRunningState extends CommandLineState {
   protected ProcessHandler startProcess() throws ExecutionException {
 
 //    GeneralCommandLine commandLine = createBuildCmd();
-    GeneralCommandLine commandLine = createBuildCmd();
+    //GeneralCommandLine commandLine = createBuildCmd();
+    GeneralCommandLine commandLine = createRunCmd();
 //    commandLine.withWorkDirectory(myWorkDirectory);
 
 //    commandLine.getEnvironment().putAll(myExtraEnvironment);
@@ -69,76 +70,38 @@ public class MonkeyCRunningState extends CommandLineState {
     String outputDir = projectBasePath + File.separator + "bin" + File.separator;
 
     ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
-        .add("\\bin\\simulator.exe")
-        .add();
-    return null;
+        .add("--transport=tcp")
+        .add("tvm")
+        .add("help");
 
+    int maxAttempts = 5;
+    int currentAttempt = 0;
+    boolean connectionEstablished = false;
 
-  }
+    String port = "1234";
+    parameters.add("--transport_args=127.0.0.1:" + port);
 
-  public GeneralCommandLine createBuildCmd() {
-    Project project = getEnvironment().getProject();
-    String projectBasePath = project.getBasePath();
-    String sdkPath = "C:\\Users\\Madis\\sdks\\connectiq-sdk-win-1.1.3";
-    String sdkBinPath = sdkPath + File.separator + "bin" + File.separator;
+    GeneralCommandLine commandLine = new GeneralCommandLine()
+        .withWorkDirectory(sdkBinPath);
 
-    String outputName = project.getName() + ".prg";
-    String outputDir = projectBasePath + File.separator + "bin" + File.separator;
-
-    boolean hasResources = true;
-    String sourcePath = projectBasePath + File.separator + "source" + File.separator;
-
-
-    ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
-        .add("-a", sdkBinPath + "api.db")
-        .add("-i", sdkBinPath + "api.debug.xml")
-        .add("-o", outputDir + outputName);
-//        .add("-w") //debug info
-
-
-    if (hasResources) {
-      parameters.add("-z", projectBasePath + File.separator + "resources" + File.separator + "resources.xml")
-          .add("-z", projectBasePath + File.separator + "resources" + File.separator + "menus" + File.separator + "menu.xml")
-          .add("-z", projectBasePath + File.separator + "resources" + File.separator + "layouts" + File.separator + "layout.xml");
-    }
-    parameters.add("-m", projectBasePath + File.separator + "manifest.xml")
-        .add("-u", sdkBinPath + "devices.xml")
-        .add("-p", sdkBinPath + "projectInfo.xml"); // optional file
-
-
-    VirtualFile sourceDir = project.getBaseDir().findChild("source");
-    if (sourceDir == null) {
-      throw new RuntimeException("source dir does not exist");
-    }
-    List<VirtualFile> sourceFiles = Arrays.asList(sourceDir.getChildren());
-
-    ImmutableList<String> sourceFilePaths = FluentIterable.from(sourceFiles)
-        .filter(new Predicate<VirtualFile>() {
-          @Override
-          public boolean apply(VirtualFile virtualFile) {
-            return "mc".equals(virtualFile.getExtension());
-          }
-        }).transform(new Function<VirtualFile, String>() {
-          @Override
-          public String apply(VirtualFile virtualFile) {
-            return virtualFile.getPath();
-          }
-        }).toList();
-
-    parameters.addAll(sourceFilePaths);
-    //parameters.add(sourcePath + "EsimeneView.mc", sourcePath + "EsimeneMenuDelegate.mc", sourcePath + "EsimeneApp.mc");
-
-    parameters.add("-d", "vivoactive_sim");
-
-    GeneralCommandLine commandLine = new GeneralCommandLine();
-    commandLine.setExePath("java");
-    commandLine.addParameters("-Dfile.encoding=UTF-8", "-Dapple.awt.UIElement=true");
-    String classPath = "C:\\Program Files\\Java\\jre1.8.0_51\\lib\\tools.jar;";
-    classPath += sdkBinPath + "monkeybrains.jar" + ";";
-    commandLine.addParameters("-classpath", classPath);
-    commandLine.addParameters("com.garmin.monkeybrains.Monkeybrains");
-
+    commandLine.setExePath(sdkBinPath + "shell.exe");
     commandLine.addParameters(parameters.build());
+    //commandLine.withWorkDirectory();
+//    for(int port = 1234; port < 1238; ++port) {
+
+
+    /*          while((line = br.readLine()) != null) {
+            if(line.contains("Connection Finished")) {
+              connectionEstablished = true;
+              break;
+            }
+          }
+
+          if(connectionEstablished) {
+            br.close();
+            in.close();
+            return true;
+          }*/
     return commandLine;
   }
 }
