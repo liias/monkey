@@ -50,29 +50,11 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
                     @NotNull BuildOutputConsumer outputConsumer, @NotNull CompileContext context) throws ProjectBuildException, IOException {
     LOG.debug(target.getPresentableName());
     if (!holder.hasDirtyFiles() && !holder.hasRemovedFiles()) return;
-
     JpsModule jpsModule = target.getModule();
-    //if (jpsModule.getModuleType() != JpsGoModuleType.INSTANCE) return;
-
-    //JpsTypedModule<JpsSimpleElement<JpsGoModuleProperties>> module = jpsModule.asTyped(JpsGoModuleType.INSTANCE);
-    //assert module != null;
-    //JpsSdk<JpsDummyElement> sdk = getSdk(context, module);
-    //File executable = new File(sdk.getHomePath(), "bin/" + GoEnvironmentUtil.getBinaryFileNameForPath(GoConstants.GO_EXECUTABLE_NAME));
-    //File outputDirectory = getBuildOutputDirectory(module, target.isTests(), context);
-
     for (String contentRootUrl : jpsModule.getContentRootsList().getUrls()) {
       String contentRootPath = new URL(contentRootUrl).getPath();
       final String projectName = context.getProjectDescriptor().getProject().getName();
       final GeneralCommandLine buildCmd = createBuildCmd(projectName, contentRootPath);
-
-      //GeneralCommandLine commandLine = new GeneralCommandLine();
-      //commandLine.getEnvironment().put(GoConstants.GO_PATH, JpsGoLibrariesExtensionService.getInstance().retrieveGoPath(module));
-      //commandLine.withWorkDirectory(contentRootPath);
-      //commandLine.setExePath(executable.getAbsolutePath());
-      //commandLine.addParameter("build");
-      //String outExecutable = GoEnvironmentUtil.getExecutableResultForModule(contentRootPath, outputDirectory.getAbsolutePath());
-      //commandLine.addParameters("-o", FileUtil.toSystemDependentName(outExecutable));
-
       runBuildProcess(context, buildCmd, contentRootPath);
     }
   }
@@ -82,10 +64,8 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
     try {
       final Process process = commandLine.createProcess();
       BaseOSProcessHandler handler = new BaseOSProcessHandler(process, commandLine.getCommandLineString(), Charset.defaultCharset());
-      //final KillableColoredProcessHandler killableColoredProcessHandler = new KillableColoredProcessHandler(commandLine);
       handler.startNotify();
       handler.waitFor();
-
     } catch (ExecutionException e) {
       throw new ProjectBuildException(e.getMessage());
     }
