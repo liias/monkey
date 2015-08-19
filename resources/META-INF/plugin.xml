@@ -26,8 +26,11 @@
 
     <!-- Add your extensions here -->
     <fileTypeFactory implementation="ee.edio.garmin.MonkeyCFileTypeFactory"/>
+    <lang.braceMatcher language="MonkeyC" implementationClass="ee.edio.garmin.editor.MCPairedBraceMather"/>
     <lang.commenter language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCCommenter"/>
     <lang.findUsagesProvider language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCFindUsagesProvider"/>
+    <lang.foldingBuilder language="MonkeyC" implementationClass="ee.edio.garmin.editor.MCFoldingBuilder"/>
+
     <lang.parserDefinition language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCParserDefinition"/>
     <lang.refactoringSupport language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCRefactoringSupportProvider"/>
     <lang.syntaxHighlighterFactory key="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCSyntaxHighlighterFactory"/>
