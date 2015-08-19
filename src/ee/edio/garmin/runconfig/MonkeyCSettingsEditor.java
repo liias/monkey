@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class MonkeyCApplicationSettingsEditor extends SettingsEditor<MonkeyCApplicationConfiguration> implements PanelWithAnchor {
+public class MonkeyCSettingsEditor extends SettingsEditor<MonkeyCModuleBasedConfiguration> implements PanelWithAnchor {
   private final Project project;
   private JComponent anchor;
 
@@ -26,7 +26,7 @@ public class MonkeyCApplicationSettingsEditor extends SettingsEditor<MonkeyCAppl
 
   private AlternativeJREPanel myAlternativeJREPanel;
 
-  public MonkeyCApplicationSettingsEditor(final Project project) {
+  public MonkeyCSettingsEditor(final Project project) {
     this.project = project;
     this.anchor = UIUtil.mergeComponentsWithAnchor(myJarPathComponent, myCommonProgramParameters, myAlternativeJREPanel);
 /*    ModulesComboBox modulesComboBox = myModuleComponent.getComponent();
@@ -56,7 +56,7 @@ public class MonkeyCApplicationSettingsEditor extends SettingsEditor<MonkeyCAppl
   }
 
   @Override
-  protected void resetEditorFrom(MonkeyCApplicationConfiguration configuration) {
+  protected void resetEditorFrom(MonkeyCModuleBasedConfiguration configuration) {
 /*    myCommonProgramParameters.reset(configuration);
     myJarPathComponent.getComponent().setText(FileUtil.toSystemDependentName(configuration.getJarPath()));
     myAlternativeJREPanel.init(configuration.getAlternativeJrePath(), configuration.isAlternativeJrePathEnabled());
@@ -64,7 +64,7 @@ public class MonkeyCApplicationSettingsEditor extends SettingsEditor<MonkeyCAppl
   }
 
   @Override
-  protected void applyEditorTo(MonkeyCApplicationConfiguration configuration) throws ConfigurationException {
+  protected void applyEditorTo(MonkeyCModuleBasedConfiguration configuration) throws ConfigurationException {
 /*    myCommonProgramParameters.applyTo(configuration);
     configuration.setAlternativeJrePath(myAlternativeJREPanel.getPath());
     configuration.setAlternativeJrePathEnabled(myAlternativeJREPanel.isPathEnabled());

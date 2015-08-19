@@ -1,8 +1,5 @@
 package ee.edio.garmin.runconfig;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.CommandLineState;
@@ -13,13 +10,11 @@ import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.CharsetToolkit;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 
+// Starts app in simulator
 public class MonkeyCRunningState extends CommandLineState {
   protected MonkeyCRunningState(ExecutionEnvironment environment) {
     super(environment);
@@ -28,37 +23,10 @@ public class MonkeyCRunningState extends CommandLineState {
   @NotNull
   @Override
   protected ProcessHandler startProcess() throws ExecutionException {
-
-//    GeneralCommandLine commandLine = createBuildCmd();
-    //GeneralCommandLine commandLine = createBuildCmd();
     GeneralCommandLine commandLine = createRunCmd();
-//    commandLine.withWorkDirectory(myWorkDirectory);
-
-//    commandLine.getEnvironment().putAll(myExtraEnvironment);
-//    commandLine.getEnvironment().put(GoConstants.GO_ROOT, StringUtil.notNullize(myGoRoot));
-
-
-
-   /* GeneralCommandLine commandLine = !myPtyDisabled ? new PtyCommandLine() : generalCommandLine;
-    commandLine.setExePath(ObjectUtils.notNull(myExePath, GoSdkService.getGoExecutablePath(myGoRoot)));
-    commandLine.getEnvironment().putAll(myExtraEnvironment);
-    commandLine.getEnvironment().put(GoConstants.GO_ROOT, StringUtil.notNullize(myGoRoot));
-    commandLine.getEnvironment().put(GoConstants.GO_PATH, StringUtil.notNullize(myGoPath));
-
-    Collection<String> paths = ContainerUtil.newArrayList();
-    ContainerUtil.addIfNotNull(paths, StringUtil.nullize(commandLine.getEnvironment().get(GoConstants.PATH), true));
-    ContainerUtil.addIfNotNull(paths, StringUtil.nullize(EnvironmentUtil.getValue(GoConstants.PATH), true));
-    ContainerUtil.addIfNotNull(paths, StringUtil.nullize(myEnvPath, true));
-    commandLine.getEnvironment().put(GoConstants.PATH, StringUtil.join(paths, File.pathSeparator));
-*/
-//    commandLine.withWorkDirectory(myWorkDirectory);
-//    commandLine.addParameters(myParameterList.getList());
-//    commandLine.setPassParentEnvironment(myPassParentEnvironment);
     commandLine.withCharset(CharsetToolkit.UTF8_CHARSET);
     EncodingEnvironmentUtil.setLocaleEnvironmentIfMac(commandLine);
-//    return commandLine;
     return new KillableColoredProcessHandler(commandLine);
-
   }
 
   private GeneralCommandLine createRunCmd() {

@@ -1,4 +1,4 @@
-package ee.edio.garmin.runconfig.builder;
+package ee.edio.garmin.jps.builder;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.builders.BuildTargetType;
@@ -6,6 +6,7 @@ import org.jetbrains.jps.incremental.BuilderService;
 import org.jetbrains.jps.incremental.TargetBuilder;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class MonkeyCBuilderService extends BuilderService {
@@ -13,7 +14,7 @@ public class MonkeyCBuilderService extends BuilderService {
   @NotNull
   @Override
   public List<? extends TargetBuilder<?, ?>> createBuilders() {
-    return super.createBuilders();
+    return Collections.singletonList(new MonkeyCBuilder());
   }
 
   @NotNull

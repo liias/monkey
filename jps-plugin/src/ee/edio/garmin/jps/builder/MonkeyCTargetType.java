@@ -1,4 +1,4 @@
-package ee.edio.garmin.runconfig.builder;
+package ee.edio.garmin.jps.builder;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

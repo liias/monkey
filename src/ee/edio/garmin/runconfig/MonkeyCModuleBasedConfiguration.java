@@ -41,10 +41,9 @@ public class MonkeyCModuleBasedConfiguration extends ModuleBasedConfiguration<Mo
   @NotNull
   @Override
   public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-    SettingsEditorGroup<MonkeyCApplicationConfiguration> group = new SettingsEditorGroup<>();
-    group.addEditor(ExecutionBundle.message("run.configuration.configuration.tab.title"), new MonkeyCApplicationSettingsEditor(getProject()));
-//    JavaRunConfigurationExtensionManager.getInstance().appendEditors(this, group);
-    group.addEditor(ExecutionBundle.message("logs.tab.title"), new LogConfigurationPanel<MonkeyCApplicationConfiguration>());
+    SettingsEditorGroup<MonkeyCModuleBasedConfiguration> group = new SettingsEditorGroup<>();
+    group.addEditor(ExecutionBundle.message("run.configuration.configuration.tab.title"), new MonkeyCSettingsEditor(getProject()));
+    group.addEditor(ExecutionBundle.message("logs.tab.title"), new LogConfigurationPanel<MonkeyCModuleBasedConfiguration>());
     return group;
   }
 
@@ -52,10 +51,6 @@ public class MonkeyCModuleBasedConfiguration extends ModuleBasedConfiguration<Mo
   @Override
   public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
     MonkeyCRunConfigurationModule configurationModule = getConfigurationModule();
-    Module module = configurationModule.getModule();
-    if (module == null) {
-      throw new ExecutionException("Monkey C isn't configured for run configuration: " + getName());
-    }
     return new MonkeyCRunningState(environment);
   }
 }

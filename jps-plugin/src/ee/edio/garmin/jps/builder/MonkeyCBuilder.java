@@ -1,4 +1,4 @@
-package ee.edio.garmin.runconfig.builder;
+package ee.edio.garmin.jps.builder;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableList;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.BaseOSProcessHandler;
-import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;

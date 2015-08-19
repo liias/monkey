@@ -40,8 +40,8 @@
 
     <!-- run application -->
     <programRunner id="MonkeyCRunner" implementation="ee.edio.garmin.runconfig.MonkeyCProgramRunner"/>
-    <runConfigurationProducer implementation="ee.edio.garmin.runconfig.MonkeyCApplicationConfigurationProducer"/>
-    <configurationType implementation="ee.edio.garmin.runconfig.MonkeyCApplicationConfigurationType"/>
+    <runConfigurationProducer implementation="ee.edio.garmin.runconfig.MonkeyCModuleConfigurationProducer"/>
+    <configurationType implementation="ee.edio.garmin.runconfig.MonkeyCConfigurationType"/>
 
   </extensions>
 

@@ -1,4 +1,4 @@
-package ee.edio.garmin.runconfig.builder;
+package ee.edio.garmin.jps.builder;
 
 import com.intellij.openapi.util.io.FileUtilRt;
 import org.jetbrains.annotations.NotNull;
