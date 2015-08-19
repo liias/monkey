@@ -1,7 +1,6 @@
 package ee.edio.garmin.jps.builder;
 
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.intellij.execution.ExecutionException;
@@ -9,8 +8,6 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.BaseOSProcessHandler;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.builders.BuildOutputConsumer;
 import org.jetbrains.jps.builders.DirtyFilesHolder;
@@ -27,6 +24,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, MonkeyCTarget> {
   public static final String NAME = "Monkey C";
@@ -75,8 +73,15 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
 
     final File file = new File(FileUtil.toSystemIndependentName(rootPath));
 
-    final LocalFileSystem localFileSystem = LocalFileSystem.getInstance();
-    final VirtualFile sourceDir = localFileSystem.findFileByIoFile(file);
+    Pattern pattern = Pattern.compile(".*\\.mc");
+
+    final List<File> mcFiles = FileUtil.findFilesByMask(pattern, file);
+    final ImmutableList<String> sourceFilePaths = FluentIterable.from(mcFiles).transform(new Function<File, String>() {
+      @Override
+      public String apply(File file) {
+        return file.getAbsolutePath();
+      }
+    }).toList();
 
     //Project project = getEnvironment().getProject();
     //String projectBasePath = project.getBasePath();
@@ -107,25 +112,6 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
         .add("-u", sdkBinPath + "devices.xml")
         .add("-p", sdkBinPath + "projectInfo.xml"); // optional file
 
-
-    //VirtualFile sourceDir = project.getBaseDir().findChild("source");
-    if (sourceDir == null) {
-      throw new RuntimeException("source dir does not exist");
-    }
-    List<VirtualFile> sourceFiles = Arrays.asList(sourceDir.getChildren());
-
-    ImmutableList<String> sourceFilePaths = FluentIterable.from(sourceFiles)
-        .filter(new Predicate<VirtualFile>() {
-          @Override
-          public boolean apply(VirtualFile virtualFile) {
-            return "mc".equals(virtualFile.getExtension());
-          }
-        }).transform(new Function<VirtualFile, String>() {
-          @Override
-          public String apply(VirtualFile virtualFile) {
-            return virtualFile.getPath();
-          }
-        }).toList();
 
     parameters.addAll(sourceFilePaths);
     //parameters.add(sourcePath + "EsimeneView.mc", sourcePath + "EsimeneMenuDelegate.mc", sourcePath + "EsimeneApp.mc");

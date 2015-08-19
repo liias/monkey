@@ -22,6 +22,9 @@
   <depends optional="true" config-file="java-deps.xml">com.intellij.modules.java</depends>
 
   <extensions defaultExtensionNs="com.intellij">
+
+    <compileServer.plugin classpath="monkey-c-jps-plugin.jar"/>
+
     <sdkType implementation="ee.edio.garmin.sdk.MonkeyCSdkType"/>
 
     <!-- Add your extensions here -->
