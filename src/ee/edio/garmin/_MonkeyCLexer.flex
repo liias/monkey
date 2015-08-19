@@ -26,8 +26,10 @@ WHITE_SPACE=[ \t\n\x0B\f\r]+
 SINGLE_LINE_COMMENT="//".*
 BLOCK_COMMENT="/"\*([^*]|\*+[^*/])*(\*+"/")?
 IDENTIFIER=[a-zA-Z$_][a-zA-Z0-9$_]*
-INTEGER=[0-9]+
-NUMBER=[0-9]+(\.[0-9]*)?
+INTLITERAL=[0-9]+
+LONGLITERAL=[0-9]+[lL]
+DOUBLELITERAL=[0-9]+(\.[0-9]*)?[dD]?
+FLOATLITERAL=[0-9]+(\.[0-9]*)?[fF]
 STRINGLITERAL=(\"([^\"\\]|\\.)*\")
 CHARLITERAL=('([^'\\]|\\.)*')
 
@@ -121,8 +123,10 @@ CHARLITERAL=('([^'\\]|\\.)*')
   {SINGLE_LINE_COMMENT}      { return SINGLE_LINE_COMMENT; }
   {BLOCK_COMMENT}            { return BLOCK_COMMENT; }
   {IDENTIFIER}               { return IDENTIFIER; }
-  {INTEGER}                  { return INTEGER; }
-  {NUMBER}                   { return NUMBER; }
+  {INTLITERAL}               { return INTLITERAL; }
+  {LONGLITERAL}              { return LONGLITERAL; }
+  {DOUBLELITERAL}            { return DOUBLELITERAL; }
+  {FLOATLITERAL}             { return FLOATLITERAL; }
   {STRINGLITERAL}            { return STRINGLITERAL; }
   {CHARLITERAL}              { return CHARLITERAL; }
 

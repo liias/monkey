@@ -111,9 +111,16 @@ tokens = [
     WHITE_SPACE='regexp:\s+'
     SINGLE_LINE_COMMENT='regexp://.*'
     BLOCK_COMMENT='regexp:/\*([^*]|\*+[^*/])*(\*+/)?'
+
     IDENTIFIER = 'regexp:[a-zA-Z$_][a-zA-Z0-9$_]*'
-    INTEGER = 'regexp:\d+'
-    NUMBER = 'regexp:\d+(\.\d*)?'
+
+
+    INTLITERAL = 'regexp:\d+'
+    LONGLITERAL = 'regexp:\d+[lL]'
+
+    DOUBLELITERAL = 'regexp:\d+(\.\d*)?[dD]?'
+    FLOATLITERAL = 'regexp:\d+(\.\d*)?[fF]'
+
     STRINGLITERAL = "regexp:(\"([^\"\\]|\\.)*\")"
     CHARLITERAL = "regexp:('([^'\\]|\\.)*')"
   ]
@@ -281,8 +288,8 @@ additiveExpression ::= multiplicativeExpression ((PLUS | SUB) multiplicativeExpr
 multiplicativeExpression ::= unaryExpression ((STAR | SLASH | PERCENT) unaryExpression)*
 
 /**
- * NOTE: for '+' and '-', if the next token is int or long interal, then it's not a unary expression.
- *       it's a literal with signed value. INTLTERAL AND LONG LITERAL are added here for this.
+ * NOTE: for '+' and '-', if the next token is int or long integral, then it's not a unary expression.
+ *       it's a literal with signed value. INTLITERAL AND LONG LITERAL are added here for this.
  */
 unaryExpression ::= PLUS unaryExpression
                   | SUB unaryExpression
@@ -319,6 +326,7 @@ creator ::= NEW classOrInterfaceType classCreatorRest | arrayCreator
 arrayCreator ::= NEW createdName LBRACKET RBRACKET (LBRACKET RBRACKET)* arrayInitializer
                | NEW createdName LBRACKET expression RBRACKET (LBRACKET expression RBRACKET)* (LBRACKET RBRACKET)*
                | newArrayInitializer | newDictionaryInitializer
+               | NEW LBRACKET INTLITERAL RBRACKET
 
 newArrayInitializer ::= LBRACKET (variableInitializer (COMMA variableInitializer)*)? (COMMA)? RBRACKET
 newDictionaryInitializer ::= LBRACE (keyValueInitializer (COMMA keyValueInitializer)*)? (COMMA)? RBRACE
@@ -346,7 +354,3 @@ literal ::= INTLITERAL
           | FALSE
           | NULL
 
-INTLITERAL ::= INTEGER
-LONGLITERAL ::= INTEGER ('l' | 'L')
-FLOATLITERAL ::= NUMBER ('f' | 'F')
-DOUBLELITERAL ::= NUMBER ('d' | 'D')

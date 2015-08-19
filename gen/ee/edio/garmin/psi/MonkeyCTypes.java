@@ -29,7 +29,6 @@ public interface MonkeyCTypes {
   IElementType CONDITIONAL_OR_EXPRESSION = new MonkeyCElementType("CONDITIONAL_OR_EXPRESSION");
   IElementType CREATED_NAME = new MonkeyCElementType("CREATED_NAME");
   IElementType CREATOR = new MonkeyCElementType("CREATOR");
-  IElementType DOUBLELITERAL = new MonkeyCElementType("DOUBLELITERAL");
   IElementType ENUM_BODY = new MonkeyCElementType("ENUM_BODY");
   IElementType ENUM_BODY_DECLARATIONS = new MonkeyCElementType("ENUM_BODY_DECLARATIONS");
   IElementType ENUM_CONSTANT = new MonkeyCElementType("ENUM_CONSTANT");
@@ -41,7 +40,6 @@ public interface MonkeyCTypes {
   IElementType EXPRESSION = new MonkeyCElementType("EXPRESSION");
   IElementType EXPRESSION_LIST = new MonkeyCElementType("EXPRESSION_LIST");
   IElementType FIELD_DECLARATION = new MonkeyCElementType("FIELD_DECLARATION");
-  IElementType FLOATLITERAL = new MonkeyCElementType("FLOATLITERAL");
   IElementType FORMAL_PARAMETERS = new MonkeyCElementType("FORMAL_PARAMETERS");
   IElementType FORMAL_PARAMETER_DECLS = new MonkeyCElementType("FORMAL_PARAMETER_DECLS");
   IElementType FOR_INIT = new MonkeyCElementType("FOR_INIT");
@@ -50,12 +48,10 @@ public interface MonkeyCTypes {
   IElementType IDENTIFIER_SUFFIX = new MonkeyCElementType("IDENTIFIER_SUFFIX");
   IElementType INCLUSIVE_OR_EXPRESSION = new MonkeyCElementType("INCLUSIVE_OR_EXPRESSION");
   IElementType INSTANCE_OF_EXPRESSION = new MonkeyCElementType("INSTANCE_OF_EXPRESSION");
-  IElementType INTLITERAL = new MonkeyCElementType("INTLITERAL");
   IElementType KEY_VALUE_INITIALIZER = new MonkeyCElementType("KEY_VALUE_INITIALIZER");
   IElementType LITERAL = new MonkeyCElementType("LITERAL");
   IElementType LOCAL_VARIABLE_DECLARATION = new MonkeyCElementType("LOCAL_VARIABLE_DECLARATION");
   IElementType LOCAL_VARIABLE_DECLARATION_STATEMENT = new MonkeyCElementType("LOCAL_VARIABLE_DECLARATION_STATEMENT");
-  IElementType LONGLITERAL = new MonkeyCElementType("LONGLITERAL");
   IElementType MEMBER_DECL = new MonkeyCElementType("MEMBER_DECL");
   IElementType MODIFIERS = new MonkeyCElementType("MODIFIERS");
   IElementType MULTIPLICATIVE_EXPRESSION = new MonkeyCElementType("MULTIPLICATIVE_EXPRESSION");
@@ -111,6 +107,7 @@ public interface MonkeyCTypes {
   IElementType DEFAULT = new MonkeyCTokenType("default");
   IElementType DO = new MonkeyCTokenType("do");
   IElementType DOT = new MonkeyCTokenType(".");
+  IElementType DOUBLELITERAL = new MonkeyCTokenType("DOUBLELITERAL");
   IElementType ELSE = new MonkeyCTokenType("else");
   IElementType ENUM = new MonkeyCTokenType("enum");
   IElementType EQ = new MonkeyCTokenType("=");
@@ -119,6 +116,7 @@ public interface MonkeyCTypes {
   IElementType EXTENDS = new MonkeyCTokenType("extends");
   IElementType FALSE = new MonkeyCTokenType("false");
   IElementType FINALLY = new MonkeyCTokenType("finally");
+  IElementType FLOATLITERAL = new MonkeyCTokenType("FLOATLITERAL");
   IElementType FOR = new MonkeyCTokenType("for");
   IElementType FUNCTION = new MonkeyCTokenType("function");
   IElementType GT = new MonkeyCTokenType(">");
@@ -127,9 +125,10 @@ public interface MonkeyCTypes {
   IElementType IDENTIFIER = new MonkeyCTokenType("IDENTIFIER");
   IElementType IF = new MonkeyCTokenType("if");
   IElementType INSTANCEOF = new MonkeyCTokenType("instanceof");
-  IElementType INTEGER = new MonkeyCTokenType("INTEGER");
+  IElementType INTLITERAL = new MonkeyCTokenType("INTLITERAL");
   IElementType LBRACE = new MonkeyCTokenType("{");
   IElementType LBRACKET = new MonkeyCTokenType("[");
+  IElementType LONGLITERAL = new MonkeyCTokenType("LONGLITERAL");
   IElementType LPAREN = new MonkeyCTokenType("(");
   IElementType LT = new MonkeyCTokenType("<");
   IElementType MODULE = new MonkeyCTokenType("module");
@@ -138,7 +137,6 @@ public interface MonkeyCTypes {
   IElementType NATIVE = new MonkeyCTokenType("native");
   IElementType NEW = new MonkeyCTokenType("new");
   IElementType NULL = new MonkeyCTokenType("null");
-  IElementType NUMBER = new MonkeyCTokenType("NUMBER");
   IElementType OR = new MonkeyCTokenType("or");
   IElementType PERCENT = new MonkeyCTokenType("%");
   IElementType PERCENTEQ = new MonkeyCTokenType("%=");
@@ -241,9 +239,6 @@ public interface MonkeyCTypes {
       else if (type == CREATOR) {
         return new MonkeyCCreatorImpl(node);
       }
-      else if (type == DOUBLELITERAL) {
-        return new MonkeyCDoubleliteralImpl(node);
-      }
       else if (type == ENUM_BODY) {
         return new MonkeyCEnumBodyImpl(node);
       }
@@ -277,9 +272,6 @@ public interface MonkeyCTypes {
       else if (type == FIELD_DECLARATION) {
         return new MonkeyCFieldDeclarationImpl(node);
       }
-      else if (type == FLOATLITERAL) {
-        return new MonkeyCFloatliteralImpl(node);
-      }
       else if (type == FORMAL_PARAMETERS) {
         return new MonkeyCFormalParametersImpl(node);
       }
@@ -304,9 +296,6 @@ public interface MonkeyCTypes {
       else if (type == INSTANCE_OF_EXPRESSION) {
         return new MonkeyCInstanceOfExpressionImpl(node);
       }
-      else if (type == INTLITERAL) {
-        return new MonkeyCIntliteralImpl(node);
-      }
       else if (type == KEY_VALUE_INITIALIZER) {
         return new MonkeyCKeyValueInitializerImpl(node);
       }
@@ -318,9 +307,6 @@ public interface MonkeyCTypes {
       }
       else if (type == LOCAL_VARIABLE_DECLARATION_STATEMENT) {
         return new MonkeyCLocalVariableDeclarationStatementImpl(node);
-      }
-      else if (type == LONGLITERAL) {
-        return new MonkeyCLongliteralImpl(node);
       }
       else if (type == MEMBER_DECL) {
         return new MonkeyCMemberDeclImpl(node);

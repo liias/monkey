@@ -6,22 +6,6 @@ import com.intellij.psi.PsiElementVisitor;
 
 public class MonkeyCVisitor extends PsiElementVisitor {
 
-  public void visitDoubleliteral(@NotNull MonkeyCDoubleliteral o) {
-    visitPsiCompositeElement(o);
-  }
-
-  public void visitFloatliteral(@NotNull MonkeyCFloatliteral o) {
-    visitPsiCompositeElement(o);
-  }
-
-  public void visitIntliteral(@NotNull MonkeyCIntliteral o) {
-    visitPsiCompositeElement(o);
-  }
-
-  public void visitLongliteral(@NotNull MonkeyCLongliteral o) {
-    visitPsiCompositeElement(o);
-  }
-
   public void visitAdditiveExpression(@NotNull MonkeyCAdditiveExpression o) {
     visitPsiCompositeElement(o);
   }

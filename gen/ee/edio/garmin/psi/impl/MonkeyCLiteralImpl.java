@@ -23,32 +23,32 @@ public class MonkeyCLiteralImpl extends MonkeyCPsiCompositeElementImpl implement
 
   @Override
   @Nullable
-  public MonkeyCDoubleliteral getDoubleliteral() {
-    return findChildByClass(MonkeyCDoubleliteral.class);
-  }
-
-  @Override
-  @Nullable
-  public MonkeyCFloatliteral getFloatliteral() {
-    return findChildByClass(MonkeyCFloatliteral.class);
-  }
-
-  @Override
-  @Nullable
-  public MonkeyCIntliteral getIntliteral() {
-    return findChildByClass(MonkeyCIntliteral.class);
-  }
-
-  @Override
-  @Nullable
-  public MonkeyCLongliteral getLongliteral() {
-    return findChildByClass(MonkeyCLongliteral.class);
-  }
-
-  @Override
-  @Nullable
   public PsiElement getCharliteral() {
     return findChildByType(CHARLITERAL);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getDoubleliteral() {
+    return findChildByType(DOUBLELITERAL);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getFloatliteral() {
+    return findChildByType(FLOATLITERAL);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getIntliteral() {
+    return findChildByType(INTLITERAL);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getLongliteral() {
+    return findChildByType(LONGLITERAL);
   }
 
   @Override

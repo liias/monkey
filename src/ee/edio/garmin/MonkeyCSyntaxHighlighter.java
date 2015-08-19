@@ -72,8 +72,10 @@ public class MonkeyCSyntaxHighlighter extends SyntaxHighlighterBase {
     aMap.put(MonkeyCTypes.SINGLE_LINE_COMMENT, MC_LINE_COMMENT);
     aMap.put(MonkeyCTypes.BLOCK_COMMENT, MC_BLOCK_COMMENT);
     aMap.put(MonkeyCTypes.STRINGLITERAL, MC_STRING);
-    aMap.put(MonkeyCTypes.INTEGER, MC_NUMBER);
-    aMap.put(MonkeyCTypes.NUMBER, MC_NUMBER);
+    aMap.put(MonkeyCTypes.INTLITERAL, MC_NUMBER);
+    aMap.put(MonkeyCTypes.LONGLITERAL, MC_NUMBER);
+    aMap.put(MonkeyCTypes.FLOATLITERAL, MC_NUMBER);
+    aMap.put(MonkeyCTypes.DOUBLELITERAL, MC_NUMBER);
 
     return Collections.unmodifiableMap(aMap);
   }

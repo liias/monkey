@@ -23,19 +23,7 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     boolean r;
     b = adapt_builder_(t, b, this, null);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
-    if (t == DOUBLELITERAL) {
-      r = DOUBLELITERAL(b, 0);
-    }
-    else if (t == FLOATLITERAL) {
-      r = FLOATLITERAL(b, 0);
-    }
-    else if (t == INTLITERAL) {
-      r = INTLITERAL(b, 0);
-    }
-    else if (t == LONGLITERAL) {
-      r = LONGLITERAL(b, 0);
-    }
-    else if (t == ADDITIVE_EXPRESSION) {
+    if (t == ADDITIVE_EXPRESSION) {
       r = additiveExpression(b, 0);
     }
     else if (t == AND_EXPRESSION) {
@@ -265,90 +253,6 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // NUMBER ('d' | 'D')
-  public static boolean DOUBLELITERAL(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "DOUBLELITERAL")) return false;
-    if (!nextTokenIs(b, NUMBER)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, NUMBER);
-    r = r && DOUBLELITERAL_1(b, l + 1);
-    exit_section_(b, m, DOUBLELITERAL, r);
-    return r;
-  }
-
-  // 'd' | 'D'
-  private static boolean DOUBLELITERAL_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "DOUBLELITERAL_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, "d");
-    if (!r) r = consumeToken(b, "D");
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // NUMBER ('f' | 'F')
-  public static boolean FLOATLITERAL(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "FLOATLITERAL")) return false;
-    if (!nextTokenIs(b, NUMBER)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, NUMBER);
-    r = r && FLOATLITERAL_1(b, l + 1);
-    exit_section_(b, m, FLOATLITERAL, r);
-    return r;
-  }
-
-  // 'f' | 'F'
-  private static boolean FLOATLITERAL_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "FLOATLITERAL_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, "f");
-    if (!r) r = consumeToken(b, "F");
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // INTEGER
-  public static boolean INTLITERAL(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "INTLITERAL")) return false;
-    if (!nextTokenIs(b, INTEGER)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, INTEGER);
-    exit_section_(b, m, INTLITERAL, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // INTEGER ('l' | 'L')
-  public static boolean LONGLITERAL(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "LONGLITERAL")) return false;
-    if (!nextTokenIs(b, INTEGER)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, INTEGER);
-    r = r && LONGLITERAL_1(b, l + 1);
-    exit_section_(b, m, LONGLITERAL, r);
-    return r;
-  }
-
-  // 'l' | 'L'
-  private static boolean LONGLITERAL_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "LONGLITERAL_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, "l");
-    if (!r) r = consumeToken(b, "L");
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
   // multiplicativeExpression ((PLUS | SUB) multiplicativeExpression)*
   public static boolean additiveExpression(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "additiveExpression")) return false;
@@ -464,6 +368,7 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   // NEW createdName LBRACKET RBRACKET (LBRACKET RBRACKET)* arrayInitializer
   //                | NEW createdName LBRACKET expression RBRACKET (LBRACKET expression RBRACKET)* (LBRACKET RBRACKET)*
   //                | newArrayInitializer | newDictionaryInitializer
+  //                | NEW LBRACKET INTLITERAL RBRACKET
   public static boolean arrayCreator(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "arrayCreator")) return false;
     boolean r;
@@ -472,6 +377,7 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     if (!r) r = arrayCreator_1(b, l + 1);
     if (!r) r = newArrayInitializer(b, l + 1);
     if (!r) r = newDictionaryInitializer(b, l + 1);
+    if (!r) r = parseTokens(b, 0, NEW, LBRACKET, INTLITERAL, RBRACKET);
     exit_section_(b, l, m, ARRAY_CREATOR, r, false, null);
     return r;
   }
@@ -1947,10 +1853,10 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "literal")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<literal>");
-    r = INTLITERAL(b, l + 1);
-    if (!r) r = LONGLITERAL(b, l + 1);
-    if (!r) r = FLOATLITERAL(b, l + 1);
-    if (!r) r = DOUBLELITERAL(b, l + 1);
+    r = consumeToken(b, INTLITERAL);
+    if (!r) r = consumeToken(b, LONGLITERAL);
+    if (!r) r = consumeToken(b, FLOATLITERAL);
+    if (!r) r = consumeToken(b, DOUBLELITERAL);
     if (!r) r = consumeToken(b, CHARLITERAL);
     if (!r) r = consumeToken(b, STRINGLITERAL);
     if (!r) r = consumeToken(b, TRUE);
