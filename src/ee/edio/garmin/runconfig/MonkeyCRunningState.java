@@ -36,8 +36,9 @@ public class MonkeyCRunningState extends CommandLineState {
     String sdkBinPath = sdkPath + File.separator + "bin" + File.separator;
     String outputName = project.getName() + ".prg";
     String outputDir = projectBasePath + File.separator + "bin" + File.separator;
+    String prgPath = outputDir + outputName;
 
-    ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
+    /*ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
         .add("--transport=tcp")
         .add("tvm")
         .add("help");
@@ -47,12 +48,18 @@ public class MonkeyCRunningState extends CommandLineState {
     boolean connectionEstablished = false;
 
     String port = "1234";
-    parameters.add("--transport_args=127.0.0.1:" + port);
+    parameters.add("--transport_args=127.0.0.1:" + port);*/
+
+    ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
+        .add(prgPath)
+        .add("vivoactive");
+    //.add("-d", "vivoactive");
+
 
     GeneralCommandLine commandLine = new GeneralCommandLine()
         .withWorkDirectory(sdkBinPath);
 
-    commandLine.setExePath(sdkBinPath + "shell.exe");
+    commandLine.setExePath(sdkBinPath + "monkeydo.bat");
     commandLine.addParameters(parameters.build());
     //commandLine.withWorkDirectory();
 //    for(int port = 1234; port < 1238; ++port) {
