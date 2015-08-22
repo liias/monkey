@@ -11,6 +11,9 @@ public interface MonkeyCMemberDecl extends MonkeyCPsiCompositeElement {
   MonkeyCClassDeclaration getClassDeclaration();
 
   @Nullable
+  MonkeyCConstDeclaration getConstDeclaration();
+
+  @Nullable
   MonkeyCFieldDeclaration getFieldDeclaration();
 
   @Nullable

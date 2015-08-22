@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyCKeyValueInitializer extends MonkeyCPsiCompositeElement {
 
   @NotNull
-  List<MonkeyCPrimary> getPrimaryList();
+  MonkeyCExpression getExpression();
+
+  @NotNull
+  MonkeyCPrimary getPrimary();
 
 }

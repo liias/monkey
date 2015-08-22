@@ -82,6 +82,10 @@ public class MonkeyCVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
+  public void visitConstDeclaration(@NotNull MonkeyCConstDeclaration o) {
+    visitPsiCompositeElement(o);
+  }
+
   public void visitCreatedName(@NotNull MonkeyCCreatedName o) {
     visitPsiCompositeElement(o);
   }
@@ -154,6 +158,10 @@ public class MonkeyCVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
+  public void visitHasExpression(@NotNull MonkeyCHasExpression o) {
+    visitPsiCompositeElement(o);
+  }
+
   public void visitIdentifierSuffix(@NotNull MonkeyCIdentifierSuffix o) {
     visitPsiCompositeElement(o);
   }
@@ -187,6 +195,14 @@ public class MonkeyCVisitor extends PsiElementVisitor {
   }
 
   public void visitModifiers(@NotNull MonkeyCModifiers o) {
+    visitPsiCompositeElement(o);
+  }
+
+  public void visitModuleBody(@NotNull MonkeyCModuleBody o) {
+    visitPsiCompositeElement(o);
+  }
+
+  public void visitModuleDeclaration(@NotNull MonkeyCModuleDeclaration o) {
     visitPsiCompositeElement(o);
   }
 

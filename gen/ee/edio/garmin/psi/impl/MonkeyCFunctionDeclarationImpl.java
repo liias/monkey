@@ -40,6 +40,12 @@ public class MonkeyCFunctionDeclarationImpl extends MonkeyCPsiCompositeElementIm
   }
 
   @Override
+  @NotNull
+  public MonkeyCModifiers getModifiers() {
+    return findNotNullChildByClass(MonkeyCModifiers.class);
+  }
+
+  @Override
   @Nullable
   public MonkeyCQualifiedNameList getQualifiedNameList() {
     return findChildByClass(MonkeyCQualifiedNameList.class);

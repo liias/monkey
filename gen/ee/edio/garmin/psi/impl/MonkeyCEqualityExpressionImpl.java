@@ -23,8 +23,8 @@ public class MonkeyCEqualityExpressionImpl extends MonkeyCPsiCompositeElementImp
 
   @Override
   @NotNull
-  public List<MonkeyCInstanceOfExpression> getInstanceOfExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyCInstanceOfExpression.class);
+  public List<MonkeyCHasExpression> getHasExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyCHasExpression.class);
   }
 
 }

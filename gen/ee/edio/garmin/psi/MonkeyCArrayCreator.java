@@ -22,7 +22,4 @@ public interface MonkeyCArrayCreator extends MonkeyCPsiCompositeElement {
   @Nullable
   MonkeyCNewDictionaryInitializer getNewDictionaryInitializer();
 
-  @Nullable
-  PsiElement getIntliteral();
-
 }

@@ -16,6 +16,9 @@ public interface MonkeyCFunctionDeclaration extends MonkeyCPsiCompositeElement {
   @NotNull
   MonkeyCFormalParameters getFormalParameters();
 
+  @NotNull
+  MonkeyCModifiers getModifiers();
+
   @Nullable
   MonkeyCQualifiedNameList getQualifiedNameList();
 

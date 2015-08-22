@@ -51,10 +51,4 @@ public class MonkeyCArrayCreatorImpl extends MonkeyCPsiCompositeElementImpl impl
     return findChildByClass(MonkeyCNewDictionaryInitializer.class);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getIntliteral() {
-    return findChildByType(INTLITERAL);
-  }
-
 }

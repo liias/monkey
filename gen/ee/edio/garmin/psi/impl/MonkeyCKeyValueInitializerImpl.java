@@ -23,8 +23,14 @@ public class MonkeyCKeyValueInitializerImpl extends MonkeyCPsiCompositeElementIm
 
   @Override
   @NotNull
-  public List<MonkeyCPrimary> getPrimaryList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyCPrimary.class);
+  public MonkeyCExpression getExpression() {
+    return findNotNullChildByClass(MonkeyCExpression.class);
+  }
+
+  @Override
+  @NotNull
+  public MonkeyCPrimary getPrimary() {
+    return findNotNullChildByClass(MonkeyCPrimary.class);
   }
 
 }

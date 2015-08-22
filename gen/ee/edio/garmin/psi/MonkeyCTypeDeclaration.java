@@ -10,4 +10,13 @@ public interface MonkeyCTypeDeclaration extends MonkeyCPsiCompositeElement {
   @Nullable
   MonkeyCClassDeclaration getClassDeclaration();
 
+  @Nullable
+  MonkeyCConstDeclaration getConstDeclaration();
+
+  @Nullable
+  MonkeyCFieldDeclaration getFieldDeclaration();
+
+  @Nullable
+  MonkeyCModuleDeclaration getModuleDeclaration();
+
 }

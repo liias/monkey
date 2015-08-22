@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyCEqualityExpression extends MonkeyCPsiCompositeElement {
 
   @NotNull
-  List<MonkeyCInstanceOfExpression> getInstanceOfExpressionList();
+  List<MonkeyCHasExpression> getHasExpressionList();
 
 }

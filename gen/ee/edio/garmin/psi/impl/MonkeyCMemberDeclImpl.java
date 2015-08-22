@@ -29,6 +29,12 @@ public class MonkeyCMemberDeclImpl extends MonkeyCPsiCompositeElementImpl implem
 
   @Override
   @Nullable
+  public MonkeyCConstDeclaration getConstDeclaration() {
+    return findChildByClass(MonkeyCConstDeclaration.class);
+  }
+
+  @Override
+  @Nullable
   public MonkeyCFieldDeclaration getFieldDeclaration() {
     return findChildByClass(MonkeyCFieldDeclaration.class);
   }

@@ -137,7 +137,7 @@ private compilationUnit ::= usingDeclaration* typeDeclaration*
 
 usingDeclaration ::= USING IDENTIFIER (DOT IDENTIFIER)+ (AS IDENTIFIER)? SEMI {pin=1}
 
-typeDeclaration ::= moduleDeclaration | classDeclaration | fieldDeclaration | SEMI
+typeDeclaration ::= moduleDeclaration | classDeclaration | constDeclaration | fieldDeclaration | SEMI
 
 moduleDeclaration ::= modifiers MODULE IDENTIFIER moduleBody
 
@@ -165,10 +165,12 @@ classBody ::= LBRACE classBodyDeclaration* RBRACE
 
 classBodyDeclaration ::= SEMI | (STATIC)? block | memberDecl
 
-memberDecl ::= fieldDeclaration | functionDeclaration | classDeclaration
+memberDecl ::= constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration
 
-functionDeclaration ::= FUNCTION IDENTIFIER formalParameters (THROWS qualifiedNameList)?
+functionDeclaration ::= modifiers FUNCTION IDENTIFIER formalParameters (THROWS qualifiedNameList)?
                         LBRACE (explicitConstructorInvocation)? (blockStatement)* RBRACE
+
+constDeclaration ::= modifiers CONST variableDeclarator SEMI
 
 fieldDeclaration ::= modifiers VAR variableDeclarator
                     (COMMA variableDeclarator)* SEMI
@@ -275,7 +277,9 @@ exclusiveOrExpression ::= andExpression (CARET andExpression)*
 
 andExpression ::= equalityExpression (AMP equalityExpression)*
 
-equalityExpression ::= instanceOfExpression ((EQEQ | BANGEQ) instanceOfExpression)*
+equalityExpression ::= hasExpression ((EQEQ | BANGEQ) hasExpression)*
+
+hasExpression ::= instanceOfExpression (HAS symbol)?
 
 instanceOfExpression ::= relationalExpression (INSTANCEOF type)?
 
@@ -330,7 +334,7 @@ creator ::= NEW classOrInterfaceType classCreatorRest | arrayCreator
 arrayCreator ::= NEW createdName LBRACKET RBRACKET (LBRACKET RBRACKET)* arrayInitializer
                | NEW createdName LBRACKET expression RBRACKET (LBRACKET expression RBRACKET)* (LBRACKET RBRACKET)*
                | newArrayInitializer | newDictionaryInitializer
-               | NEW LBRACKET INTLITERAL RBRACKET
+               | NEW LBRACKET expression RBRACKET
 
 newArrayInitializer ::= LBRACKET (variableInitializer (COMMA variableInitializer)*)? (COMMA)? RBRACKET
 newDictionaryInitializer ::= LBRACE (keyValueInitializer (COMMA keyValueInitializer)*)? (COMMA)? RBRACE

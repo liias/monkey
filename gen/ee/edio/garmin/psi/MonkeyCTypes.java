@@ -27,6 +27,7 @@ public interface MonkeyCTypes {
   IElementType CONDITIONAL_AND_EXPRESSION = new MonkeyCElementType("CONDITIONAL_AND_EXPRESSION");
   IElementType CONDITIONAL_EXPRESSION = new MonkeyCElementType("CONDITIONAL_EXPRESSION");
   IElementType CONDITIONAL_OR_EXPRESSION = new MonkeyCElementType("CONDITIONAL_OR_EXPRESSION");
+  IElementType CONST_DECLARATION = new MonkeyCElementType("CONST_DECLARATION");
   IElementType CREATED_NAME = new MonkeyCElementType("CREATED_NAME");
   IElementType CREATOR = new MonkeyCElementType("CREATOR");
   IElementType ENUM_BODY = new MonkeyCElementType("ENUM_BODY");
@@ -45,6 +46,7 @@ public interface MonkeyCTypes {
   IElementType FOR_INIT = new MonkeyCElementType("FOR_INIT");
   IElementType FOR_STATEMENT = new MonkeyCElementType("FOR_STATEMENT");
   IElementType FUNCTION_DECLARATION = new MonkeyCElementType("FUNCTION_DECLARATION");
+  IElementType HAS_EXPRESSION = new MonkeyCElementType("HAS_EXPRESSION");
   IElementType IDENTIFIER_SUFFIX = new MonkeyCElementType("IDENTIFIER_SUFFIX");
   IElementType INCLUSIVE_OR_EXPRESSION = new MonkeyCElementType("INCLUSIVE_OR_EXPRESSION");
   IElementType INSTANCE_OF_EXPRESSION = new MonkeyCElementType("INSTANCE_OF_EXPRESSION");
@@ -54,6 +56,8 @@ public interface MonkeyCTypes {
   IElementType LOCAL_VARIABLE_DECLARATION_STATEMENT = new MonkeyCElementType("LOCAL_VARIABLE_DECLARATION_STATEMENT");
   IElementType MEMBER_DECL = new MonkeyCElementType("MEMBER_DECL");
   IElementType MODIFIERS = new MonkeyCElementType("MODIFIERS");
+  IElementType MODULE_BODY = new MonkeyCElementType("MODULE_BODY");
+  IElementType MODULE_DECLARATION = new MonkeyCElementType("MODULE_DECLARATION");
   IElementType MULTIPLICATIVE_EXPRESSION = new MonkeyCElementType("MULTIPLICATIVE_EXPRESSION");
   IElementType NEW_ARRAY_INITIALIZER = new MonkeyCElementType("NEW_ARRAY_INITIALIZER");
   IElementType NEW_DICTIONARY_INITIALIZER = new MonkeyCElementType("NEW_DICTIONARY_INITIALIZER");
@@ -233,6 +237,9 @@ public interface MonkeyCTypes {
       else if (type == CONDITIONAL_OR_EXPRESSION) {
         return new MonkeyCConditionalOrExpressionImpl(node);
       }
+      else if (type == CONST_DECLARATION) {
+        return new MonkeyCConstDeclarationImpl(node);
+      }
       else if (type == CREATED_NAME) {
         return new MonkeyCCreatedNameImpl(node);
       }
@@ -287,6 +294,9 @@ public interface MonkeyCTypes {
       else if (type == FUNCTION_DECLARATION) {
         return new MonkeyCFunctionDeclarationImpl(node);
       }
+      else if (type == HAS_EXPRESSION) {
+        return new MonkeyCHasExpressionImpl(node);
+      }
       else if (type == IDENTIFIER_SUFFIX) {
         return new MonkeyCIdentifierSuffixImpl(node);
       }
@@ -313,6 +323,12 @@ public interface MonkeyCTypes {
       }
       else if (type == MODIFIERS) {
         return new MonkeyCModifiersImpl(node);
+      }
+      else if (type == MODULE_BODY) {
+        return new MonkeyCModuleBodyImpl(node);
+      }
+      else if (type == MODULE_DECLARATION) {
+        return new MonkeyCModuleDeclarationImpl(node);
       }
       else if (type == MULTIPLICATIVE_EXPRESSION) {
         return new MonkeyCMultiplicativeExpressionImpl(node);
