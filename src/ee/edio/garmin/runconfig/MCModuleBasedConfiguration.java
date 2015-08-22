@@ -4,9 +4,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
-import com.intellij.execution.ExecutionBundle;
-import com.intellij.execution.ExecutionException;
-import com.intellij.execution.Executor;
+import com.intellij.execution.*;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.ModuleBasedConfiguration;
 import com.intellij.execution.configurations.RunConfiguration;
@@ -21,10 +19,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-public class MonkeyCModuleBasedConfiguration extends ModuleBasedConfiguration<MonkeyCRunConfigurationModule> {
-  public MonkeyCModuleBasedConfiguration(String name, @NotNull MonkeyCRunConfigurationModule configurationModule, @NotNull ConfigurationFactory factory) {
+public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MonkeyCRunConfigurationModule> implements CommonProgramRunConfigurationParameters {
+  private String PROGRAM_PARAMETERS;
+  private String WORKING_DIRECTORY;
+  private boolean PASS_PARENT_ENVS;
+  private final Map<String, String> envs = new LinkedHashMap<>();
+
+  public MCModuleBasedConfiguration(String name, @NotNull MonkeyCRunConfigurationModule configurationModule, @NotNull ConfigurationFactory factory) {
     super(name, configurationModule, factory);
   }
 
@@ -42,9 +47,9 @@ public class MonkeyCModuleBasedConfiguration extends ModuleBasedConfiguration<Mo
   @NotNull
   @Override
   public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-    SettingsEditorGroup<MonkeyCModuleBasedConfiguration> group = new SettingsEditorGroup<>();
+    SettingsEditorGroup<MCModuleBasedConfiguration> group = new SettingsEditorGroup<>();
     group.addEditor(ExecutionBundle.message("run.configuration.configuration.tab.title"), new MonkeyCSettingsEditor(getProject()));
-    group.addEditor(ExecutionBundle.message("logs.tab.title"), new LogConfigurationPanel<MonkeyCModuleBasedConfiguration>());
+    group.addEditor(ExecutionBundle.message("logs.tab.title"), new LogConfigurationPanel<MCModuleBasedConfiguration>());
     return group;
   }
 
@@ -65,6 +70,50 @@ public class MonkeyCModuleBasedConfiguration extends ModuleBasedConfiguration<Mo
 
     //for (ModuleBuildTarget target : chunk.getTargets()) {
     //  final File outputDir = target.getOutputDir();
-    return new MonkeyCRunningState(environment, module);
+    return new MonkeyCRunningState(environment);
+  }
+
+  @Override
+  public void setProgramParameters(@Nullable String value) {
+    PROGRAM_PARAMETERS = value;
+  }
+
+  @Nullable
+  @Override
+  public String getProgramParameters() {
+    return PROGRAM_PARAMETERS;
+  }
+
+  @Override
+  public void setWorkingDirectory(@Nullable String value) {
+    WORKING_DIRECTORY = ExternalizablePath.urlValue(value);
+  }
+
+  @Nullable
+  @Override
+  public String getWorkingDirectory() {
+    return ExternalizablePath.localPathValue(WORKING_DIRECTORY);
+  }
+
+  @Override
+  public void setEnvs(@NotNull final Map<String, String> envs) {
+    this.envs.clear();
+    this.envs.putAll(envs);
+  }
+
+  @NotNull
+  @Override
+  public Map<String, String> getEnvs() {
+    return this.envs;
+  }
+
+  @Override
+  public void setPassParentEnvs(boolean passParentEnvs) {
+    PASS_PARENT_ENVS = passParentEnvs;
+  }
+
+  @Override
+  public boolean isPassParentEnvs() {
+    return PASS_PARENT_ENVS;
   }
 }

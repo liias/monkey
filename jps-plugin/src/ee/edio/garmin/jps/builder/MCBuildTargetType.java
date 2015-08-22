@@ -13,12 +13,12 @@ import org.jetbrains.jps.model.module.JpsTypedModule;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MonkeyCTargetType extends ModuleBasedBuildTargetType<MonkeyCTarget> {
-  public static final MonkeyCTargetType PRODUCTION = new MonkeyCTargetType("mc-production", false);
-  public static final MonkeyCTargetType TESTS = new MonkeyCTargetType("mc-tests", true);
+public class MCBuildTargetType extends ModuleBasedBuildTargetType<MCBuildTarget> {
+  public static final MCBuildTargetType PRODUCTION = new MCBuildTargetType("mc-production", false);
+  public static final MCBuildTargetType TESTS = new MCBuildTargetType("mc-tests", true);
   private final boolean tests;
 
-  private MonkeyCTargetType(String typeId, boolean tests) {
+  private MCBuildTargetType(String typeId, boolean tests) {
     super(typeId);
     this.tests = tests;
   }
@@ -29,24 +29,24 @@ public class MonkeyCTargetType extends ModuleBasedBuildTargetType<MonkeyCTarget>
 
   @NotNull
   @Override
-  public List<MonkeyCTarget> computeAllTargets(@NotNull JpsModel model) {
-    List<MonkeyCTarget> targets = new ArrayList<>();
+  public List<MCBuildTarget> computeAllTargets(@NotNull JpsModel model) {
+    List<MCBuildTarget> targets = new ArrayList<>();
     for (JpsTypedModule<JpsSimpleElement<JpsMCModuleProperties>> module : model.getProject().getModules(JpsMCModuleType.INSTANCE)) {
-      targets.add(new MonkeyCTarget(this, module));
+      targets.add(new MCBuildTarget(this, module));
     }
     return targets;
   }
 
   @NotNull
   @Override
-  public BuildTargetLoader<MonkeyCTarget> createLoader(@NotNull final JpsModel model) {
-    return new BuildTargetLoader<MonkeyCTarget>() {
+  public BuildTargetLoader<MCBuildTarget> createLoader(@NotNull final JpsModel model) {
+    return new BuildTargetLoader<MCBuildTarget>() {
       @Nullable
       @Override
-      public MonkeyCTarget createTarget(@NotNull String targetId) {
+      public MCBuildTarget createTarget(@NotNull String targetId) {
         for (JpsTypedModule<JpsSimpleElement<JpsMCModuleProperties>> module : model.getProject().getModules(JpsMCModuleType.INSTANCE)) {
           if (module.getName().equals(targetId)) {
-            return new MonkeyCTarget(MonkeyCTargetType.this, module);
+            return new MCBuildTarget(MCBuildTargetType.this, module);
           }
         }
         return null;

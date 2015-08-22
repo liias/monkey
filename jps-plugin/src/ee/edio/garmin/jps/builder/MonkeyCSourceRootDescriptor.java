@@ -10,9 +10,9 @@ import java.io.FileFilter;
 
 public class MonkeyCSourceRootDescriptor extends BuildRootDescriptor {
   private final File root;
-  private final MonkeyCTarget monkeyCTarget;
+  private final MCBuildTarget monkeyCTarget;
 
-  public MonkeyCSourceRootDescriptor(File root, MonkeyCTarget monkeyCTarget) {
+  public MonkeyCSourceRootDescriptor(File root, MCBuildTarget monkeyCTarget) {
     this.root = root;
     this.monkeyCTarget = monkeyCTarget;
   }

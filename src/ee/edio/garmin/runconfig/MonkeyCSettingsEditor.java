@@ -1,6 +1,5 @@
 package ee.edio.garmin.runconfig;
 
-import com.intellij.application.options.ModulesComboBox;
 import com.intellij.execution.ui.AlternativeJREPanel;
 import com.intellij.execution.ui.CommonProgramParametersPanel;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
@@ -15,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class MonkeyCSettingsEditor extends SettingsEditor<MonkeyCModuleBasedConfiguration> implements PanelWithAnchor {
+public class MonkeyCSettingsEditor extends SettingsEditor<MCModuleBasedConfiguration> implements PanelWithAnchor {
   private final Project project;
   private JComponent anchor;
 
@@ -56,7 +55,7 @@ public class MonkeyCSettingsEditor extends SettingsEditor<MonkeyCModuleBasedConf
   }
 
   @Override
-  protected void resetEditorFrom(MonkeyCModuleBasedConfiguration configuration) {
+  protected void resetEditorFrom(MCModuleBasedConfiguration configuration) {
 /*    myCommonProgramParameters.reset(configuration);
     myJarPathComponent.getComponent().setText(FileUtil.toSystemDependentName(configuration.getJarPath()));
     myAlternativeJREPanel.init(configuration.getAlternativeJrePath(), configuration.isAlternativeJrePathEnabled());
@@ -64,7 +63,7 @@ public class MonkeyCSettingsEditor extends SettingsEditor<MonkeyCModuleBasedConf
   }
 
   @Override
-  protected void applyEditorTo(MonkeyCModuleBasedConfiguration configuration) throws ConfigurationException {
+  protected void applyEditorTo(MCModuleBasedConfiguration configuration) throws ConfigurationException {
 /*    myCommonProgramParameters.applyTo(configuration);
     configuration.setAlternativeJrePath(myAlternativeJREPanel.getPath());
     configuration.setAlternativeJrePathEnabled(myAlternativeJREPanel.isPathEnabled());

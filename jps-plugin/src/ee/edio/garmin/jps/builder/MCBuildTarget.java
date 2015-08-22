@@ -20,14 +20,14 @@ import org.jetbrains.jps.model.module.JpsTypedModuleSourceRoot;
 import java.io.File;
 import java.util.*;
 
-public class MonkeyCTarget extends ModuleBasedTarget<MonkeyCSourceRootDescriptor> {
-  public MonkeyCTarget(MonkeyCTargetType targetType, @NotNull JpsModule module) {
+public class MCBuildTarget extends ModuleBasedTarget<MonkeyCSourceRootDescriptor> {
+  public MCBuildTarget(MCBuildTargetType targetType, @NotNull JpsModule module) {
     super(targetType, module);
   }
 
   @Override
   public boolean isTests() {
-    return getMonkeyCTargetType().isTests();
+    return getMCTargetType().isTests();
   }
 
   @NotNull
@@ -43,11 +43,11 @@ public class MonkeyCTarget extends ModuleBasedTarget<MonkeyCSourceRootDescriptor
     Set<JpsModule> modules = JpsJavaExtensionService.dependencies(myModule).includedIn(JpsJavaClasspathKind.compile(isTests())).getModules();
     for (JpsModule module : modules) {
       if (module.getModuleType() == JpsMCModuleType.INSTANCE) {
-        dependencies.add(new MonkeyCTarget(getMonkeyCTargetType(), module));
+        dependencies.add(new MCBuildTarget(getMCTargetType(), module));
       }
     }
     if (isTests()) {
-      dependencies.add(new MonkeyCTarget(MonkeyCTargetType.PRODUCTION, getModule()));
+      dependencies.add(new MCBuildTarget(MCBuildTargetType.PRODUCTION, getModule()));
     }
     return dependencies;
   }
@@ -66,7 +66,7 @@ public class MonkeyCTarget extends ModuleBasedTarget<MonkeyCSourceRootDescriptor
   @Nullable
   @Override
   public MonkeyCSourceRootDescriptor findRootDescriptor(String rootId, BuildRootIndex rootIndex) {
-    return ContainerUtil.getFirstItem(rootIndex.getRootDescriptors(new File(rootId), Collections.singletonList(getMonkeyCTargetType()), null));
+    return ContainerUtil.getFirstItem(rootIndex.getRootDescriptors(new File(rootId), Collections.singletonList(getMCTargetType()), null));
 
   }
 
@@ -79,11 +79,17 @@ public class MonkeyCTarget extends ModuleBasedTarget<MonkeyCSourceRootDescriptor
   @NotNull
   @Override
   public Collection<File> getOutputRoots(CompileContext context) {
-    return ContainerUtil.createMaybeSingletonList(JpsJavaExtensionService.getInstance().getOutputDirectory(myModule, isTests()));
+    return ContainerUtil.createMaybeSingletonList(getOutputDir());
   }
 
   @NotNull
-  public MonkeyCTargetType getMonkeyCTargetType() {
-    return (MonkeyCTargetType) getTargetType();
+  public MCBuildTargetType getMCTargetType() {
+    return (MCBuildTargetType) getTargetType();
   }
+
+  @Nullable
+  public File getOutputDir() {
+    return JpsJavaExtensionService.getInstance().getOutputDirectory(getModule(), isTests());
+  }
+
 }

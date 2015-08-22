@@ -36,13 +36,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, MonkeyCTarget> {
+public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, MCBuildTarget> {
   public static final String NAME = "Monkey C";
 
   private final static Logger LOG = Logger.getInstance(MonkeyCBuilder.class);
 
   public MonkeyCBuilder() {
-    super(Arrays.asList(MonkeyCTargetType.PRODUCTION, MonkeyCTargetType.TESTS));
+    super(Arrays.asList(MCBuildTargetType.PRODUCTION, MCBuildTargetType.TESTS));
     ResourcesBuilder.registerEnabler(new StandardResourceBuilderEnabler() {
       @Override
       public boolean isResourceProcessingEnabled(@NotNull JpsModule module) {
@@ -52,7 +52,7 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
   }
 
   @Override
-  public void build(@NotNull MonkeyCTarget target, @NotNull DirtyFilesHolder<MonkeyCSourceRootDescriptor, MonkeyCTarget> holder,
+  public void build(@NotNull MCBuildTarget target, @NotNull DirtyFilesHolder<MonkeyCSourceRootDescriptor, MCBuildTarget> holder,
                     @NotNull BuildOutputConsumer outputConsumer, @NotNull CompileContext context) throws ProjectBuildException, IOException {
     LOG.debug(target.getPresentableName());
     if (!holder.hasDirtyFiles() && !holder.hasRemovedFiles()) return;
