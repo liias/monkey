@@ -9,12 +9,12 @@ import javax.swing.*;
 public class MonkeyCModuleType extends ModuleType<MonkeyCModuleBuilder> {
 
   public MonkeyCModuleType() {
-    super(MonkeyCConstants.MODULE_TYPE_ID);
+    super(MCConstants.MODULE_TYPE_ID);
   }
 
   @NotNull
   public static MonkeyCModuleType getInstance() {
-    return (MonkeyCModuleType) ModuleTypeManager.getInstance().findByID(MonkeyCConstants.MODULE_TYPE_ID);
+    return (MonkeyCModuleType) ModuleTypeManager.getInstance().findByID(MCConstants.MODULE_TYPE_ID);
   }
 
   @NotNull

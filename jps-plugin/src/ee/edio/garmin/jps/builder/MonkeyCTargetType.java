@@ -1,11 +1,14 @@
 package ee.edio.garmin.jps.builder;
 
+import ee.edio.garmin.jps.model.JpsMCModuleProperties;
+import ee.edio.garmin.jps.model.JpsMCModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jps.builders.BuildTargetLoader;
 import org.jetbrains.jps.builders.ModuleBasedBuildTargetType;
 import org.jetbrains.jps.model.JpsModel;
-import org.jetbrains.jps.model.module.JpsModule;
+import org.jetbrains.jps.model.JpsSimpleElement;
+import org.jetbrains.jps.model.module.JpsTypedModule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +31,9 @@ public class MonkeyCTargetType extends ModuleBasedBuildTargetType<MonkeyCTarget>
   @Override
   public List<MonkeyCTarget> computeAllTargets(@NotNull JpsModel model) {
     List<MonkeyCTarget> targets = new ArrayList<>();
-    for (JpsModule jpsModule : model.getProject().getModules()) {
-      targets.add(new MonkeyCTarget(this, jpsModule));
-    }
-    /*for (JpsTypedModule<JpsSimpleElement<JpsGoModuleProperties>> module : model.getProject().getModules(JpsGoModuleType.INSTANCE)) {
+    for (JpsTypedModule<JpsSimpleElement<JpsMCModuleProperties>> module : model.getProject().getModules(JpsMCModuleType.INSTANCE)) {
       targets.add(new MonkeyCTarget(this, module));
-    }*/
+    }
     return targets;
   }
 
@@ -44,16 +44,11 @@ public class MonkeyCTargetType extends ModuleBasedBuildTargetType<MonkeyCTarget>
       @Nullable
       @Override
       public MonkeyCTarget createTarget(@NotNull String targetId) {
-        for (JpsModule jpsModule : model.getProject().getModules()) {
-          if (jpsModule.getName().equals(targetId)) {
-            return new MonkeyCTarget(MonkeyCTargetType.this, jpsModule);
-          }
-        }
-        /*for (JpsTypedModule<JpsSimpleElement<JpsGoModuleProperties>> module : model.getProject().getModules(JpsGoModuleType.INSTANCE)) {
+        for (JpsTypedModule<JpsSimpleElement<JpsMCModuleProperties>> module : model.getProject().getModules(JpsMCModuleType.INSTANCE)) {
           if (module.getName().equals(targetId)) {
             return new MonkeyCTarget(MonkeyCTargetType.this, module);
           }
-        }*/
+        }
         return null;
       }
     };

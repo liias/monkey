@@ -8,15 +8,25 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.BaseOSProcessHandler;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
+import ee.edio.garmin.jps.model.JpsMCModuleProperties;
+import ee.edio.garmin.jps.model.JpsMCModuleType;
+import ee.edio.garmin.jps.model.JpsMCSdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.builders.BuildOutputConsumer;
 import org.jetbrains.jps.builders.DirtyFilesHolder;
 import org.jetbrains.jps.incremental.CompileContext;
 import org.jetbrains.jps.incremental.ProjectBuildException;
 import org.jetbrains.jps.incremental.TargetBuilder;
+import org.jetbrains.jps.incremental.messages.BuildMessage;
+import org.jetbrains.jps.incremental.messages.CompilerMessage;
 import org.jetbrains.jps.incremental.resources.ResourcesBuilder;
 import org.jetbrains.jps.incremental.resources.StandardResourceBuilderEnabler;
+import org.jetbrains.jps.model.JpsDummyElement;
+import org.jetbrains.jps.model.JpsSimpleElement;
+import org.jetbrains.jps.model.java.JpsJavaExtensionService;
+import org.jetbrains.jps.model.library.sdk.JpsSdk;
 import org.jetbrains.jps.model.module.JpsModule;
+import org.jetbrains.jps.model.module.JpsTypedModule;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,23 +46,32 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
     ResourcesBuilder.registerEnabler(new StandardResourceBuilderEnabler() {
       @Override
       public boolean isResourceProcessingEnabled(@NotNull JpsModule module) {
-        return false;
-        //return module.getModuleType() != JpsGoModuleType.INSTANCE;
+        return module.getModuleType() != JpsMCModuleType.INSTANCE;
       }
     });
   }
-
 
   @Override
   public void build(@NotNull MonkeyCTarget target, @NotNull DirtyFilesHolder<MonkeyCSourceRootDescriptor, MonkeyCTarget> holder,
                     @NotNull BuildOutputConsumer outputConsumer, @NotNull CompileContext context) throws ProjectBuildException, IOException {
     LOG.debug(target.getPresentableName());
     if (!holder.hasDirtyFiles() && !holder.hasRemovedFiles()) return;
+
     JpsModule jpsModule = target.getModule();
+    if (jpsModule.getModuleType() != JpsMCModuleType.INSTANCE) return;
+
+    //JpsTypedModule<JpsSimpleElement<JpsGoModuleProperties>> module =
+    JpsTypedModule<JpsSimpleElement<JpsMCModuleProperties>> module = jpsModule.asTyped(JpsMCModuleType.INSTANCE);
+    assert module != null;
+
+    JpsSdk<JpsDummyElement> sdk = getSdk(context, module);
+
+    File outputDirectory = getBuildOutputDirectory(jpsModule, target.isTests(), context);
+
     for (String contentRootUrl : jpsModule.getContentRootsList().getUrls()) {
       String contentRootPath = new URL(contentRootUrl).getPath();
       final String projectName = context.getProjectDescriptor().getProject().getName();
-      final GeneralCommandLine buildCmd = createBuildCmd(projectName, contentRootPath);
+      final GeneralCommandLine buildCmd = createBuildCmd(projectName, contentRootPath, outputDirectory, sdk.getHomePath());
       runBuildProcess(context, buildCmd, contentRootPath);
     }
   }
@@ -69,7 +88,7 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
     }
   }
 
-  public GeneralCommandLine createBuildCmd(String projectName, String rootPath) {
+  public GeneralCommandLine createBuildCmd(String projectName, String rootPath, File outputDirectory, String sdkHomePath) {
 
     final File file = new File(FileUtil.toSystemIndependentName(rootPath));
 
@@ -85,15 +104,16 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
 
     //Project project = getEnvironment().getProject();
     //String projectBasePath = project.getBasePath();
-    String projectBasePath = rootPath;
-    String sdkPath = "C:\\Users\\Madis\\sdks\\connectiq-sdk-win-1.1.3";
-    String sdkBinPath = sdkPath + File.separator + "bin" + File.separator;
+    String sdkPath = sdkHomePath + File.separator;
+    String sdkBinPath = sdkPath + "bin" + File.separator;
 
     String outputName = projectName + ".prg";
-    String outputDir = projectBasePath + File.separator + "bin" + File.separator;
+
+    String outputDir = outputDirectory.getAbsolutePath() + File.separator;
+    //String outputDir = projectBasePath + File.separator + "bin" + File.separator;
 
     boolean hasResources = true;
-    String sourcePath = projectBasePath + File.separator + "source" + File.separator;
+    String sourcePath = rootPath + File.separator + "source" + File.separator;
 
 
     ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
@@ -104,11 +124,11 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
 
 
     if (hasResources) {
-      parameters.add("-z", projectBasePath + File.separator + "resources" + File.separator + "resources.xml")
-          .add("-z", projectBasePath + File.separator + "resources" + File.separator + "menus" + File.separator + "menu.xml")
-          .add("-z", projectBasePath + File.separator + "resources" + File.separator + "layouts" + File.separator + "layout.xml");
+      parameters.add("-z", rootPath + File.separator + "resources" + File.separator + "resources.xml")
+          .add("-z", rootPath + File.separator + "resources" + File.separator + "menus" + File.separator + "menu.xml")
+          .add("-z", rootPath + File.separator + "resources" + File.separator + "layouts" + File.separator + "layout.xml");
     }
-    parameters.add("-m", projectBasePath + File.separator + "manifest.xml")
+    parameters.add("-m", rootPath + File.separator + "manifest.xml")
         .add("-u", sdkBinPath + "devices.xml")
         .add("-p", sdkBinPath + "projectInfo.xml"); // optional file
 
@@ -128,6 +148,36 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
 
     commandLine.addParameters(parameters.build());
     return commandLine;
+  }
+
+  @NotNull
+  private static JpsSdk<JpsDummyElement> getSdk(@NotNull CompileContext context,
+                                                @NotNull JpsModule module) throws ProjectBuildException {
+    JpsSdk<JpsDummyElement> sdk = module.getSdk(JpsMCSdkType.INSTANCE);
+    if (sdk == null) {
+      String errorMessage = "No SDK for module " + module.getName();
+      context.processMessage(new CompilerMessage(NAME, BuildMessage.Kind.ERROR, errorMessage));
+      throw new ProjectBuildException(errorMessage);
+    }
+    return sdk;
+  }
+
+
+  @NotNull
+  private static File getBuildOutputDirectory(@NotNull JpsModule module,
+                                              boolean forTests,
+                                              @NotNull CompileContext context) throws ProjectBuildException {
+    JpsJavaExtensionService instance = JpsJavaExtensionService.getInstance();
+    File outputDirectory = instance.getOutputDirectory(module, forTests);
+    if (outputDirectory == null) {
+      String errorMessage = "No output dir for module " + module.getName();
+      context.processMessage(new CompilerMessage(NAME, BuildMessage.Kind.ERROR, errorMessage));
+      throw new ProjectBuildException(errorMessage);
+    }
+    if (!outputDirectory.exists()) {
+      FileUtil.createDirectory(outputDirectory);
+    }
+    return outputDirectory;
   }
 
   @NotNull

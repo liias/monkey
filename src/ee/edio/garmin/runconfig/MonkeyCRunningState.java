@@ -8,6 +8,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.KillableColoredProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +17,11 @@ import java.io.File;
 
 // Starts app in simulator
 public class MonkeyCRunningState extends CommandLineState {
-  protected MonkeyCRunningState(ExecutionEnvironment environment) {
+  private Module module;
+
+  protected MonkeyCRunningState(ExecutionEnvironment environment, Module module) {
     super(environment);
+    this.module = module;
   }
 
   @NotNull
@@ -30,11 +34,15 @@ public class MonkeyCRunningState extends CommandLineState {
   }
 
   private GeneralCommandLine createRunCmd() {
+    String sdkPath = "C:\\Users\\Madis\\sdks\\connectiq-sdk-win-1.1.3";
+
+
     Project project = getEnvironment().getProject();
     String projectBasePath = project.getBasePath();
-    String sdkPath = "C:\\Users\\Madis\\sdks\\connectiq-sdk-win-1.1.3";
     String sdkBinPath = sdkPath + File.separator + "bin" + File.separator;
     String outputName = project.getName() + ".prg";
+
+    getEnvironment().getConfigurationSettings();
     String outputDir = projectBasePath + File.separator + "bin" + File.separator;
     String prgPath = outputDir + outputName;
 

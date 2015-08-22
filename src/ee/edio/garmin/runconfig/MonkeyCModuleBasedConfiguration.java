@@ -16,6 +16,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.options.SettingsEditorGroup;
+import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +34,7 @@ public class MonkeyCModuleBasedConfiguration extends ModuleBasedConfiguration<Mo
     return Collections2.filter(allModules, new Predicate<Module>() {
       @Override
       public boolean apply(@Nullable Module module) {
-        return module != null && module.isDisposed();
+        return module != null && !module.isDisposed();
       }
     });
   }
@@ -51,6 +52,19 @@ public class MonkeyCModuleBasedConfiguration extends ModuleBasedConfiguration<Mo
   @Override
   public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
     MonkeyCRunConfigurationModule configurationModule = getConfigurationModule();
-    return new MonkeyCRunningState(environment);
+
+    Module module = configurationModule.getModule();
+    if (module == null) {
+      Collection<Module> modules = getValidModules();
+      if (modules.size() == 1) {
+        module = ContainerUtil.getFirstItem(modules);
+        getConfigurationModule().setModule(module);
+      }
+    }
+
+
+    //for (ModuleBuildTarget target : chunk.getTargets()) {
+    //  final File outputDir = target.getOutputDir();
+    return new MonkeyCRunningState(environment, module);
   }
 }

@@ -1,6 +1,7 @@
 package ee.edio.garmin.jps.builder;
 
 import com.intellij.util.containers.ContainerUtil;
+import ee.edio.garmin.jps.model.JpsMCModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jps.builders.*;
@@ -20,7 +21,7 @@ import java.io.File;
 import java.util.*;
 
 public class MonkeyCTarget extends ModuleBasedTarget<MonkeyCSourceRootDescriptor> {
-  public MonkeyCTarget(ModuleBasedBuildTargetType<?> targetType, @NotNull JpsModule module) {
+  public MonkeyCTarget(MonkeyCTargetType targetType, @NotNull JpsModule module) {
     super(targetType, module);
   }
 
@@ -41,9 +42,9 @@ public class MonkeyCTarget extends ModuleBasedTarget<MonkeyCSourceRootDescriptor
     List<BuildTarget<?>> dependencies = new ArrayList<>();
     Set<JpsModule> modules = JpsJavaExtensionService.dependencies(myModule).includedIn(JpsJavaClasspathKind.compile(isTests())).getModules();
     for (JpsModule module : modules) {
-      //if (module.getModuleType() == JpsGoModuleType.INSTANCE) {
-      dependencies.add(new MonkeyCTarget(getMonkeyCTargetType(), module));
-      //}
+      if (module.getModuleType() == JpsMCModuleType.INSTANCE) {
+        dependencies.add(new MonkeyCTarget(getMonkeyCTargetType(), module));
+      }
     }
     if (isTests()) {
       dependencies.add(new MonkeyCTarget(MonkeyCTargetType.PRODUCTION, getModule()));
