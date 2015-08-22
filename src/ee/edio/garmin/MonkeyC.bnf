@@ -135,7 +135,7 @@ monkeyCFile ::= compilationUnit
 
 private compilationUnit ::= usingDeclaration* typeDeclaration*
 
-usingDeclaration ::= USING IDENTIFIER (DOT IDENTIFIER)+ (AS IDENTIFIER)? SEMI
+usingDeclaration ::= USING IDENTIFIER (DOT IDENTIFIER)+ (AS IDENTIFIER)? SEMI {pin=1}
 
 typeDeclaration ::= classDeclaration | SEMI
 
@@ -330,7 +330,7 @@ arrayCreator ::= NEW createdName LBRACKET RBRACKET (LBRACKET RBRACKET)* arrayIni
 
 newArrayInitializer ::= LBRACKET (variableInitializer (COMMA variableInitializer)*)? (COMMA)? RBRACKET
 newDictionaryInitializer ::= LBRACE (keyValueInitializer (COMMA keyValueInitializer)*)? (COMMA)? RBRACE
-keyValueInitializer ::= primary EQGT primary
+keyValueInitializer ::= primary EQGT expression
 
 arrayInitializer ::= LBRACE (variableInitializer (COMMA variableInitializer)*)? (COMMA)? RBRACE
 
