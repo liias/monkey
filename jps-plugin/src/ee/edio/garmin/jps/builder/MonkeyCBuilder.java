@@ -1,6 +1,7 @@
 package ee.edio.garmin.jps.builder;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.intellij.execution.ExecutionException;
@@ -93,17 +94,36 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
 
   public GeneralCommandLine createBuildCmd(String projectName, String rootPath, File outputDirectory, String sdkHomePath) {
 
-    final File file = new File(FileUtil.toSystemIndependentName(rootPath));
+    final File projectRoot = new File(FileUtil.toSystemIndependentName(rootPath));
 
-    Pattern pattern = Pattern.compile(".*\\.mc");
+    // TODO: Use module sources functionality instead
+    Pattern sourcePattern = Pattern.compile(".*\\.mc");
+    final List<File> mcFiles = FileUtil.findFilesByMask(sourcePattern, projectRoot);
+    final ImmutableList<String> sourceFilePaths = FluentIterable.from(mcFiles)
+        .transform(new Function<File, String>() {
+          @Override
+          public String apply(File file) {
+            return file.getAbsolutePath();
+          }
+        }).toList();
 
-    final List<File> mcFiles = FileUtil.findFilesByMask(pattern, file);
-    final ImmutableList<String> sourceFilePaths = FluentIterable.from(mcFiles).transform(new Function<File, String>() {
-      @Override
-      public String apply(File file) {
-        return file.getAbsolutePath();
-      }
-    }).toList();
+    // TODO: Use module resources functionality instead
+    Pattern resourcePattern = Pattern.compile(".*\\.xml");
+    final List<File> xmlFiles = FileUtil.findFilesByMask(resourcePattern, projectRoot);
+    final ImmutableList<String> resourceFilePaths = FluentIterable.from(xmlFiles)
+        .filter(new Predicate<File>() {
+          @Override
+          public boolean apply(File file) {
+            return file != null && file.getParentFile().getAbsolutePath().contains("resource");
+          }
+        })
+        .transform(new Function<File, String>() {
+          @Override
+          public String apply(File file) {
+            return file.getAbsolutePath();
+          }
+        }).toList();
+
 
     //Project project = getEnvironment().getProject();
     //String projectBasePath = project.getBasePath();
@@ -115,10 +135,6 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
     String outputDir = outputDirectory.getAbsolutePath() + File.separator;
     //String outputDir = projectBasePath + File.separator + "bin" + File.separator;
 
-    boolean hasResources = true;
-    String sourcePath = rootPath + File.separator + "source" + File.separator;
-
-
     ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
         .add("-a", sdkBinPath + "api.db")
         .add("-i", sdkBinPath + "api.debug.xml")
@@ -126,20 +142,22 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
 //        .add("-w") //debug info
 
 
-    if (hasResources) {
-      parameters.add("-z", rootPath + File.separator + "resources" + File.separator + "resources.xml")
-          .add("-z", rootPath + File.separator + "resources" + File.separator + "menus" + File.separator + "menu.xml")
-          .add("-z", rootPath + File.separator + "resources" + File.separator + "layouts" + File.separator + "layout.xml");
+    if (!resourceFilePaths.isEmpty()) {
+      for (String resourceFilePath : resourceFilePaths) {
+        parameters.add("-z", resourceFilePath);
+      }
     }
+
     parameters.add("-m", rootPath + File.separator + "manifest.xml")
         .add("-u", sdkBinPath + "devices.xml")
         .add("-p", sdkBinPath + "projectInfo.xml"); // optional file
 
 
     parameters.addAll(sourceFilePaths);
-    //parameters.add(sourcePath + "EsimeneView.mc", sourcePath + "EsimeneMenuDelegate.mc", sourcePath + "EsimeneApp.mc");
 
-    parameters.add("-d", "vivoactive_sim");
+    final String deviceId = "fenix3";
+    final String deviceSim = deviceId + "_sim";
+    parameters.add("-d", deviceSim);
 
     //final String javaHome = SystemProperties.getJavaHome();
     //String javaPath = javaHome + File.separator + "bin" + File.separator + "java";

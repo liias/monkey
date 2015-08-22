@@ -166,9 +166,11 @@ public class MonkeyCRunningState extends CommandLineState {
     String outputName = project.getName() + ".prg";
     String prgPath = outputDir + outputName;
 
+    //String deviceId = "vivoactive";
+    String deviceId = "fenix3";
     ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
         .add(prgPath)
-        .add("vivoactive");
+        .add(deviceId);
 
     GeneralCommandLine commandLine = new GeneralCommandLine()
         .withWorkDirectory(sdkBinPath)
