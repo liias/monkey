@@ -11,7 +11,7 @@ import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.Pair;
 import com.intellij.util.containers.ContainerUtil;
-import ee.edio.garmin.sdk.MonkeyCSdkType;
+import ee.edio.garmin.sdk.MCSdkType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class MonkeyCModuleBuilder extends JavaModuleBuilder implements SourcePat
 
   @Override
   public boolean isSuitableSdkType(SdkTypeId sdkType) {
-    return sdkType == MonkeyCSdkType.getInstance();
+    return sdkType == MCSdkType.getInstance();
   }
 
   @Override

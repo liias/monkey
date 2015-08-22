@@ -7,7 +7,7 @@ import com.intellij.ide.util.projectWizard.importSources.DetectedProjectRoot;
 import com.intellij.ide.util.projectWizard.importSources.ProjectFromSourcesBuilder;
 import com.intellij.ide.util.projectWizard.importSources.ProjectStructureDetector;
 import com.intellij.openapi.util.io.FileUtil;
-import ee.edio.garmin.sdk.MonkeyCSdkType;
+import ee.edio.garmin.sdk.MCSdkType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -62,7 +62,7 @@ public class MonkeyCProjectStructureDetector extends ProjectStructureDetector {
   @NotNull
   @Override
   public List<ModuleWizardStep> createWizardSteps(@NotNull ProjectFromSourcesBuilder builder, ProjectDescriptor projectDescriptor, Icon stepIcon) {
-    ProjectJdkForModuleStep projectJdkForModuleStep = new ProjectJdkForModuleStep(builder.getContext(), MonkeyCSdkType.getInstance());
+    ProjectJdkForModuleStep projectJdkForModuleStep = new ProjectJdkForModuleStep(builder.getContext(), MCSdkType.getInstance());
     return Collections.<ModuleWizardStep>singletonList(projectJdkForModuleStep);
   }
 }

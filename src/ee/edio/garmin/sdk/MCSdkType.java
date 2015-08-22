@@ -8,15 +8,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.io.File;
 
-public class MonkeyCSdkType extends SdkType {
-  public MonkeyCSdkType() {
+public class MCSdkType extends SdkType {
+  public MCSdkType() {
     super(MCConstants.SDK_TYPE_ID);
   }
 
   @NotNull
-  public static MonkeyCSdkType getInstance() {
-    final MonkeyCSdkType instance = SdkType.findInstance(MonkeyCSdkType.class);
+  public static MCSdkType getInstance() {
+    final MCSdkType instance = SdkType.findInstance(MCSdkType.class);
     assert instance != null;
     return instance;
   }
@@ -69,4 +70,25 @@ public class MonkeyCSdkType extends SdkType {
   @Override
   public void saveAdditionalData(@NotNull SdkAdditionalData additionalData, @NotNull Element additional) {
   }
+
+  public String getMonkeydoBatPath(@NotNull Sdk sdk) {
+    return getBinPath(sdk) + File.separator + "monkeydo.bat";
+  }
+
+  public String getMonkeybrainsJarPath(@NotNull Sdk sdk) {
+    return getBinPath(sdk) + File.separator + "monkeybrains.jar";
+  }
+
+  public String getBinPath(@NotNull Sdk sdk) {
+    return getConvertedHomePath(sdk) + "bin";
+  }
+
+  private static String getConvertedHomePath(@NotNull Sdk sdk) {
+    String path = sdk.getHomePath().replace('/', File.separatorChar);
+    if (!path.endsWith(File.separator)) {
+      path += File.separator;
+    }
+    return path;
+  }
+
 }

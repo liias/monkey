@@ -85,13 +85,13 @@ public class MCParameters extends SimpleProgramParameters {
   }
 
   @Nullable
-  private static NotNullFunction<OrderEntry, VirtualFile[]> computeRootProvider(@MagicConstant(valuesFromClass = MCParameters.class) int classPathType, final Sdk jdk) {
+  private static NotNullFunction<OrderEntry, VirtualFile[]> computeRootProvider(@MagicConstant(valuesFromClass = MCParameters.class) int classPathType, final Sdk sdk) {
     return (classPathType & SDK_ONLY) == 0 ? null : new NotNullFunction<OrderEntry, VirtualFile[]>() {
       @NotNull
       @Override
       public VirtualFile[] fun(OrderEntry orderEntry) {
         if (orderEntry instanceof JdkOrderEntry) {
-          return jdk.getRootProvider().getFiles(OrderRootType.CLASSES);
+          return sdk.getRootProvider().getFiles(OrderRootType.CLASSES);
         }
         return orderEntry.getFiles(OrderRootType.CLASSES);
       }

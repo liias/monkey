@@ -7,7 +7,10 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.BaseOSProcessHandler;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.projectRoots.JdkUtil;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.util.SystemProperties;
+import com.intellij.util.containers.ContainerUtil;
 import ee.edio.garmin.jps.model.JpsMCModuleProperties;
 import ee.edio.garmin.jps.model.JpsMCModuleType;
 import ee.edio.garmin.jps.model.JpsMCSdkType;
@@ -138,17 +141,63 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
 
     parameters.add("-d", "vivoactive_sim");
 
+    //final String javaHome = SystemProperties.getJavaHome();
+    //String javaPath = javaHome + File.separator + "bin" + File.separator + "java";
+    final String jdkHome = findRealJdkHome() + File.separator;
+    String javaPath = jdkHome + "bin" + File.separator + "java";
+    String toolsJarPath = jdkHome + "lib" + File.separator + "java";
+    String monkeybrainsJarPath = sdkBinPath + "monkeybrains.jar";
     GeneralCommandLine commandLine = new GeneralCommandLine();
-    commandLine.setExePath("java");
+    commandLine.setExePath(javaPath);
     commandLine.addParameters("-Dfile.encoding=UTF-8", "-Dapple.awt.UIElement=true");
-    String classPath = "C:\\Program Files\\Java\\jre1.8.0_51\\lib\\tools.jar;";
-    classPath += sdkBinPath + "monkeybrains.jar" + ";";
+    String classPath = toolsJarPath + ";" + monkeybrainsJarPath + ";";
     commandLine.addParameters("-classpath", classPath);
     commandLine.addParameters("com.garmin.monkeybrains.Monkeybrains");
-
     commandLine.addParameters(parameters.build());
+
     return commandLine;
   }
+
+  // searches some common directories and misconfigurations
+  public static String findRealJdkHome() {
+    String javaHome = SystemProperties.getJavaHome();
+    List<String> paths = ContainerUtil.packNullables(javaHome, new File(javaHome).getParent(), System.getenv("JDK_16_x64"), System.getenv("JDK_16"));
+    for (String path : paths) {
+      if (JdkUtil.checkForJdk(new File(path))) {
+        return path;
+      }
+    }
+    throw new RuntimeException("could not find JDK");
+  }
+/*  private void a() {
+    final String jdkHome = SystemProperties.getJavaHome();
+    final String versionName = ProjectBundle.message("sdk.java.name.template", SystemProperties.getJavaVersion());
+    Sdk ideaJdk = ProjectJdkTable.getInstance().createSdk(versionName, new SimpleJavaSdkType());
+  }*/
+
+ /* public static GeneralCommandLine createMonkeybrainsCommandLine(String workDir, String sdkBinPath, ImmutableList<String> args) {
+    //final Sdk ideaJdk = sdkType.createJdk("tmp", SystemProperties.getJavaHome());
+    SimpleJavaParameters parameters = new SimpleJavaParameters();
+    //parameters.setJdk(ideaJdk);
+    parameters.setMainClass("com.garmin.monkeybrains.Monkeybrains");
+    File monkeybrainsJar = new File(sdkBinPath + "monkeybrains.jar");
+
+    final String toolsJar = sdkType.getToolsPath(ideaJdk);
+    if (toolsJar != null) {
+      parameters.getClassPath().add(toolsJar);
+    }
+    parameters.getClassPath().add(monkeybrainsJar.getPath());
+
+
+    parameters.getProgramParametersList().addAll("-Dfile.encoding=UTF-8", "-Dapple.awt.UIElement=true");
+//    parameters.getProgramParametersList().add("-Dpython.path=" + pythonPath + File.pathSeparator + workDir);
+    parameters.getProgramParametersList().addAll(args);
+    //parameters.setWorkingDirectory(workDir);
+
+    return JdkUtil.setupJVMCommandLine(sdkType.getVMExecutablePath(ideaJdk), parameters, false);
+    //final CapturingProcessHandler processHandler = new CapturingProcessHandler(commandLine.createProcess());
+    //return processHandler.runProcess();
+  }*/
 
   @NotNull
   private static JpsSdk<JpsDummyElement> getSdk(@NotNull CompileContext context,

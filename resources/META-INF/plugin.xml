@@ -25,7 +25,7 @@
 
     <compileServer.plugin classpath="monkey-c-jps-plugin.jar"/>
 
-    <sdkType implementation="ee.edio.garmin.sdk.MonkeyCSdkType"/>
+    <sdkType implementation="ee.edio.garmin.sdk.MCSdkType"/>
 
     <!-- Add your extensions here -->
     <fileTypeFactory implementation="ee.edio.garmin.MonkeyCFileTypeFactory"/>
