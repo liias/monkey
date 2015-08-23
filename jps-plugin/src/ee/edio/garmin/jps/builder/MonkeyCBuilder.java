@@ -168,16 +168,16 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
     // in format: C:\xyz\source\aaApp.mc C:\xyz\source\aaMenuDelegate.mc C:\xyz\source\aaView.mc
     parameters.addAll(sourceFilePaths);
 
-    //final String deviceId = "fenix3";
-    //final String deviceSim = deviceId + "_sim";
+    final String deviceId = "fenix3";
+    final String deviceSim = deviceId + "_sim";
     // parameters.add("-r"); // if release build
-    //parameters.add("-d", deviceSim);
+    parameters.add("-d", deviceSim);
 
     //final String javaHome = SystemProperties.getJavaHome();
     //String javaPath = javaHome + File.separator + "bin" + File.separator + "java";
     final String jdkHome = findRealJdkHome() + File.separator;
     String javaPath = jdkHome + "bin" + File.separator + "java";
-    String toolsJarPath = jdkHome + "lib" + File.separator + "java";
+    String toolsJarPath = jdkHome + "lib" + File.separator + "tools.jar";
     String monkeybrainsJarPath = sdkBinPath + MONKEYBRAINS_JAR_FILENAME;
     GeneralCommandLine commandLine = new GeneralCommandLine();
     commandLine.setExePath(javaPath);
