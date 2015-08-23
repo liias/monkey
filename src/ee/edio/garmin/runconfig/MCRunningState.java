@@ -116,8 +116,13 @@ public class MCRunningState extends CommandLineState {
     String outputName = project.getName() + ".prg";
     String prgPath = outputDir + outputName;
 
-    //String deviceId = "vivoactive";
+    final MCModuleBasedConfiguration runConfig = getConfiguration();
+    final TargetDevice targetDevice = runConfig.getTargetDevice();
     String deviceId = "fenix3";
+    if (targetDevice != null) {
+      deviceId = targetDevice.getId();
+    }
+    //String deviceId = "vivoactive";
     ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
         .add(prgPath)
         .add(deviceId);

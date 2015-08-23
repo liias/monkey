@@ -28,6 +28,7 @@ public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MCRunCo
   private String WORKING_DIRECTORY;
   private boolean PASS_PARENT_ENVS;
   private final Map<String, String> envs = new LinkedHashMap<>();
+  private TargetDevice targetDevice;
 
   public MCModuleBasedConfiguration(String name, @NotNull MCRunConfigurationModule configurationModule, @NotNull ConfigurationFactory factory) {
     super(name, configurationModule, factory);
@@ -115,5 +116,13 @@ public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MCRunCo
   @Override
   public boolean isPassParentEnvs() {
     return PASS_PARENT_ENVS;
+  }
+
+  public void setTargetDevice(TargetDevice targetDevice) {
+    this.targetDevice = targetDevice;
+  }
+
+  public TargetDevice getTargetDevice() {
+    return targetDevice;
   }
 }

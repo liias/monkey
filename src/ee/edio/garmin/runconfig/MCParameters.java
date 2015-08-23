@@ -47,11 +47,7 @@ public class MCParameters extends SimpleProgramParameters {
 
   public void configureByModule(final Module module,
                                 @MagicConstant(valuesFromClass = MCParameters.class) final int classPathType) throws CantRunException {
-    configureByModule(module, classPathType, getModuleSdk(module));
-  }
-
-  private void configureByModule(final Module module, @MagicConstant(valuesFromClass = MCParameters.class) final int classPathType,
-                                 final Sdk moduleSdk) throws CantRunException {
+    final Sdk moduleSdk = getModuleSdk(module);
 
     if ((classPathType & SDK_ONLY) != 0) {
       if (moduleSdk == null) {
