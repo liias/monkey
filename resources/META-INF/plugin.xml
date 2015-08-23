@@ -46,7 +46,7 @@
 
     <!-- run application -->
     <programRunner id="MonkeyCRunner" implementation="ee.edio.garmin.runconfig.MCProgramRunner"/>
-    <runConfigurationProducer implementation="ee.edio.garmin.runconfig.MonkeyCModuleConfigurationProducer"/>
+    <runConfigurationProducer implementation="ee.edio.garmin.runconfig.MCModuleConfigurationProducer"/>
     <configurationType implementation="ee.edio.garmin.runconfig.MCConfigurationType"/>
 
   </extensions>

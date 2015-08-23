@@ -25,10 +25,10 @@ import java.io.IOException;
 import java.util.List;
 
 // Starts app in simulator
-public class MonkeyCRunningState extends CommandLineState {
+public class MCRunningState extends CommandLineState {
   private MCParameters mcParameters;
 
-  protected MonkeyCRunningState(ExecutionEnvironment environment) {
+  protected MCRunningState(ExecutionEnvironment environment) {
     super(environment);
   }
 
@@ -42,7 +42,7 @@ public class MonkeyCRunningState extends CommandLineState {
   private MCParameters createMcParameters() throws ExecutionException {
     final MCParameters params = new MCParameters();
     final MCModuleBasedConfiguration runConfig = getConfiguration();
-    final MonkeyCRunConfigurationModule configurationModule = runConfig.getConfigurationModule();
+    final MCRunConfigurationModule configurationModule = runConfig.getConfigurationModule();
     final int classPathType = MCParameters.SDK_AND_CLASSES;
     params.configureByModule(configurationModule.getModule(), classPathType);
     ProgramParametersUtil.configureConfiguration(params, runConfig);
@@ -52,37 +52,12 @@ public class MonkeyCRunningState extends CommandLineState {
   @Override
   @NotNull
   public ExecutionResult execute(@NotNull final Executor executor, @NotNull final ProgramRunner runner) throws ExecutionException {
-
-
-    /*ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
-      @Override
-      public void run() {
-        runInSimHandler.addProcessListener(new ProcessAdapter() {
-          @Override
-          public void processWillTerminate(ProcessEvent event, boolean willBeDestroyed) {
-            // cleanup other process maybe
-          }
-        });
-        try {
-          final KillableColoredProcessHandler runSimHandler = new KillableColoredProcessHandler(runSimulatorCmd);
-
-          if (console != null) {
-            console.attachToProcess(runSimHandler);
-          }
-          //runSimHandler.startNotify();
-        } catch (ExecutionException e) {
-          e.printStackTrace();
-        }
-      }
-    });*/
-
     GeneralCommandLine runSimulatorCmd = createRunSimulatorCmd();
     ProcessBuilder pb = new ProcessBuilder(runSimulatorCmd.getExePath())
         .directory(runSimulatorCmd.getWorkDirectory());
-    Process simulator = null;
 
     try {
-      simulator = pb.start();
+      pb.start();
     } catch (IOException e) {
       throw new ExecutionException(e.getMessage());
     }
@@ -93,31 +68,6 @@ public class MonkeyCRunningState extends CommandLineState {
       console.attachToProcess(runInSimHandler);
     }
 
-/*    final int maxTries = 3;
-    final int[] i = {0};
-    runInSimHandler.addProcessListener(new ProcessAdapter() {
-      @Override
-      public void onTextAvailable(ProcessEvent event, Key outputType) {
-        final boolean failed = "System Error\n".equals(event.getText());
-        if (failed) {
-          if (i[0] > maxTries) {
-            return;
-          }
-          //ProcessHandler processHandler = event.getProcessHandler();
-          //processHandler.detachProcess();
-
-          try {
-            i[0] += 1;
-            ProcessHandler newProcessHandler = startProcess();
-            if (console != null) {
-              console.attachToProcess(newProcessHandler);
-            }
-          } catch (ExecutionException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-    });*/
     return new DefaultExecutionResult(console, runInSimHandler);
   }
 

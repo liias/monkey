@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class MonkeyCSettingsEditor extends SettingsEditor<MCModuleBasedConfiguration> implements PanelWithAnchor {
+public class MCSettingsEditor extends SettingsEditor<MCModuleBasedConfiguration> implements PanelWithAnchor {
   private final Project project;
   private JComponent anchor;
 
@@ -25,7 +25,7 @@ public class MonkeyCSettingsEditor extends SettingsEditor<MCModuleBasedConfigura
 
   private AlternativeJREPanel myAlternativeJREPanel;
 
-  public MonkeyCSettingsEditor(final Project project) {
+  public MCSettingsEditor(final Project project) {
     this.project = project;
     this.anchor = UIUtil.mergeComponentsWithAnchor(myJarPathComponent, myCommonProgramParameters, myAlternativeJREPanel);
 /*    ModulesComboBox modulesComboBox = myModuleComponent.getComponent();

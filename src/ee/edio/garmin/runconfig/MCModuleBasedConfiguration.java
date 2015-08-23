@@ -23,13 +23,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MonkeyCRunConfigurationModule> implements CommonProgramRunConfigurationParameters {
+public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MCRunConfigurationModule> implements CommonProgramRunConfigurationParameters {
   private String PROGRAM_PARAMETERS;
   private String WORKING_DIRECTORY;
   private boolean PASS_PARENT_ENVS;
   private final Map<String, String> envs = new LinkedHashMap<>();
 
-  public MCModuleBasedConfiguration(String name, @NotNull MonkeyCRunConfigurationModule configurationModule, @NotNull ConfigurationFactory factory) {
+  public MCModuleBasedConfiguration(String name, @NotNull MCRunConfigurationModule configurationModule, @NotNull ConfigurationFactory factory) {
     super(name, configurationModule, factory);
   }
 
@@ -48,7 +48,7 @@ public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MonkeyC
   @Override
   public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
     SettingsEditorGroup<MCModuleBasedConfiguration> group = new SettingsEditorGroup<>();
-    group.addEditor(ExecutionBundle.message("run.configuration.configuration.tab.title"), new MonkeyCSettingsEditor(getProject()));
+    group.addEditor(ExecutionBundle.message("run.configuration.configuration.tab.title"), new MCSettingsEditor(getProject()));
     group.addEditor(ExecutionBundle.message("logs.tab.title"), new LogConfigurationPanel<MCModuleBasedConfiguration>());
     return group;
   }
@@ -56,7 +56,7 @@ public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MonkeyC
   @Nullable
   @Override
   public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
-    MonkeyCRunConfigurationModule configurationModule = getConfigurationModule();
+    MCRunConfigurationModule configurationModule = getConfigurationModule();
 
     Module module = configurationModule.getModule();
     if (module == null) {
@@ -70,7 +70,7 @@ public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MonkeyC
 
     //for (ModuleBuildTarget target : chunk.getTargets()) {
     //  final File outputDir = target.getOutputDir();
-    return new MonkeyCRunningState(environment);
+    return new MCRunningState(environment);
   }
 
   @Override

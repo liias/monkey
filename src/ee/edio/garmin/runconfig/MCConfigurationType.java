@@ -23,7 +23,7 @@ public class MCConfigurationType extends ConfigurationTypeBase {
       }
 
       public RunConfiguration createTemplateConfiguration(Project project) {
-        return new MCModuleBasedConfiguration("", new MonkeyCRunConfigurationModule(project), this);
+        return new MCModuleBasedConfiguration("", new MCRunConfigurationModule(project), this);
       }
     });
   }

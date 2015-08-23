@@ -5,8 +5,8 @@ import com.intellij.execution.actions.RunConfigurationProducer;
 import com.intellij.openapi.util.Ref;
 import com.intellij.psi.PsiElement;
 
-public class MonkeyCModuleConfigurationProducer extends RunConfigurationProducer<MCModuleBasedConfiguration> {
-  public MonkeyCModuleConfigurationProducer() {
+public class MCModuleConfigurationProducer extends RunConfigurationProducer<MCModuleBasedConfiguration> {
+  public MCModuleConfigurationProducer() {
     super(MCConfigurationType.getInstance());
   }
 
