@@ -117,8 +117,7 @@ public class MCRunningState extends CommandLineState {
     String prgPath = outputDir + outputName;
 
     final MCModuleBasedConfiguration runConfig = getConfiguration();
-    final TargetDevice targetDevice = runConfig.getTargetDevice();
-    String deviceId = targetDevice.getId();
+    final String deviceId = runConfig.getTargetDeviceId();
 
     ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
         .add(prgPath)

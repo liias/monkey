@@ -1,11 +1,13 @@
 package ee.edio.garmin.runconfig;
 
+import com.google.common.collect.ImmutableList;
 import com.intellij.application.options.ModulesComboBox;
 import com.intellij.execution.ui.CommonProgramParametersPanel;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.LabeledComponent;
+import com.intellij.ui.ListCellRendererWrapper;
 import com.intellij.ui.PanelWithAnchor;
 import com.intellij.util.ui.UIUtil;
 import ee.edio.garmin.MonkeyCModuleType;
@@ -13,40 +15,69 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class MCSettingsEditor extends SettingsEditor<MCModuleBasedConfiguration> implements PanelWithAnchor {
-  private final Project project;
-  private LabeledComponent<JComboBox> targetDevice;
-  private JComponent anchor;
+  public static final ImmutableList<TargetDevice> ALL_DEVICES = new ImmutableList.Builder<TargetDevice>()
+      .add(new TargetDevice("square_watch", "Square Watch"))
+      .add(new TargetDevice("round_watch", "Round Watch"))
+      .add(new TargetDevice("vivoactive", "vívoactive"))
+      .add(new TargetDevice("fenix3", "fēnix™ 3"))
+      .add(new TargetDevice("d2bravo", "D2™ Bravo"))
+      .add(new TargetDevice("fr920xt", "Forerunner® 920XT"))
+      .add(new TargetDevice("epix", "epix®"))
+      .build();
 
+  private final Project project;
+  private LabeledComponent<JComboBox<TargetDevice>> targetDevice;
+  private JComponent anchor;
   private CommonProgramParametersPanel commonProgramParameters;
-  //private LabeledComponent<TextFieldWithBrowseButton> myJarPathComponent;
   private LabeledComponent<ModulesComboBox> moduleComponent;
   private JComponent wholePanel;
 
   public MCSettingsEditor(final Project project) {
     this.project = project;
-    //this.moduleSelector = new MCConfigurationModuleSelector(project, this.module.getComponent());
-    //this.commonProgramParameters.setModuleContext(moduleSelector.getModule());
-    /*this.module.getComponent().addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        commonProgramParameters.setModuleContext(moduleSelector.getModule());
-      }
-    });*/
-    //myAnchor = UIUtil.mergeComponentsWithAnchor(myMainClass, myCommonProgramParameters, myAlternativeJREPanel, myModule);
     this.anchor = UIUtil.mergeComponentsWithAnchor(commonProgramParameters);
     ModulesComboBox modulesComboBox = moduleComponent.getComponent();
-    //modulesComboBox.allowEmptySelection("<whole project>");
     modulesComboBox.fillModules(project, MonkeyCModuleType.getInstance());
+    fillTargetDevices();
   }
 
-/*  private void createUIComponents() {
-    myJarPathComponent = new LabeledComponent<>();
-    TextFieldWithBrowseButton textFieldWithBrowseButton = new TextFieldWithBrowseButton();
-    textFieldWithBrowseButton.addBrowseFolderListener("Choose JAR File", null, this.project,
-        new FileChooserDescriptor(false, false, true, true, false, false));
-    myJarPathComponent.setComponent(textFieldWithBrowseButton);
-  }*/
+  private static class TargetDeviceListRenderer extends ListCellRendererWrapper<TargetDevice> {
+    public TargetDeviceListRenderer(JComboBox<TargetDevice> comboBox) {
+      super();
+    }
+
+    @Override
+    public void customize(JList list, TargetDevice device, int index, boolean selected, boolean hasFocus) {
+      if (device != null) {
+        //setIcon(ModuleType.get(value).getIcon());
+        setText(device.getName());
+      } else {
+        setText("<unspecified>");
+        setIcon(null);
+      }
+    }
+  }
+
+  private void fillTargetDevices() {
+    final JComboBox<TargetDevice> comboBox = targetDevice.getComponent();
+    comboBox.removeAllItems();
+    //noinspection unchecked
+    comboBox.setRenderer(new TargetDeviceListRenderer(comboBox));
+
+    for (TargetDevice device : ALL_DEVICES) {
+      comboBox.addItem(device);
+    }
+    comboBox.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        final TargetDevice selectedItem = (TargetDevice) comboBox.getSelectedItem();
+        // TODO: needs rebuilding module or something else?
+      }
+    });
+  }
 
   @Override
   public JComponent getAnchor() {
@@ -65,38 +96,22 @@ public class MCSettingsEditor extends SettingsEditor<MCModuleBasedConfiguration>
     commonProgramParameters.reset(configuration);
     moduleComponent.getComponent().setSelectedModule(configuration.getConfigurationModule().getModule());
 
-    // TODO: target device? from configuration.getTargetDevice()
-    //targetDevice.setText("");
-    //targetDevice.getComponent().setSelectedIndex(0);
+    final String targetDeviceId = configuration.getTargetDeviceId();
+    if (targetDeviceId != null) {
+      final TargetDevice selectedTargetDevice = new TargetDevice();
+      selectedTargetDevice.setId(targetDeviceId);
+      this.targetDevice.getComponent().setSelectedItem(selectedTargetDevice);
+    } else {
+      this.targetDevice.getComponent().setSelectedIndex(0);
+    }
   }
 
   @Override
   protected void applyEditorTo(MCModuleBasedConfiguration configuration) throws ConfigurationException {
     commonProgramParameters.applyTo(configuration);
     configuration.setModule(moduleComponent.getComponent().getSelectedModule());
-
-    final Object selectedItem = this.targetDevice.getComponent().getSelectedItem();
-    String targetDeviceId = "fenix3";
-    if (selectedItem != null) {
-      targetDeviceId = selectedItem.toString();
-    }
-    final TargetDevice targetDevice = new TargetDevice();
-    targetDevice.setId(targetDeviceId);
-
-    configuration.setTargetDevice(targetDevice);
-    //moduleSelector.applyTo(configuration);
-    //final String className = getMainClassField().getText();
-    //final PsiClass aClass = myModuleSelector.findClass(className);
-    //configuration.MAIN_CLASS_NAME = aClass != null ? JavaExecutionUtil.getRuntimeQualifiedName(aClass) : className;
-    //configuration.ALTERNATIVE_JRE_PATH = myAlternativeJREPanel.getPath();
-    //configuration.ALTERNATIVE_JRE_PATH_ENABLED = myAlternativeJREPanel.isPathEnabled();
-    //configuration.ENABLE_SWING_INSPECTOR = (myVersionDetector.isJre50Configured(configuration) || myVersionDetector.isModuleJre50Configured(configuration)) && myShowSwingInspectorCheckbox.isSelected();
-
-/*    commonProgramParameters.applyTo(configuration);
-    configuration.setAlternativeJrePath(myAlternativeJREPanel.getPath());
-    configuration.setAlternativeJrePathEnabled(myAlternativeJREPanel.isPathEnabled());
-    configuration.setJarPath(FileUtil.toSystemIndependentName(myJarPathComponent.getComponent().getText()));
-    configuration.setModule(moduleComponent.getComponent().getSelectedModule());*/
+    final TargetDevice selectedTargetDevice = (TargetDevice) this.targetDevice.getComponent().getSelectedItem();
+    configuration.setTargetDeviceId(selectedTargetDevice.getId());
   }
 
   @NotNull

@@ -106,14 +106,6 @@ public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MCRunCo
     return bean.PASS_PARENT_ENVS;
   }
 
-  public void setTargetDevice(TargetDevice targetDevice) {
-    bean.targetDevice = targetDevice;
-  }
-
-  public TargetDevice getTargetDevice() {
-    return bean.targetDevice;
-  }
-
   @Override
   public void checkConfiguration() throws RuntimeConfigurationException {
     final MCRunConfigurationModule configurationModule = getConfigurationModule();
@@ -126,7 +118,7 @@ public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MCRunCo
     super.readExternal(element);
     XmlSerializer.deserializeInto(this.bean, element);
     EnvironmentVariablesComponent.readExternal(element, getEnvs());
-    getConfigurationModule().readExternal(element);
+    readModule(element);
   }
 
   @Override
@@ -134,15 +126,21 @@ public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MCRunCo
     super.writeExternal(element);
     XmlSerializer.serializeInto(this.bean, element, SERIALIZATION_FILTERS);
     EnvironmentVariablesComponent.writeExternal(element, getEnvs());
-    if (getConfigurationModule().getModule() != null) {
-      getConfigurationModule().writeExternal(element);
-    }
+    writeModule(element);
+  }
+
+  public String getTargetDeviceId() {
+    return bean.TARGET_DEVICE_ID;
+  }
+
+  public void setTargetDeviceId(String targetDeviceId) {
+    bean.TARGET_DEVICE_ID = targetDeviceId;
   }
 
   private static class MCModuleBasedConfigurationBean {
     public String PROGRAM_PARAMETERS = "";
     public String WORKING_DIRECTORY = "";
     public boolean PASS_PARENT_ENVS = true;
-    private TargetDevice targetDevice;
+    public String TARGET_DEVICE_ID = "";
   }
 }
