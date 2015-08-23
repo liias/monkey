@@ -5,16 +5,20 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
 import com.intellij.execution.*;
-import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.execution.configurations.ModuleBasedConfiguration;
-import com.intellij.execution.configurations.RunConfiguration;
-import com.intellij.execution.configurations.RunProfileState;
+import com.intellij.execution.configuration.EnvironmentVariablesComponent;
+import com.intellij.execution.configurations.*;
 import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.execution.util.ProgramParametersUtil;
+import com.intellij.openapi.components.PathMacroManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.options.SettingsEditorGroup;
-import com.intellij.util.containers.ContainerUtil;
+import com.intellij.openapi.util.InvalidDataException;
+import com.intellij.openapi.util.WriteExternalException;
+import com.intellij.util.xmlb.SkipDefaultValuesSerializationFilters;
+import com.intellij.util.xmlb.XmlSerializer;
+import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,11 +28,9 @@ import java.util.List;
 import java.util.Map;
 
 public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MCRunConfigurationModule> implements CommonProgramRunConfigurationParameters {
-  private String PROGRAM_PARAMETERS;
-  private String WORKING_DIRECTORY;
-  private boolean PASS_PARENT_ENVS;
+  private static final SkipDefaultValuesSerializationFilters SERIALIZATION_FILTERS = new SkipDefaultValuesSerializationFilters();
+  private MCModuleBasedConfigurationBean bean = new MCModuleBasedConfigurationBean();
   private final Map<String, String> envs = new LinkedHashMap<>();
-  private TargetDevice targetDevice;
 
   public MCModuleBasedConfiguration(String name, @NotNull MCRunConfigurationModule configurationModule, @NotNull ConfigurationFactory factory) {
     super(name, configurationModule, factory);
@@ -57,43 +59,29 @@ public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MCRunCo
   @Nullable
   @Override
   public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
-    MCRunConfigurationModule configurationModule = getConfigurationModule();
-
-    Module module = configurationModule.getModule();
-    if (module == null) {
-      Collection<Module> modules = getValidModules();
-      if (modules.size() == 1) {
-        module = ContainerUtil.getFirstItem(modules);
-        getConfigurationModule().setModule(module);
-      }
-    }
-
-
-    //for (ModuleBuildTarget target : chunk.getTargets()) {
-    //  final File outputDir = target.getOutputDir();
     return new MCRunningState(environment);
   }
 
   @Override
   public void setProgramParameters(@Nullable String value) {
-    PROGRAM_PARAMETERS = value;
+    bean.PROGRAM_PARAMETERS = value;
   }
 
   @Nullable
   @Override
   public String getProgramParameters() {
-    return PROGRAM_PARAMETERS;
+    return bean.PROGRAM_PARAMETERS;
   }
 
   @Override
   public void setWorkingDirectory(@Nullable String value) {
-    WORKING_DIRECTORY = ExternalizablePath.urlValue(value);
+    bean.WORKING_DIRECTORY = ExternalizablePath.urlValue(value);
   }
 
   @Nullable
   @Override
   public String getWorkingDirectory() {
-    return ExternalizablePath.localPathValue(WORKING_DIRECTORY);
+    return ExternalizablePath.localPathValue(bean.WORKING_DIRECTORY);
   }
 
   @Override
@@ -110,19 +98,51 @@ public class MCModuleBasedConfiguration extends ModuleBasedConfiguration<MCRunCo
 
   @Override
   public void setPassParentEnvs(boolean passParentEnvs) {
-    PASS_PARENT_ENVS = passParentEnvs;
+    bean.PASS_PARENT_ENVS = passParentEnvs;
   }
 
   @Override
   public boolean isPassParentEnvs() {
-    return PASS_PARENT_ENVS;
+    return bean.PASS_PARENT_ENVS;
   }
 
   public void setTargetDevice(TargetDevice targetDevice) {
-    this.targetDevice = targetDevice;
+    bean.targetDevice = targetDevice;
   }
 
   public TargetDevice getTargetDevice() {
-    return targetDevice;
+    return bean.targetDevice;
+  }
+
+  @Override
+  public void checkConfiguration() throws RuntimeConfigurationException {
+    final MCRunConfigurationModule configurationModule = getConfigurationModule();
+    ProgramParametersUtil.checkWorkingDirectoryExist(this, getProject(), configurationModule.getModule());
+  }
+
+  @Override
+  public void readExternal(Element element) throws InvalidDataException {
+    PathMacroManager.getInstance(getProject()).expandPaths(element);
+    super.readExternal(element);
+    XmlSerializer.deserializeInto(this.bean, element);
+    EnvironmentVariablesComponent.readExternal(element, getEnvs());
+    getConfigurationModule().readExternal(element);
+  }
+
+  @Override
+  public void writeExternal(Element element) throws WriteExternalException {
+    super.writeExternal(element);
+    XmlSerializer.serializeInto(this.bean, element, SERIALIZATION_FILTERS);
+    EnvironmentVariablesComponent.writeExternal(element, getEnvs());
+    if (getConfigurationModule().getModule() != null) {
+      getConfigurationModule().writeExternal(element);
+    }
+  }
+
+  private static class MCModuleBasedConfigurationBean {
+    public String PROGRAM_PARAMETERS = "";
+    public String WORKING_DIRECTORY = "";
+    public boolean PASS_PARENT_ENVS = true;
+    private TargetDevice targetDevice;
   }
 }

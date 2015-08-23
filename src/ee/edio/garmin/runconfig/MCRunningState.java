@@ -118,11 +118,8 @@ public class MCRunningState extends CommandLineState {
 
     final MCModuleBasedConfiguration runConfig = getConfiguration();
     final TargetDevice targetDevice = runConfig.getTargetDevice();
-    String deviceId = "fenix3";
-    if (targetDevice != null) {
-      deviceId = targetDevice.getId();
-    }
-    //String deviceId = "vivoactive";
+    String deviceId = targetDevice.getId();
+
     ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
         .add(prgPath)
         .add(deviceId);
