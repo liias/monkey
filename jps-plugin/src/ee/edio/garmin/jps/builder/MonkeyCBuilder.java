@@ -44,6 +44,8 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
   public static final String NAME = "Monkey C";
 
   private final static Logger LOG = Logger.getInstance(MonkeyCBuilder.class);
+  public static final String MONKEYBRAINS_FQN = "com.garmin.monkeybrains.Monkeybrains";
+  public static final String MONKEYBRAINS_JAR_FILENAME = "monkeybrains.jar";
 
   public MonkeyCBuilder() {
     super(Arrays.asList(MCBuildTargetType.PRODUCTION, MCBuildTargetType.TESTS));
@@ -92,9 +94,9 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
     }
   }
 
-  public GeneralCommandLine createBuildCmd(String projectName, String rootPath, File outputDirectory, String sdkHomePath) {
-
-    final File projectRoot = new File(FileUtil.toSystemIndependentName(rootPath));
+  // TODO: paths that contain spaces should be quoted?
+  public GeneralCommandLine createBuildCmd(String projectName, String projectRootPath, File outputDirectory, String sdkHomePath) {
+    final File projectRoot = new File(FileUtil.toSystemIndependentName(projectRootPath));
 
     // TODO: Use module sources functionality instead
     Pattern sourcePattern = Pattern.compile(".*\\.mc");
@@ -139,38 +141,50 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
         .add("-a", sdkBinPath + "api.db")
         .add("-i", sdkBinPath + "api.debug.xml")
         .add("-o", outputDir + outputName);
-//        .add("-w") //debug info
+//        .add("-w") // Show compilation warnings in the Console
+//        .add("-g") // Print debug output (-g)
 
 
     if (!resourceFilePaths.isEmpty()) {
+      // in format: -z C:\xyz\resources\layouts\layout.xml;C:\xyz\resources\menus\menu.xml;C:\xyz\resources\resources.xml
+      StringBuilder builder = new StringBuilder();
       for (String resourceFilePath : resourceFilePaths) {
-        parameters.add("-z", resourceFilePath);
+        // if not first
+        if (builder.length() != 0) {
+          builder.append(File.pathSeparator);
+        }
+        builder.append(resourceFilePath);
       }
+      parameters.add("-z", builder.toString());
     }
 
-    parameters.add("-m", rootPath + File.separator + "manifest.xml")
-        .add("-u", sdkBinPath + "devices.xml")
-        .add("-p", sdkBinPath + "projectInfo.xml"); // optional file
+    String manifestXmlPath = projectRootPath + File.separator + "manifest.xml";
+    String devicesXmlPath = sdkBinPath + "devices.xml";
+    String projectInfoXmlPath = sdkBinPath + "projectInfo.xml"; // todo: is this file optional?
+    parameters.add("-m", manifestXmlPath)
+        .add("-u", devicesXmlPath)
+        .add("-p", projectInfoXmlPath); // optional file?
 
-
+    // in format: C:\xyz\source\aaApp.mc C:\xyz\source\aaMenuDelegate.mc C:\xyz\source\aaView.mc
     parameters.addAll(sourceFilePaths);
 
-    final String deviceId = "fenix3";
-    final String deviceSim = deviceId + "_sim";
-    parameters.add("-d", deviceSim);
+    //final String deviceId = "fenix3";
+    //final String deviceSim = deviceId + "_sim";
+    // parameters.add("-r"); // if release build
+    //parameters.add("-d", deviceSim);
 
     //final String javaHome = SystemProperties.getJavaHome();
     //String javaPath = javaHome + File.separator + "bin" + File.separator + "java";
     final String jdkHome = findRealJdkHome() + File.separator;
     String javaPath = jdkHome + "bin" + File.separator + "java";
     String toolsJarPath = jdkHome + "lib" + File.separator + "java";
-    String monkeybrainsJarPath = sdkBinPath + "monkeybrains.jar";
+    String monkeybrainsJarPath = sdkBinPath + MONKEYBRAINS_JAR_FILENAME;
     GeneralCommandLine commandLine = new GeneralCommandLine();
     commandLine.setExePath(javaPath);
     commandLine.addParameters("-Dfile.encoding=UTF-8", "-Dapple.awt.UIElement=true");
     String classPath = toolsJarPath + ";" + monkeybrainsJarPath + ";";
     commandLine.addParameters("-classpath", classPath);
-    commandLine.addParameters("com.garmin.monkeybrains.Monkeybrains");
+    commandLine.addParameters(MONKEYBRAINS_FQN);
     commandLine.addParameters(parameters.build());
 
     return commandLine;

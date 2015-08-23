@@ -9,8 +9,8 @@ import com.intellij.openapi.project.Project;
 import ee.edio.garmin.MonkeyCIcons;
 import org.jetbrains.annotations.NotNull;
 
-public class MonkeyCConfigurationType extends ConfigurationTypeBase {
-  protected MonkeyCConfigurationType() {
+public class MCConfigurationType extends ConfigurationTypeBase {
+  protected MCConfigurationType() {
     // icon is 16 (default for java is AllIcons.RunConfigurations.Application)
     super("MonkeyCApplication", "Monkey C Application", "Configuration to run a Connect IQ app with the simulator", MonkeyCIcons.MODULE16);
 
@@ -29,8 +29,8 @@ public class MonkeyCConfigurationType extends ConfigurationTypeBase {
   }
 
   @NotNull
-  public static MonkeyCConfigurationType getInstance() {
-    return ConfigurationTypeUtil.findConfigurationType(MonkeyCConfigurationType.class);
-    //return Extensions.findExtension(CONFIGURATION_TYPE_EP, MonkeyCConfigurationType.class);
+  public static MCConfigurationType getInstance() {
+    return ConfigurationTypeUtil.findConfigurationType(MCConfigurationType.class);
+    //return Extensions.findExtension(CONFIGURATION_TYPE_EP, MCConfigurationType.class);
   }
 }

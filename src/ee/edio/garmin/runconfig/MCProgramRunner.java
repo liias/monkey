@@ -6,7 +6,7 @@ import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.execution.runners.DefaultProgramRunner;
 import org.jetbrains.annotations.NotNull;
 
-public class MonkeyCProgramRunner extends DefaultProgramRunner {
+public class MCProgramRunner extends DefaultProgramRunner {
   @NotNull
   @Override
   public String getRunnerId() {

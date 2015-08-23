@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public class MonkeyCModuleConfigurationProducer extends RunConfigurationProducer<MCModuleBasedConfiguration> {
   public MonkeyCModuleConfigurationProducer() {
-    super(MonkeyCConfigurationType.getInstance());
+    super(MCConfigurationType.getInstance());
   }
 
   @Override

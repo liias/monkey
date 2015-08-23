@@ -45,9 +45,9 @@
     <gotoClassContributor implementation="ee.edio.garmin.MonkeyCGoToClassContributor"/>
 
     <!-- run application -->
-    <programRunner id="MonkeyCRunner" implementation="ee.edio.garmin.runconfig.MonkeyCProgramRunner"/>
+    <programRunner id="MonkeyCRunner" implementation="ee.edio.garmin.runconfig.MCProgramRunner"/>
     <runConfigurationProducer implementation="ee.edio.garmin.runconfig.MonkeyCModuleConfigurationProducer"/>
-    <configurationType implementation="ee.edio.garmin.runconfig.MonkeyCConfigurationType"/>
+    <configurationType implementation="ee.edio.garmin.runconfig.MCConfigurationType"/>
 
   </extensions>
 
