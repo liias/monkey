@@ -1,7 +1,10 @@
 package ee.edio.garmin;
 
+import com.intellij.ide.util.projectWizard.ModuleWizardStep;
+import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.ModuleTypeManager;
+import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -44,4 +47,10 @@ public class MonkeyCModuleType extends ModuleType<MonkeyCModuleBuilder> {
   public Icon getNodeIcon(@Deprecated boolean isOpened) {
     return MonkeyCIcons.MODULE16;
   } // 16
+
+  @NotNull
+  @Override
+  public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull MonkeyCModuleBuilder moduleBuilder, @NotNull ModulesProvider modulesProvider) {
+    return super.createWizardSteps(wizardContext, moduleBuilder, modulesProvider);
+  }
 }
