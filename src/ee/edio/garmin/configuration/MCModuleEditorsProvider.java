@@ -20,7 +20,10 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleConfigurationEditor;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.roots.ui.configuration.*;
+import com.intellij.openapi.roots.ui.configuration.ClasspathEditor;
+import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationEditorProvider;
+import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
+import com.intellij.openapi.roots.ui.configuration.OutputEditor;
 import ee.edio.garmin.MonkeyCModuleType;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +31,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MonkeyCModuleEditorsProvider implements ModuleConfigurationEditorProvider {
+public class MCModuleEditorsProvider implements ModuleConfigurationEditorProvider {
   public ModuleConfigurationEditor[] createEditors(@NotNull ModuleConfigurationState state) {
     ModifiableRootModel rootModel = state.getRootModel();
     Module module = rootModel.getModule();
@@ -38,7 +41,7 @@ public class MonkeyCModuleEditorsProvider implements ModuleConfigurationEditorPr
 
     String moduleName = module.getName();
     List<ModuleConfigurationEditor> editors = new ArrayList<>();
-    editors.add(new ContentEntriesEditor(moduleName, state));
+    editors.add(new MCContentEntriesEditor(moduleName, state));
     editors.add(new OutputEditorEx(state));
     editors.add(new ClasspathEditor(state));
     return editors.toArray(new ModuleConfigurationEditor[editors.size()]);
