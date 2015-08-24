@@ -1,10 +1,12 @@
 package ee.edio.garmin;
 
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
+import com.intellij.ide.util.projectWizard.ProjectJdkForModuleStep;
 import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.ModuleTypeManager;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
+import ee.edio.garmin.sdk.MCSdkType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -50,7 +52,12 @@ public class MonkeyCModuleType extends ModuleType<MonkeyCModuleBuilder> {
 
   @NotNull
   @Override
-  public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull MonkeyCModuleBuilder moduleBuilder, @NotNull ModulesProvider modulesProvider) {
-    return super.createWizardSteps(wizardContext, moduleBuilder, modulesProvider);
+  public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext,
+                                              @NotNull MonkeyCModuleBuilder moduleBuilder,
+                                              @NotNull ModulesProvider modulesProvider) {
+
+    final ProjectJdkForModuleStep projectJdkForModuleStep = new ProjectJdkForModuleStep(wizardContext, MCSdkType.getInstance());
+    return new ModuleWizardStep[]{projectJdkForModuleStep};
+
   }
 }

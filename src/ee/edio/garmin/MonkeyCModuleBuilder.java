@@ -6,10 +6,13 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.Pair;
+import com.intellij.remoteServer.impl.module.CloudModuleWizardStep;
 import com.intellij.util.containers.ContainerUtil;
+import ee.edio.garmin.module.MCModuleWizardStep;
 import ee.edio.garmin.sdk.MCSdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,6 +50,6 @@ public class MonkeyCModuleBuilder extends JavaModuleBuilder implements SourcePat
   @Nullable
   @Override
   public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
-    return super.getCustomOptionsStep(context, parentDisposable);
+    return new MCModuleWizardStep(this, context, parentDisposable);
   }
 }
