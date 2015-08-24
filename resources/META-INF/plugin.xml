@@ -37,6 +37,8 @@
     <fileTypeFactory implementation="ee.edio.garmin.MonkeyCFileTypeFactory"/>
     <lang.braceMatcher language="MonkeyC" implementationClass="ee.edio.garmin.editor.MCPairedBraceMather"/>
     <lang.commenter language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCCommenter"/>
+    <lang.documentationProvider language="MonkeyC"
+                                implementationClass="ee.edio.garmin.documentation.MCDocumentationProvider"/>
     <lang.findUsagesProvider language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCFindUsagesProvider"/>
     <lang.foldingBuilder language="MonkeyC" implementationClass="ee.edio.garmin.editor.MCFoldingBuilder"/>
     <lang.formatter language="MonkeyC" implementationClass="ee.edio.garmin.formatter.MCFormattingModelBuilder"/>
