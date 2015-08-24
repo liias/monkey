@@ -61,6 +61,7 @@
     <runConfigurationProducer implementation="ee.edio.garmin.runconfig.MCModuleConfigurationProducer"/>
     <configurationType implementation="ee.edio.garmin.runconfig.MCConfigurationType"/>
 
+    <moduleExtension implementation="ee.edio.garmin.configuration.TargetDeviceModuleExtension"/>
   </extensions>
 
   <application-components>

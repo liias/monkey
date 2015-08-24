@@ -3,6 +3,7 @@ package ee.edio.garmin.configuration;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.roots.ui.configuration.CommonContentEntriesEditor;
 import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.model.java.JavaResourceRootType;
 import org.jetbrains.jps.model.java.JavaSourceRootType;
 
@@ -29,7 +30,7 @@ public class MCContentEntriesEditor extends CommonContentEntriesEditor {
 
   @Override
   protected void addAdditionalSettingsToPanel(JPanel mainPanel) {
-    myTargetDeviceConfigurable = new TargetDeviceConfigurable(getState());
+    myTargetDeviceConfigurable = new TargetDeviceConfigurable(myProject, getModel());
     mainPanel.add(myTargetDeviceConfigurable.createComponent(), BorderLayout.NORTH);
     myTargetDeviceConfigurable.reset();
   }

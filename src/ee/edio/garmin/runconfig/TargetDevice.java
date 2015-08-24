@@ -41,4 +41,8 @@ public class TargetDevice {
   public int hashCode() {
     return id.hashCode();
   }
+
+  public static TargetDevice fromId(String targetDeviceId) {
+    return new TargetDevice(targetDeviceId, "hihii");
+  }
 }
