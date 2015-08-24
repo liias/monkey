@@ -42,6 +42,9 @@
     <lang.formatter language="MonkeyC" implementationClass="ee.edio.garmin.formatter.MCFormattingModelBuilder"/>
 
     <lang.parserDefinition language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCParserDefinition"/>
+    <lang.psiStructureViewFactory language="MonkeyC"
+                                  implementationClass="ee.edio.garmin.structure.MCStructureViewBuilderFactory"/>
+
     <lang.refactoringSupport language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCRefactoringSupportProvider"/>
     <lang.syntaxHighlighterFactory key="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCSyntaxHighlighterFactory"/>
     <colorSettingsPage implementation="ee.edio.garmin.MonkeyCColorSettingsPage"/>
