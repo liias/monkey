@@ -30,7 +30,15 @@ public class MCContentEntriesEditor extends CommonContentEntriesEditor {
 
   @Override
   protected void addAdditionalSettingsToPanel(JPanel mainPanel) {
-    myTargetDeviceConfigurable = new TargetDeviceConfigurable(myProject, getModel());
+    myTargetDeviceConfigurable = new TargetDeviceConfigurable(myProject) {
+      // overriding is needed because it would fail when Applying changes in module settings
+      // though I guess I could give 'this' to TargetDeviceConfigurable so I could have getModule() reference instead of value
+      @NotNull
+      @Override
+      public TargetDeviceModuleExtension getTargetDeviceModuleExtension() {
+        return getModel().getModuleExtension(TargetDeviceModuleExtension.class);
+      }
+    };
     mainPanel.add(myTargetDeviceConfigurable.createComponent(), BorderLayout.NORTH);
     myTargetDeviceConfigurable.reset();
   }

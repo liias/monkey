@@ -45,4 +45,9 @@ public class TargetDevice {
   public static TargetDevice fromId(String targetDeviceId) {
     return new TargetDevice(targetDeviceId, "hihii");
   }
+
+  @Override
+  public String toString() {
+    return getName();
+  }
 }

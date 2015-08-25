@@ -3,9 +3,9 @@ package ee.edio.garmin.configuration;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.UnnamedConfigurable;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.util.Key;
+import ee.edio.garmin.runconfig.MCSettingsEditor;
 import ee.edio.garmin.runconfig.TargetDevice;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,22 +15,21 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class TargetDeviceConfigurable implements UnnamedConfigurable {
+public abstract class TargetDeviceConfigurable implements UnnamedConfigurable {
   public static final Key<String> TARGET_DEVICE = new Key<>("TARGET_DEVICE");
   //private final ModuleConfigurationState moduleConfigurationState;
   private final Project myProject;
-  private final ModifiableRootModel myModifiableRootModel;
   private ComboBox myComboBox;
   private JPanel myPanel = new JPanel(new GridBagLayout());
   private String targetDevice;
 
-  public TargetDeviceConfigurable(Project project, ModifiableRootModel model) {
+  public TargetDeviceConfigurable(Project project) {
     myProject = project;
-    myModifiableRootModel = model;
     myComboBox = new ComboBox();
-    myComboBox.addItem("vivoactive");
 
-    myComboBox.addItem("fenix3");
+    for (TargetDevice device : MCSettingsEditor.ALL_DEVICES) {
+      myComboBox.addItem(device);
+    }
 
     myComboBox.addActionListener(new ActionListener() {
       @Override
@@ -78,7 +77,5 @@ public class TargetDeviceConfigurable implements UnnamedConfigurable {
   }
 
   @NotNull
-  public TargetDeviceModuleExtension getTargetDeviceModuleExtension() {
-    return myModifiableRootModel.getModuleExtension(TargetDeviceModuleExtension.class);
-  }
+  public abstract TargetDeviceModuleExtension getTargetDeviceModuleExtension();
 }

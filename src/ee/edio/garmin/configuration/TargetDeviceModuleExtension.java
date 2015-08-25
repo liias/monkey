@@ -67,6 +67,11 @@ public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceMod
   public void writeExternal(final Element element) throws WriteExternalException {
     if (myTargetDevice != null) {
       element.setAttribute(TARGET_DEVICE_ELEMENT_NAME, myTargetDevice.getId());
+
+      // could also add it as a new tag:
+      // final Element pathElement = new Element(TEST_OUTPUT_TAG);
+      // pathElement.setAttribute(ATTRIBUTE_URL, myCompilerOutputForTests);
+      // element.addContent(pathElement);
     }
   }
 
