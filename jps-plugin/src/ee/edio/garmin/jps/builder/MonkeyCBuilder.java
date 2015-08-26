@@ -26,6 +26,7 @@ import org.jetbrains.jps.incremental.messages.CompilerMessage;
 import org.jetbrains.jps.incremental.resources.ResourcesBuilder;
 import org.jetbrains.jps.incremental.resources.StandardResourceBuilderEnabler;
 import org.jetbrains.jps.model.JpsDummyElement;
+import org.jetbrains.jps.model.JpsElement;
 import org.jetbrains.jps.model.JpsSimpleElement;
 import org.jetbrains.jps.model.java.JpsJavaExtensionService;
 import org.jetbrains.jps.model.library.sdk.JpsSdk;
@@ -70,6 +71,16 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
     JpsTypedModule<JpsSimpleElement<JpsMCModuleProperties>> module = jpsModule.asTyped(JpsMCModuleType.INSTANCE);
     assert module != null;
 
+
+    final JpsElement propertiesUntyped = target.getModule().getProperties();
+    if (!(propertiesUntyped instanceof JpsSimpleElement)) {
+      throw new ProjectBuildException("module properties has wrong type");
+    }
+    @SuppressWarnings("unchecked")
+    JpsSimpleElement<JpsMCModuleProperties> properties = (JpsSimpleElement<JpsMCModuleProperties>) propertiesUntyped;
+    JpsMCModuleProperties moduleProperties = properties.getData();
+    final String targetDeviceId = moduleProperties.targetDeviceId;
+
     JpsSdk<JpsDummyElement> sdk = getSdk(context, module);
 
     File outputDirectory = getBuildOutputDirectory(jpsModule, target.isTests(), context);
@@ -77,7 +88,7 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
     for (String contentRootUrl : jpsModule.getContentRootsList().getUrls()) {
       String contentRootPath = new URL(contentRootUrl).getPath();
       final String projectName = context.getProjectDescriptor().getProject().getName();
-      final GeneralCommandLine buildCmd = createBuildCmd(projectName, contentRootPath, outputDirectory, sdk.getHomePath());
+      final GeneralCommandLine buildCmd = createBuildCmd(projectName, contentRootPath, outputDirectory, sdk.getHomePath(), targetDeviceId);
       runBuildProcess(context, buildCmd, contentRootPath);
     }
   }
@@ -95,7 +106,7 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
   }
 
   // TODO: paths that contain spaces should be quoted?
-  public GeneralCommandLine createBuildCmd(String projectName, String projectRootPath, File outputDirectory, String sdkHomePath) {
+  public GeneralCommandLine createBuildCmd(String projectName, String projectRootPath, File outputDirectory, String sdkHomePath, String targetDeviceId) {
     final File projectRoot = new File(FileUtil.toSystemIndependentName(projectRootPath));
 
     // TODO: Use module sources functionality instead
@@ -168,7 +179,7 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
     // in format: C:\xyz\source\aaApp.mc C:\xyz\source\aaMenuDelegate.mc C:\xyz\source\aaView.mc
     parameters.addAll(sourceFilePaths);
 
-    final String deviceId = "fenix3";
+    final String deviceId = targetDeviceId != null ? targetDeviceId : "fenix3";
     final String deviceSim = deviceId + "_sim";
     // parameters.add("-r"); // if release build
     parameters.add("-d", deviceSim);

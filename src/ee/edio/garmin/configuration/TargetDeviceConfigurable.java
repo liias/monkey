@@ -5,6 +5,7 @@ import com.intellij.openapi.options.UnnamedConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.util.Key;
+import ee.edio.garmin.jps.model.JpsMCModelSerializerExtension;
 import ee.edio.garmin.runconfig.MCSettingsEditor;
 import ee.edio.garmin.runconfig.TargetDevice;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public abstract class TargetDeviceConfigurable implements UnnamedConfigurable {
-  public static final Key<String> TARGET_DEVICE = new Key<>("TARGET_DEVICE");
+  public static final Key<String> TARGET_DEVICE = new Key<>(JpsMCModelSerializerExtension.MODULE_TARGET_DEVICE_ID_ATTRIBUTE);
   //private final ModuleConfigurationState moduleConfigurationState;
   private final Project myProject;
   private ComboBox myComboBox;
@@ -28,6 +29,7 @@ public abstract class TargetDeviceConfigurable implements UnnamedConfigurable {
     myComboBox = new ComboBox();
 
     for (TargetDevice device : MCSettingsEditor.ALL_DEVICES) {
+      //noinspection unchecked
       myComboBox.addItem(device);
     }
 

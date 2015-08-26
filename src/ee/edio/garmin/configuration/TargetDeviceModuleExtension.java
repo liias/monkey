@@ -6,6 +6,7 @@ import com.intellij.openapi.roots.ModuleExtension;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
+import ee.edio.garmin.jps.model.JpsMCModelSerializerExtension;
 import ee.edio.garmin.runconfig.TargetDevice;
 import org.jdom.Element;
 import org.jetbrains.annotations.NonNls;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceModuleExtension> {
   @NonNls
-  private static final String TARGET_DEVICE_ELEMENT_NAME = "TARGET_DEVICE";
+  private static final String TARGET_DEVICE_ID_ATTRIBUTE = JpsMCModelSerializerExtension.MODULE_TARGET_DEVICE_ID_ATTRIBUTE;
   private Module myModule;
   private final boolean myWritable;
   private static final Logger LOG = Logger.getInstance("#" + TargetDeviceModuleExtension.class.getName());
@@ -51,7 +52,7 @@ public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceMod
 
   @Override
   public void readExternal(@NotNull Element element) throws InvalidDataException {
-    final String targetDeviceId = element.getAttributeValue(TARGET_DEVICE_ELEMENT_NAME);
+    final String targetDeviceId = element.getAttributeValue(TARGET_DEVICE_ID_ATTRIBUTE);
     if (targetDeviceId != null) {
       try {
         myTargetDevice = TargetDevice.fromId(targetDeviceId);
@@ -66,7 +67,7 @@ public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceMod
   @Override
   public void writeExternal(final Element element) throws WriteExternalException {
     if (myTargetDevice != null) {
-      element.setAttribute(TARGET_DEVICE_ELEMENT_NAME, myTargetDevice.getId());
+      element.setAttribute(TARGET_DEVICE_ID_ATTRIBUTE, myTargetDevice.getId());
 
       // could also add it as a new tag:
       // final Element pathElement = new Element(TEST_OUTPUT_TAG);
@@ -84,7 +85,7 @@ public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceMod
   public void commit() {
     if (mySource != null && mySource.myTargetDevice != myTargetDevice) {
       mySource.myTargetDevice = myTargetDevice;
-      myModule.setOption("TARGET_DEVICE", myTargetDevice.getId());
+      myModule.setOption(TARGET_DEVICE_ID_ATTRIBUTE, myTargetDevice.getId());
       //TargetDeviceModuleExtension.getInstance(myModule.getProject()).languageLevelsChanged();
     }
   }
