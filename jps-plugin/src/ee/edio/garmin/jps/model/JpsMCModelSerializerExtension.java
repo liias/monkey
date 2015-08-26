@@ -15,25 +15,22 @@ import org.jetbrains.jps.model.serialization.module.JpsModulePropertiesSerialize
 import java.util.Collections;
 import java.util.List;
 
-// TODO: see org.jetbrains.jps.devkit.model.impl.JpsDevKitModelSerializerExtension
 public class JpsMCModelSerializerExtension extends JpsModelSerializerExtension {
   public static final String MODULE_TARGET_DEVICE_ID_ATTRIBUTE = "target-device";
 
   @Override
-  public void loadModuleOptions(@NotNull JpsModule module, @NotNull Element rootElement) {
-    final String targetDeviceId = rootElement.getAttributeValue(MODULE_TARGET_DEVICE_ID_ATTRIBUTE);
-    final JpsSimpleElement properties = (JpsSimpleElement) module.getProperties();
-    final JpsMCModuleProperties data = (JpsMCModuleProperties) properties.getData();
-    data.targetDeviceId = targetDeviceId;
+  public void loadRootModel(@NotNull JpsModule module, @NotNull Element rootModel) {
+    final JpsSimpleElement modulePropertiesElement = (JpsSimpleElement) module.getProperties();
+    final JpsMCModuleProperties moduleProperties = (JpsMCModuleProperties) modulePropertiesElement.getData();
+    moduleProperties.TARGET_DEVICE_ID = rootModel.getAttributeValue(MODULE_TARGET_DEVICE_ID_ATTRIBUTE);
   }
 
-  @Override
-  public void saveModuleOptions(@NotNull JpsModule module, @NotNull Element rootElement) {
-    final JpsSimpleElement properties = (JpsSimpleElement) module.getProperties();
-    final JpsMCModuleProperties data = (JpsMCModuleProperties) properties.getData();
-    rootElement.setAttribute(MODULE_TARGET_DEVICE_ID_ATTRIBUTE, data.targetDeviceId);
-  }
-  //XmlSerializer.serializeInto(properties, componentElement);
+/*  @Override
+  public void loadModuleOptions(@NotNull JpsModule module, @NotNull Element rootElement) {
+    final JpsSimpleElement modulePropertiesElement = (JpsSimpleElement) module.getProperties();
+    final JpsMCModuleProperties moduleProperties = (JpsMCModuleProperties) modulePropertiesElement.getData();
+    moduleProperties.TARGET_DEVICE_ID = rootElement.getAttributeValue(MODULE_TARGET_DEVICE_ID_ATTRIBUTE);
+  }*/
 
   @NotNull
   @Override

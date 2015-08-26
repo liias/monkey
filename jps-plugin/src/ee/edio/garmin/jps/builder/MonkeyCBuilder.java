@@ -79,7 +79,7 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
     @SuppressWarnings("unchecked")
     JpsSimpleElement<JpsMCModuleProperties> properties = (JpsSimpleElement<JpsMCModuleProperties>) propertiesUntyped;
     JpsMCModuleProperties moduleProperties = properties.getData();
-    final String targetDeviceId = moduleProperties.targetDeviceId;
+    final String targetDeviceId = moduleProperties.TARGET_DEVICE_ID;
 
     JpsSdk<JpsDummyElement> sdk = getSdk(context, module);
 
@@ -137,16 +137,12 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
           }
         }).toList();
 
-
-    //Project project = getEnvironment().getProject();
-    //String projectBasePath = project.getBasePath();
     String sdkPath = sdkHomePath + File.separator;
     String sdkBinPath = sdkPath + "bin" + File.separator;
 
     String outputName = projectName + ".prg";
 
     String outputDir = outputDirectory.getAbsolutePath() + File.separator;
-    //String outputDir = projectBasePath + File.separator + "bin" + File.separator;
 
     ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
         .add("-a", sdkBinPath + "api.db")
@@ -179,7 +175,7 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
     // in format: C:\xyz\source\aaApp.mc C:\xyz\source\aaMenuDelegate.mc C:\xyz\source\aaView.mc
     parameters.addAll(sourceFilePaths);
 
-    final String deviceId = targetDeviceId != null ? targetDeviceId : "fenix3";
+    final String deviceId = targetDeviceId != null ? targetDeviceId : "round_watch";
     final String deviceSim = deviceId + "_sim";
     // parameters.add("-r"); // if release build
     parameters.add("-d", deviceSim);
@@ -212,35 +208,6 @@ public class MonkeyCBuilder extends TargetBuilder<MonkeyCSourceRootDescriptor, M
     }
     throw new RuntimeException("could not find JDK");
   }
-/*  private void a() {
-    final String jdkHome = SystemProperties.getJavaHome();
-    final String versionName = ProjectBundle.message("sdk.java.name.template", SystemProperties.getJavaVersion());
-    Sdk ideaJdk = ProjectJdkTable.getInstance().createSdk(versionName, new SimpleJavaSdkType());
-  }*/
-
- /* public static GeneralCommandLine createMonkeybrainsCommandLine(String workDir, String sdkBinPath, ImmutableList<String> args) {
-    //final Sdk ideaJdk = sdkType.createJdk("tmp", SystemProperties.getJavaHome());
-    SimpleJavaParameters parameters = new SimpleJavaParameters();
-    //parameters.setJdk(ideaJdk);
-    parameters.setMainClass("com.garmin.monkeybrains.Monkeybrains");
-    File monkeybrainsJar = new File(sdkBinPath + "monkeybrains.jar");
-
-    final String toolsJar = sdkType.getToolsPath(ideaJdk);
-    if (toolsJar != null) {
-      parameters.getClassPath().add(toolsJar);
-    }
-    parameters.getClassPath().add(monkeybrainsJar.getPath());
-
-
-    parameters.getProgramParametersList().addAll("-Dfile.encoding=UTF-8", "-Dapple.awt.UIElement=true");
-//    parameters.getProgramParametersList().add("-Dpython.path=" + pythonPath + File.pathSeparator + workDir);
-    parameters.getProgramParametersList().addAll(args);
-    //parameters.setWorkingDirectory(workDir);
-
-    return JdkUtil.setupJVMCommandLine(sdkType.getVMExecutablePath(ideaJdk), parameters, false);
-    //final CapturingProcessHandler processHandler = new CapturingProcessHandler(commandLine.createProcess());
-    //return processHandler.runProcess();
-  }*/
 
   @NotNull
   private static JpsSdk<JpsDummyElement> getSdk(@NotNull CompileContext context,
