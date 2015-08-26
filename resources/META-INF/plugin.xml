@@ -1,11 +1,11 @@
 <idea-plugin version="2">
   <id>ee.edio.garmin.monkeyc</id>
-  <name>Monkey C language support</name>
+  <name>Garmin Connect IQ</name>
   <version>0.1</version>
   <vendor email="madisliias@gmail.com" url="https://github.com/liias/MonkeyC">liias</vendor>
 
   <description><![CDATA[
-      Monkey C language support
+      Basic Garmin Connect IQ SDK and Monkey C language support
     ]]></description>
 
   <change-notes><![CDATA[
@@ -22,13 +22,6 @@
   <depends optional="true" config-file="java-deps.xml">com.intellij.modules.java</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-
-    <!--
-        <projectConfigurable groupId="language" provider="com.goide.configuration.GoConfigurableProvider" dynamic="true"
-                             bundle="do.not.touch.this.attribute"/>
-    -->
-
-
     <compileServer.plugin classpath="monkey-c-jps-plugin.jar"/>
 
     <sdkType implementation="ee.edio.garmin.sdk.MCSdkType"/>
