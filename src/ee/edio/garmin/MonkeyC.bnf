@@ -137,7 +137,7 @@ private compilationUnit ::= usingDeclaration* typeDeclaration*
 
 usingDeclaration ::= USING IDENTIFIER (DOT IDENTIFIER)+ (AS IDENTIFIER)? SEMI {pin=1}
 
-typeDeclaration ::= moduleDeclaration | classDeclaration | constDeclaration | fieldDeclaration | SEMI
+typeDeclaration ::= moduleDeclaration | classDeclaration | constDeclaration | fieldDeclaration | blockStatement | SEMI
 
 moduleDeclaration ::= modifiers MODULE IDENTIFIER moduleBody
 

@@ -2888,7 +2888,7 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // moduleDeclaration | classDeclaration | constDeclaration | fieldDeclaration | SEMI
+  // moduleDeclaration | classDeclaration | constDeclaration | fieldDeclaration | blockStatement | SEMI
   public static boolean typeDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "typeDeclaration")) return false;
     boolean r;
@@ -2897,6 +2897,7 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     if (!r) r = classDeclaration(b, l + 1);
     if (!r) r = constDeclaration(b, l + 1);
     if (!r) r = fieldDeclaration(b, l + 1);
+    if (!r) r = blockStatement(b, l + 1);
     if (!r) r = consumeToken(b, SEMI);
     exit_section_(b, l, m, TYPE_DECLARATION, r, false, null);
     return r;

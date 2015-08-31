@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyCTypeDeclaration extends MonkeyCPsiCompositeElement {
 
   @Nullable
+  MonkeyCBlockStatement getBlockStatement();
+
+  @Nullable
   MonkeyCClassDeclaration getClassDeclaration();
 
   @Nullable

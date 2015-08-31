@@ -23,6 +23,12 @@ public class MonkeyCTypeDeclarationImpl extends MonkeyCPsiCompositeElementImpl i
 
   @Override
   @Nullable
+  public MonkeyCBlockStatement getBlockStatement() {
+    return findChildByClass(MonkeyCBlockStatement.class);
+  }
+
+  @Override
+  @Nullable
   public MonkeyCClassDeclaration getClassDeclaration() {
     return findChildByClass(MonkeyCClassDeclaration.class);
   }
