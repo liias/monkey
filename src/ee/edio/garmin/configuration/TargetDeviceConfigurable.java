@@ -4,7 +4,7 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.UnnamedConfigurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
-import ee.edio.garmin.runconfig.MCSettingsEditor;
+import ee.edio.garmin.runconfig.MonkeySettingsEditor;
 import ee.edio.garmin.runconfig.TargetDevice;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +23,7 @@ public abstract class TargetDeviceConfigurable implements UnnamedConfigurable {
     myProject = project;
     myComboBox = new ComboBox();
 
-    for (TargetDevice device : MCSettingsEditor.ALL_DEVICES) {
+    for (TargetDevice device : MonkeySettingsEditor.ALL_DEVICES) {
       //noinspection unchecked
       myComboBox.addItem(device);
     }

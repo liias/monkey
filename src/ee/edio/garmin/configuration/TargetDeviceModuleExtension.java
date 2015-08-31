@@ -6,15 +6,15 @@ import com.intellij.openapi.roots.ModuleExtension;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
-import ee.edio.garmin.jps.model.JpsMCModelSerializerExtension;
+import ee.edio.garmin.jps.model.JpsMonkeyModelSerializerExtension;
 import ee.edio.garmin.runconfig.TargetDevice;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceModuleExtension> {
-  // must be same as fields in JpsMCModuleProperties
-  private static final String TARGET_DEVICE_ID_ATTRIBUTE = JpsMCModelSerializerExtension.MODULE_TARGET_DEVICE_ID_ATTRIBUTE;
+  // must be same as fields in JpsMonkeyModuleProperties
+  private static final String TARGET_DEVICE_ID_ATTRIBUTE = JpsMonkeyModelSerializerExtension.MODULE_TARGET_DEVICE_ID_ATTRIBUTE;
 
   private Module myModule;
   private final boolean myWritable;

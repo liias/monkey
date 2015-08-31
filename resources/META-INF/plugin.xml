@@ -24,35 +24,35 @@
   <extensions defaultExtensionNs="com.intellij">
     <compileServer.plugin classpath="monkey-c-jps-plugin.jar"/>
 
-    <sdkType implementation="ee.edio.garmin.sdk.MCSdkType"/>
+    <sdkType implementation="ee.edio.garmin.sdk.MonkeySdkType"/>
 
     <!-- Add your extensions here -->
-    <fileTypeFactory implementation="ee.edio.garmin.MonkeyCFileTypeFactory"/>
-    <lang.braceMatcher language="MonkeyC" implementationClass="ee.edio.garmin.editor.MCPairedBraceMather"/>
-    <lang.commenter language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCCommenter"/>
+    <fileTypeFactory implementation="ee.edio.garmin.MonkeyFileTypeFactory"/>
+    <lang.braceMatcher language="MonkeyC" implementationClass="ee.edio.garmin.editor.MonkeyPairedBraceMather"/>
+    <lang.commenter language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCommenter"/>
     <lang.documentationProvider language="MonkeyC"
-                                implementationClass="ee.edio.garmin.documentation.MCDocumentationProvider"/>
-    <lang.findUsagesProvider language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCFindUsagesProvider"/>
-    <lang.foldingBuilder language="MonkeyC" implementationClass="ee.edio.garmin.editor.MCFoldingBuilder"/>
-    <lang.formatter language="MonkeyC" implementationClass="ee.edio.garmin.formatter.MCFormattingModelBuilder"/>
+                                implementationClass="ee.edio.garmin.documentation.MonkeyDocumentationProvider"/>
+    <lang.findUsagesProvider language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyFindUsagesProvider"/>
+    <lang.foldingBuilder language="MonkeyC" implementationClass="ee.edio.garmin.editor.MonkeyFoldingBuilder"/>
+    <lang.formatter language="MonkeyC" implementationClass="ee.edio.garmin.formatter.MonkeyFormattingModelBuilder"/>
 
-    <lang.parserDefinition language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCParserDefinition"/>
+    <lang.parserDefinition language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyParserDefinition"/>
     <lang.psiStructureViewFactory language="MonkeyC"
-                                  implementationClass="ee.edio.garmin.structure.MCStructureViewBuilderFactory"/>
+                                  implementationClass="ee.edio.garmin.structure.MonkeyStructureViewBuilderFactory"/>
 
-    <lang.refactoringSupport language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCRefactoringSupportProvider"/>
-    <lang.syntaxHighlighterFactory key="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCSyntaxHighlighterFactory"/>
-    <colorSettingsPage implementation="ee.edio.garmin.MonkeyCColorSettingsPage"/>
+    <lang.refactoringSupport language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyRefactoringSupportProvider"/>
+    <lang.syntaxHighlighterFactory key="MonkeyC" implementationClass="ee.edio.garmin.MonkeySyntaxHighlighterFactory"/>
+    <colorSettingsPage implementation="ee.edio.garmin.MonkeyColorSettingsPage"/>
 
     <completion.contributor language="MonkeyC"
-                            implementationClass="ee.edio.garmin.completion.MonkeyCCompletionContributor"/>
+                            implementationClass="ee.edio.garmin.completion.MonkeyCompletionContributor"/>
 
-    <gotoClassContributor implementation="ee.edio.garmin.MonkeyCGoToClassContributor"/>
+    <gotoClassContributor implementation="ee.edio.garmin.MonkeyGoToClassContributor"/>
 
     <!-- run application -->
-    <programRunner id="MonkeyCRunner" implementation="ee.edio.garmin.runconfig.MCProgramRunner"/>
-    <runConfigurationProducer implementation="ee.edio.garmin.runconfig.MCModuleConfigurationProducer"/>
-    <configurationType implementation="ee.edio.garmin.runconfig.MCConfigurationType"/>
+    <programRunner id="MonkeyCRunner" implementation="ee.edio.garmin.runconfig.MonkeyProgramRunner"/>
+    <runConfigurationProducer implementation="ee.edio.garmin.runconfig.MonkeyModuleConfigurationProducer"/>
+    <configurationType implementation="ee.edio.garmin.runconfig.MonkeyConfigurationType"/>
 
     <moduleExtension implementation="ee.edio.garmin.configuration.TargetDeviceModuleExtension"/>
   </extensions>
