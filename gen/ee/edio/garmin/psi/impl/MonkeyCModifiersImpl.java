@@ -21,4 +21,10 @@ public class MonkeyCModifiersImpl extends MonkeyCPsiCompositeElementImpl impleme
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public MonkeyCAnnotation getAnnotation() {
+    return findChildByClass(MonkeyCAnnotation.class);
+  }
+
 }

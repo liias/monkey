@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface MonkeyCModifiers extends MonkeyCPsiCompositeElement {
 
+  @Nullable
+  MonkeyCAnnotation getAnnotation();
+
 }

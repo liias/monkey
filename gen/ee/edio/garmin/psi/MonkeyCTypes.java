@@ -10,6 +10,7 @@ public interface MonkeyCTypes {
 
   IElementType ADDITIVE_EXPRESSION = new MonkeyCElementType("ADDITIVE_EXPRESSION");
   IElementType AND_EXPRESSION = new MonkeyCElementType("AND_EXPRESSION");
+  IElementType ANNOTATION = new MonkeyCElementType("ANNOTATION");
   IElementType ARGUMENTS = new MonkeyCElementType("ARGUMENTS");
   IElementType ARRAY_CREATOR = new MonkeyCElementType("ARRAY_CREATOR");
   IElementType ARRAY_INITIALIZER = new MonkeyCElementType("ARRAY_INITIALIZER");
@@ -182,6 +183,9 @@ public interface MonkeyCTypes {
       }
       else if (type == AND_EXPRESSION) {
         return new MonkeyCAndExpressionImpl(node);
+      }
+      else if (type == ANNOTATION) {
+        return new MonkeyCAnnotationImpl(node);
       }
       else if (type == ARGUMENTS) {
         return new MonkeyCArgumentsImpl(node);

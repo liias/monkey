@@ -29,6 +29,9 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     else if (t == AND_EXPRESSION) {
       r = andExpression(b, 0);
     }
+    else if (t == ANNOTATION) {
+      r = annotation(b, 0);
+    }
     else if (t == ARGUMENTS) {
       r = arguments(b, 0);
     }
@@ -333,6 +336,20 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     r = consumeToken(b, AMP);
     r = r && equalityExpression(b, l + 1);
     exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // LPAREN symbol RPAREN
+  public static boolean annotation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "annotation")) return false;
+    if (!nextTokenIs(b, LPAREN)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LPAREN);
+    r = r && symbol(b, l + 1);
+    r = r && consumeToken(b, RPAREN);
+    exit_section_(b, m, ANNOTATION, r);
     return r;
   }
 
@@ -1925,32 +1942,35 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // STATIC* HIDDEN?
+  // annotation? STATIC? HIDDEN?
   public static boolean modifiers(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "modifiers")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<modifiers>");
     r = modifiers_0(b, l + 1);
     r = r && modifiers_1(b, l + 1);
+    r = r && modifiers_2(b, l + 1);
     exit_section_(b, l, m, MODIFIERS, r, false, null);
     return r;
   }
 
-  // STATIC*
+  // annotation?
   private static boolean modifiers_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "modifiers_0")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!consumeToken(b, STATIC)) break;
-      if (!empty_element_parsed_guard_(b, "modifiers_0", c)) break;
-      c = current_position_(b);
-    }
+    annotation(b, l + 1);
+    return true;
+  }
+
+  // STATIC?
+  private static boolean modifiers_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "modifiers_1")) return false;
+    consumeToken(b, STATIC);
     return true;
   }
 
   // HIDDEN?
-  private static boolean modifiers_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "modifiers_1")) return false;
+  private static boolean modifiers_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "modifiers_2")) return false;
     consumeToken(b, HIDDEN);
     return true;
   }

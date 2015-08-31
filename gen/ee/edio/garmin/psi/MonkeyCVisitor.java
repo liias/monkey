@@ -14,6 +14,10 @@ public class MonkeyCVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
+  public void visitAnnotation(@NotNull MonkeyCAnnotation o) {
+    visitPsiCompositeElement(o);
+  }
+
   public void visitArguments(@NotNull MonkeyCArguments o) {
     visitPsiCompositeElement(o);
   }
