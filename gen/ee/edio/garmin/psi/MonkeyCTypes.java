@@ -77,7 +77,6 @@ public interface MonkeyCTypes {
   IElementType SYMBOL = new MonkeyCElementType("SYMBOL");
   IElementType TRY_STATEMENT = new MonkeyCElementType("TRY_STATEMENT");
   IElementType TYPE = new MonkeyCElementType("TYPE");
-  IElementType TYPE_DECLARATION = new MonkeyCElementType("TYPE_DECLARATION");
   IElementType UNARY_EXPRESSION = new MonkeyCElementType("UNARY_EXPRESSION");
   IElementType UNARY_EXPRESSION_NOT_PLUS_MINUS = new MonkeyCElementType("UNARY_EXPRESSION_NOT_PLUS_MINUS");
   IElementType USING_DECLARATION = new MonkeyCElementType("USING_DECLARATION");
@@ -384,9 +383,6 @@ public interface MonkeyCTypes {
       }
       else if (type == TYPE) {
         return new MonkeyCTypeImpl(node);
-      }
-      else if (type == TYPE_DECLARATION) {
-        return new MonkeyCTypeDeclarationImpl(node);
       }
       else if (type == UNARY_EXPRESSION) {
         return new MonkeyCUnaryExpressionImpl(node);

@@ -33,4 +33,10 @@ public class MonkeyCClassBodyDeclarationImpl extends MonkeyCPsiCompositeElementI
     return findChildByClass(MonkeyCMemberDecl.class);
   }
 
+  @Override
+  @Nullable
+  public MonkeyCUsingDeclaration getUsingDeclaration() {
+    return findChildByClass(MonkeyCUsingDeclaration.class);
+  }
+
 }

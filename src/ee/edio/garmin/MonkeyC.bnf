@@ -131,13 +131,11 @@ tokens = [
 
 
 
-monkeyCFile ::= compilationUnit
+monkeyCFile ::= compilationUnit*
 
-private compilationUnit ::= usingDeclaration* typeDeclaration*
+private compilationUnit ::= usingDeclaration | moduleDeclaration | memberDecl | blockStatement | SEMI
 
 usingDeclaration ::= USING IDENTIFIER (DOT IDENTIFIER)+ (AS IDENTIFIER)? SEMI {pin=1}
-
-typeDeclaration ::= moduleDeclaration | classDeclaration | constDeclaration | fieldDeclaration | blockStatement | SEMI
 
 moduleDeclaration ::= modifiers MODULE IDENTIFIER moduleBody
 
@@ -163,7 +161,7 @@ enumBodyDeclarations ::= SEMI classBodyDeclaration*
 
 classBody ::= LBRACE classBodyDeclaration* RBRACE
 
-classBodyDeclaration ::= SEMI | (STATIC)? block | memberDecl
+classBodyDeclaration ::= SEMI | block | memberDecl | usingDeclaration
 
 memberDecl ::= constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration
 
@@ -239,10 +237,7 @@ catchClause ::= CATCH LPAREN catchParameter RPAREN block
 
 catchParameter ::= IDENTIFIER (LBRACKET RBRACKET)*
 
-forStatement ::= // enhanced for loop
-        FOR LPAREN VAR IDENTIFIER COLON expression RPAREN statement
-        // normal for loop
-        | FOR LPAREN (forInit)? SEMI (expression)? SEMI (expressionList)? RPAREN statement
+forStatement ::= FOR LPAREN forInit? SEMI expression? SEMI expressionList? RPAREN statement
 
 forInit ::= localVariableDeclaration| expressionList
 

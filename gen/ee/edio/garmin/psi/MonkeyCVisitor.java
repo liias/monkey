@@ -282,10 +282,6 @@ public class MonkeyCVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
-  public void visitTypeDeclaration(@NotNull MonkeyCTypeDeclaration o) {
-    visitPsiCompositeElement(o);
-  }
-
   public void visitUnaryExpression(@NotNull MonkeyCUnaryExpression o) {
     visitPsiCompositeElement(o);
   }

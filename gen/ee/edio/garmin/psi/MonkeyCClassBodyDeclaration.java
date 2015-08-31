@@ -13,4 +13,7 @@ public interface MonkeyCClassBodyDeclaration extends MonkeyCPsiCompositeElement 
   @Nullable
   MonkeyCMemberDecl getMemberDecl();
 
+  @Nullable
+  MonkeyCUsingDeclaration getUsingDeclaration();
+
 }

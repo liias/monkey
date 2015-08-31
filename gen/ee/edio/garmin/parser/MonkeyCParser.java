@@ -230,9 +230,6 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     else if (t == TYPE) {
       r = type(b, 0);
     }
-    else if (t == TYPE_DECLARATION) {
-      r = typeDeclaration(b, 0);
-    }
     else if (t == UNARY_EXPRESSION) {
       r = unaryExpression(b, 0);
     }
@@ -709,34 +706,17 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // SEMI | (STATIC)? block | memberDecl
+  // SEMI | block | memberDecl | usingDeclaration
   public static boolean classBodyDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classBodyDeclaration")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<class body declaration>");
     r = consumeToken(b, SEMI);
-    if (!r) r = classBodyDeclaration_1(b, l + 1);
+    if (!r) r = block(b, l + 1);
     if (!r) r = memberDecl(b, l + 1);
+    if (!r) r = usingDeclaration(b, l + 1);
     exit_section_(b, l, m, CLASS_BODY_DECLARATION, r, false, null);
     return r;
-  }
-
-  // (STATIC)? block
-  private static boolean classBodyDeclaration_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "classBodyDeclaration_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = classBodyDeclaration_1_0(b, l + 1);
-    r = r && block(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (STATIC)?
-  private static boolean classBodyDeclaration_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "classBodyDeclaration_1_0")) return false;
-    consumeToken(b, STATIC);
-    return true;
   }
 
   /* ********************************************************** */
@@ -817,39 +797,18 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // usingDeclaration* typeDeclaration*
+  // usingDeclaration | moduleDeclaration | memberDecl | blockStatement | SEMI
   static boolean compilationUnit(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "compilationUnit")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = compilationUnit_0(b, l + 1);
-    r = r && compilationUnit_1(b, l + 1);
+    r = usingDeclaration(b, l + 1);
+    if (!r) r = moduleDeclaration(b, l + 1);
+    if (!r) r = memberDecl(b, l + 1);
+    if (!r) r = blockStatement(b, l + 1);
+    if (!r) r = consumeToken(b, SEMI);
     exit_section_(b, m, null, r);
     return r;
-  }
-
-  // usingDeclaration*
-  private static boolean compilationUnit_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "compilationUnit_0")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!usingDeclaration(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "compilationUnit_0", c)) break;
-      c = current_position_(b);
-    }
-    return true;
-  }
-
-  // typeDeclaration*
-  private static boolean compilationUnit_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "compilationUnit_1")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!typeDeclaration(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "compilationUnit_1", c)) break;
-      c = current_position_(b);
-    }
-    return true;
   }
 
   /* ********************************************************** */
@@ -1476,99 +1435,43 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // FOR LPAREN VAR IDENTIFIER COLON expression RPAREN statement
-  //         // normal for loop
-  //         | FOR LPAREN (forInit)? SEMI (expression)? SEMI (expressionList)? RPAREN statement
+  // FOR LPAREN forInit? SEMI expression? SEMI expressionList? RPAREN statement
   public static boolean forStatement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "forStatement")) return false;
     if (!nextTokenIs(b, FOR)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = forStatement_0(b, l + 1);
-    if (!r) r = forStatement_1(b, l + 1);
+    r = consumeTokens(b, 0, FOR, LPAREN);
+    r = r && forStatement_2(b, l + 1);
+    r = r && consumeToken(b, SEMI);
+    r = r && forStatement_4(b, l + 1);
+    r = r && consumeToken(b, SEMI);
+    r = r && forStatement_6(b, l + 1);
+    r = r && consumeToken(b, RPAREN);
+    r = r && statement(b, l + 1);
     exit_section_(b, m, FOR_STATEMENT, r);
     return r;
   }
 
-  // FOR LPAREN VAR IDENTIFIER COLON expression RPAREN statement
-  private static boolean forStatement_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "forStatement_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, FOR, LPAREN, VAR, IDENTIFIER, COLON);
-    r = r && expression(b, l + 1);
-    r = r && consumeToken(b, RPAREN);
-    r = r && statement(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // FOR LPAREN (forInit)? SEMI (expression)? SEMI (expressionList)? RPAREN statement
-  private static boolean forStatement_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "forStatement_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, FOR, LPAREN);
-    r = r && forStatement_1_2(b, l + 1);
-    r = r && consumeToken(b, SEMI);
-    r = r && forStatement_1_4(b, l + 1);
-    r = r && consumeToken(b, SEMI);
-    r = r && forStatement_1_6(b, l + 1);
-    r = r && consumeToken(b, RPAREN);
-    r = r && statement(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (forInit)?
-  private static boolean forStatement_1_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "forStatement_1_2")) return false;
-    forStatement_1_2_0(b, l + 1);
+  // forInit?
+  private static boolean forStatement_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forStatement_2")) return false;
+    forInit(b, l + 1);
     return true;
   }
 
-  // (forInit)
-  private static boolean forStatement_1_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "forStatement_1_2_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = forInit(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (expression)?
-  private static boolean forStatement_1_4(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "forStatement_1_4")) return false;
-    forStatement_1_4_0(b, l + 1);
+  // expression?
+  private static boolean forStatement_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forStatement_4")) return false;
+    expression(b, l + 1);
     return true;
   }
 
-  // (expression)
-  private static boolean forStatement_1_4_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "forStatement_1_4_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = expression(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (expressionList)?
-  private static boolean forStatement_1_6(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "forStatement_1_6")) return false;
-    forStatement_1_6_0(b, l + 1);
+  // expressionList?
+  private static boolean forStatement_6(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "forStatement_6")) return false;
+    expressionList(b, l + 1);
     return true;
-  }
-
-  // (expressionList)
-  private static boolean forStatement_1_6_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "forStatement_1_6_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = expressionList(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
   }
 
   /* ********************************************************** */
@@ -2078,9 +1981,16 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // compilationUnit
+  // compilationUnit*
   static boolean monkeyCFile(PsiBuilder b, int l) {
-    return compilationUnit(b, l + 1);
+    if (!recursion_guard_(b, l, "monkeyCFile")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!compilationUnit(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "monkeyCFile", c)) break;
+      c = current_position_(b);
+    }
+    return true;
   }
 
   /* ********************************************************** */
@@ -2884,22 +2794,6 @@ public class MonkeyCParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeTokens(b, 0, LBRACKET, RBRACKET);
     exit_section_(b, m, null, r);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // moduleDeclaration | classDeclaration | constDeclaration | fieldDeclaration | blockStatement | SEMI
-  public static boolean typeDeclaration(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "typeDeclaration")) return false;
-    boolean r;
-    Marker m = enter_section_(b, l, _NONE_, "<type declaration>");
-    r = moduleDeclaration(b, l + 1);
-    if (!r) r = classDeclaration(b, l + 1);
-    if (!r) r = constDeclaration(b, l + 1);
-    if (!r) r = fieldDeclaration(b, l + 1);
-    if (!r) r = blockStatement(b, l + 1);
-    if (!r) r = consumeToken(b, SEMI);
-    exit_section_(b, l, m, TYPE_DECLARATION, r, false, null);
     return r;
   }
 

@@ -45,10 +45,4 @@ public class MonkeyCForStatementImpl extends MonkeyCPsiCompositeElementImpl impl
     return findNotNullChildByClass(MonkeyCStatement.class);
   }
 
-  @Override
-  @Nullable
-  public PsiElement getIdentifier() {
-    return findChildByType(IDENTIFIER);
-  }
-
 }

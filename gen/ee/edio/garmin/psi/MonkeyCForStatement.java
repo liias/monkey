@@ -19,7 +19,4 @@ public interface MonkeyCForStatement extends MonkeyCPsiCompositeElement {
   @NotNull
   MonkeyCStatement getStatement();
 
-  @Nullable
-  PsiElement getIdentifier();
-
 }
