@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>ee.edio.garmin.monkeyc</id>
   <name>Garmin Connect IQ</name>
-  <version>0.1</version>
+  <version>0.1.1</version>
   <vendor email="madisliias@gmail.com" url="https://github.com/liias/MonkeyC">liias</vendor>
 
   <description><![CDATA[
@@ -9,6 +9,10 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      0.1.1
+       More flexible grammar
+      0.1
+       Initial release
     ]]>
   </change-notes>
 
