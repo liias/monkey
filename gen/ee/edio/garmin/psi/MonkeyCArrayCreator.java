@@ -8,18 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyCArrayCreator extends MonkeyCPsiCompositeElement {
 
   @Nullable
-  MonkeyCArrayInitializer getArrayInitializer();
+  MonkeyCDictionaryCreator getDictionaryCreator();
 
   @Nullable
-  MonkeyCCreatedName getCreatedName();
-
-  @NotNull
-  List<MonkeyCExpression> getExpressionList();
-
-  @Nullable
-  MonkeyCNewArrayInitializer getNewArrayInitializer();
-
-  @Nullable
-  MonkeyCNewDictionaryInitializer getNewDictionaryInitializer();
+  MonkeyCExpression getExpression();
 
 }

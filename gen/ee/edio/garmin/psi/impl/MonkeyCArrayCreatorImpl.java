@@ -23,32 +23,14 @@ public class MonkeyCArrayCreatorImpl extends MonkeyCPsiCompositeElementImpl impl
 
   @Override
   @Nullable
-  public MonkeyCArrayInitializer getArrayInitializer() {
-    return findChildByClass(MonkeyCArrayInitializer.class);
+  public MonkeyCDictionaryCreator getDictionaryCreator() {
+    return findChildByClass(MonkeyCDictionaryCreator.class);
   }
 
   @Override
   @Nullable
-  public MonkeyCCreatedName getCreatedName() {
-    return findChildByClass(MonkeyCCreatedName.class);
-  }
-
-  @Override
-  @NotNull
-  public List<MonkeyCExpression> getExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyCExpression.class);
-  }
-
-  @Override
-  @Nullable
-  public MonkeyCNewArrayInitializer getNewArrayInitializer() {
-    return findChildByClass(MonkeyCNewArrayInitializer.class);
-  }
-
-  @Override
-  @Nullable
-  public MonkeyCNewDictionaryInitializer getNewDictionaryInitializer() {
-    return findChildByClass(MonkeyCNewDictionaryInitializer.class);
+  public MonkeyCExpression getExpression() {
+    return findChildByClass(MonkeyCExpression.class);
   }
 
 }

@@ -28,8 +28,8 @@ public interface MonkeyCTypes {
   IElementType CONDITIONAL_EXPRESSION = new MonkeyCElementType("CONDITIONAL_EXPRESSION");
   IElementType CONDITIONAL_OR_EXPRESSION = new MonkeyCElementType("CONDITIONAL_OR_EXPRESSION");
   IElementType CONST_DECLARATION = new MonkeyCElementType("CONST_DECLARATION");
-  IElementType CREATED_NAME = new MonkeyCElementType("CREATED_NAME");
   IElementType CREATOR = new MonkeyCElementType("CREATOR");
+  IElementType DICTIONARY_CREATOR = new MonkeyCElementType("DICTIONARY_CREATOR");
   IElementType ENUM_BODY = new MonkeyCElementType("ENUM_BODY");
   IElementType ENUM_BODY_DECLARATIONS = new MonkeyCElementType("ENUM_BODY_DECLARATIONS");
   IElementType ENUM_CONSTANT = new MonkeyCElementType("ENUM_CONSTANT");
@@ -59,8 +59,6 @@ public interface MonkeyCTypes {
   IElementType MODULE_BODY = new MonkeyCElementType("MODULE_BODY");
   IElementType MODULE_DECLARATION = new MonkeyCElementType("MODULE_DECLARATION");
   IElementType MULTIPLICATIVE_EXPRESSION = new MonkeyCElementType("MULTIPLICATIVE_EXPRESSION");
-  IElementType NEW_ARRAY_INITIALIZER = new MonkeyCElementType("NEW_ARRAY_INITIALIZER");
-  IElementType NEW_DICTIONARY_INITIALIZER = new MonkeyCElementType("NEW_DICTIONARY_INITIALIZER");
   IElementType NORMAL_CLASS_DECLARATION = new MonkeyCElementType("NORMAL_CLASS_DECLARATION");
   IElementType NORMAL_PARAMETER_DECL = new MonkeyCElementType("NORMAL_PARAMETER_DECL");
   IElementType PAR_EXPRESSION = new MonkeyCElementType("PAR_EXPRESSION");
@@ -240,11 +238,11 @@ public interface MonkeyCTypes {
       else if (type == CONST_DECLARATION) {
         return new MonkeyCConstDeclarationImpl(node);
       }
-      else if (type == CREATED_NAME) {
-        return new MonkeyCCreatedNameImpl(node);
-      }
       else if (type == CREATOR) {
         return new MonkeyCCreatorImpl(node);
+      }
+      else if (type == DICTIONARY_CREATOR) {
+        return new MonkeyCDictionaryCreatorImpl(node);
       }
       else if (type == ENUM_BODY) {
         return new MonkeyCEnumBodyImpl(node);
@@ -332,12 +330,6 @@ public interface MonkeyCTypes {
       }
       else if (type == MULTIPLICATIVE_EXPRESSION) {
         return new MonkeyCMultiplicativeExpressionImpl(node);
-      }
-      else if (type == NEW_ARRAY_INITIALIZER) {
-        return new MonkeyCNewArrayInitializerImpl(node);
-      }
-      else if (type == NEW_DICTIONARY_INITIALIZER) {
-        return new MonkeyCNewDictionaryInitializerImpl(node);
       }
       else if (type == NORMAL_CLASS_DECLARATION) {
         return new MonkeyCNormalClassDeclarationImpl(node);

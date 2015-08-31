@@ -86,11 +86,11 @@ public class MonkeyCVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
-  public void visitCreatedName(@NotNull MonkeyCCreatedName o) {
+  public void visitCreator(@NotNull MonkeyCCreator o) {
     visitPsiCompositeElement(o);
   }
 
-  public void visitCreator(@NotNull MonkeyCCreator o) {
+  public void visitDictionaryCreator(@NotNull MonkeyCDictionaryCreator o) {
     visitPsiCompositeElement(o);
   }
 
@@ -207,14 +207,6 @@ public class MonkeyCVisitor extends PsiElementVisitor {
   }
 
   public void visitMultiplicativeExpression(@NotNull MonkeyCMultiplicativeExpression o) {
-    visitPsiCompositeElement(o);
-  }
-
-  public void visitNewArrayInitializer(@NotNull MonkeyCNewArrayInitializer o) {
-    visitPsiCompositeElement(o);
-  }
-
-  public void visitNewDictionaryInitializer(@NotNull MonkeyCNewDictionaryInitializer o) {
     visitPsiCompositeElement(o);
   }
 

@@ -267,9 +267,9 @@ assignmentOperator ::= EQ
 
 conditionalExpression ::= conditionalOrExpression (QUES expression COLON conditionalExpression)?
 
-conditionalOrExpression ::= conditionalAndExpression (BARBAR conditionalAndExpression)*
+conditionalOrExpression ::= conditionalAndExpression ((BARBAR | OR) conditionalAndExpression)*
 
-conditionalAndExpression ::= inclusiveOrExpression (AMPAMP inclusiveOrExpression)*
+conditionalAndExpression ::= inclusiveOrExpression ((AMPAMP | AND) inclusiveOrExpression)*
 
 inclusiveOrExpression ::= exclusiveOrExpression (BAR exclusiveOrExpression)*
 
