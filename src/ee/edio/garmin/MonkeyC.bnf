@@ -115,11 +115,11 @@ tokens = [
     IDENTIFIER = 'regexp:[a-zA-Z$_][a-zA-Z0-9$_]*'
 
 
-    INTLITERAL = 'regexp:\d+'
     LONGLITERAL = 'regexp:\d+[lL]'
+    INTLITERAL = 'regexp:\d+'
 
-    DOUBLELITERAL = 'regexp:\d+(\.\d*)?[dD]?'
-    FLOATLITERAL = 'regexp:\d+(\.\d*)?[fF]'
+    FLOATLITERAL = 'regexp:\d+(\.\d*)?[fF]?'
+    DOUBLELITERAL = 'regexp:\d+(\.\d*)?[dD]'
 
     STRINGLITERAL = "regexp:(\"([^\"\\]|\\.)*\")"
     CHARLITERAL = "regexp:('([^'\\]|\\.)*')"
@@ -331,20 +331,18 @@ selector ::= DOT IDENTIFIER (arguments)?
 
 creator ::= NEW classOrInterfaceType classCreatorRest | arrayCreator
 
-arrayCreator ::= NEW createdName LBRACKET RBRACKET (LBRACKET RBRACKET)* arrayInitializer
-               | NEW createdName LBRACKET expression RBRACKET (LBRACKET expression RBRACKET)* (LBRACKET RBRACKET)*
-               | newArrayInitializer | newDictionaryInitializer
-               | NEW LBRACKET expression RBRACKET
+arrayCreator ::= NEW LBRACKET expression RBRACKET // new [expression evaluating to integer]
+               | LBRACKET (expression (COMMA expression)* )? RBRACKET // [expression1, expression2, ...]
+               | dictionaryCreator
 
-newArrayInitializer ::= LBRACKET (variableInitializer (COMMA variableInitializer)*)? (COMMA)? RBRACKET
-newDictionaryInitializer ::= LBRACE (keyValueInitializer (COMMA keyValueInitializer)*)? (COMMA)? RBRACE
+dictionaryCreator ::= NEW LBRACE RBRACE // new {}
+                    | LBRACE (keyValueInitializer (COMMA keyValueInitializer)* )? RBRACE // {"a"=> exp, :b => exp2, ...}
+
 keyValueInitializer ::= primary EQGT expression
 
 arrayInitializer ::= LBRACE (variableInitializer (COMMA variableInitializer)*)? (COMMA)? RBRACE
 
 variableInitializer ::= arrayInitializer | expression
-
-createdName ::= classOrInterfaceType
 
 classCreatorRest ::= arguments (classBody)?
 
