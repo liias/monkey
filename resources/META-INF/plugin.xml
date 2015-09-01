@@ -1,18 +1,17 @@
-<idea-plugin version="2">
+<idea-plugin url="https://github.com/liias/MonkeyC" version="2">
   <id>ee.edio.garmin.monkeyc</id>
   <name>Garmin Connect IQ</name>
-  <version>0.1.1</version>
-  <vendor email="madisliias@gmail.com" url="https://github.com/liias/MonkeyC">liias</vendor>
+  <version>0.1.2</version>
+  <vendor email="madisliias@gmail.com" url="https://liias.github.io/">Madis Liias</vendor>
 
   <description><![CDATA[
       Unofficial Garmin Connect IQ SDK and Monkey C language support
     ]]></description>
 
   <change-notes><![CDATA[
-      0.1.1
-       More flexible grammar
-      0.1
-       Initial release
+    <ul>
+      <li>More flexible grammar</li>
+    </ul>
     ]]>
   </change-notes>
 
@@ -26,8 +25,6 @@
   <depends optional="true" config-file="java-deps.xml">com.intellij.modules.java</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <compileServer.plugin classpath="monkey-c-jps-plugin.jar"/>
-
     <sdkType implementation="ee.edio.garmin.sdk.MonkeySdkType"/>
 
     <!-- Add your extensions here -->

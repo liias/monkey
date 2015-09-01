@@ -10,11 +10,11 @@ import java.io.FileFilter;
 
 public class MonkeySourceRootDescriptor extends BuildRootDescriptor {
   private final File root;
-  private final MonkeyBuildTarget monkeyCTarget;
+  private final MonkeyBuildTarget monkeyBuildTarget;
 
-  public MonkeySourceRootDescriptor(File root, MonkeyBuildTarget monkeyCTarget) {
+  public MonkeySourceRootDescriptor(File root, MonkeyBuildTarget monkeyBuildTarget) {
     this.root = root;
-    this.monkeyCTarget = monkeyCTarget;
+    this.monkeyBuildTarget = monkeyBuildTarget;
   }
 
   @NotNull
@@ -31,7 +31,7 @@ public class MonkeySourceRootDescriptor extends BuildRootDescriptor {
 
   @Override
   public BuildTarget<?> getTarget() {
-    return monkeyCTarget;
+    return monkeyBuildTarget;
   }
 
   @NotNull

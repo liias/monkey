@@ -1,6 +1,8 @@
 <idea-plugin version="2">
   <extensions defaultExtensionNs="com.intellij">
     <moduleType id="MONKEY_C_MODULE" implementationClass="ee.edio.garmin.MonkeyModuleType"/>
+    <compileServer.plugin classpath="monkey-c-jps-plugin.jar"/>
+
     <moduleConfigurationEditorProvider implementation="ee.edio.garmin.configuration.MonkeyModuleEditorsProvider"
                                        order="first"/>
     <!--<editorNotificationProvider implementation="com.goide.inspections.WrongModuleTypeNotificationProvider"/>-->
