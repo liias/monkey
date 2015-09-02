@@ -37,9 +37,9 @@ public class MonkeyReferenceImpl extends MonkeyExpressionImpl implements MonkeyR
   public TextRange getRangeInElement() {
     final TextRange textRange = getTextRange();
 
-    MonkeyReference[] MonkeyReferences = PsiTreeUtil.getChildrenOfType(this, MonkeyReference.class);
-    if (MonkeyReferences != null && MonkeyReferences.length > 0) {
-      TextRange lastReferenceRange = MonkeyReferences[MonkeyReferences.length - 1].getTextRange();
+    MonkeyReference[] monkeyReferences = PsiTreeUtil.getChildrenOfType(this, MonkeyReference.class);
+    if (monkeyReferences != null && monkeyReferences.length > 0) {
+      TextRange lastReferenceRange = monkeyReferences[monkeyReferences.length - 1].getTextRange();
       return new UnfairTextRange(
           lastReferenceRange.getStartOffset() - textRange.getStartOffset(),
           lastReferenceRange.getEndOffset() - textRange.getEndOffset()
@@ -132,69 +132,6 @@ public class MonkeyReferenceImpl extends MonkeyExpressionImpl implements MonkeyR
     }
     return result;
   }
-
-  /*@NotNull
-  @Override
-  public MonkeyClassResolveResult resolveMonkeyClass() {
-    if (this instanceof MonkeySuperExpression) {
-      final MonkeyClass MonkeyClass = PsiTreeUtil.getParentOfType(this, MonkeyClass.class);
-      return MonkeyClass == null ? MonkeyClassResolveResult.EMPTY : MonkeyClass.getSuperClassResolvedOrObjectClass();
-    }
-
-    if (this instanceof MonkeyNewExpression) {
-      final MonkeyClassResolveResult result = MonkeyResolveUtil.resolveClassByType(PsiTreeUtil.getChildOfType(this, MonkeyType.class));
-      result.specialize(this);
-      return result;
-    }
-
-    if (this instanceof MonkeyCallExpression) {
-      final MonkeyExpression expression = ((MonkeyCallExpression)this).getExpression();
-      final MonkeyClassResolveResult leftResult = tryGetLeftResolveResult(expression);
-      if (expression instanceof MonkeyReference) {
-        final MonkeyClassResolveResult result =
-            MonkeyResolveUtil.getMonkeyClassResolveResult(((MonkeyReference) expression).resolve(), leftResult.getSpecialization());
-        result.specialize(this);
-        return result;
-      }
-    }
-
-    if (this instanceof MonkeyCascadeReferenceExpression) {
-      PsiElement parent = this.getParent();
-      if (parent instanceof MonkeyValueExpression) {
-        final List<MonkeyExpression> expressionList = ((MonkeyValueExpression)parent).getExpressionList();
-        final MonkeyExpression firstExpression = expressionList.isEmpty() ? null : expressionList.get(0);
-        if (firstExpression instanceof MonkeyReference) {
-          return ((MonkeyReference)firstExpression).resolveMonkeyClass();
-        }
-      }
-    }
-
-    if (this instanceof MonkeyAwaitExpression) {
-      final MonkeyExpression expression = ((MonkeyAwaitExpression)this).getExpression();
-      if (expression instanceof MonkeyReference) {
-        final MonkeyClassResolveResult result = ((MonkeyReference)expression).resolveMonkeyClass();
-        final MonkeyClass resolvedClass = result.getMonkeyClass();
-        if (resolvedClass != null && "Future".equals(resolvedClass.getName())) {
-          final MonkeyClassResolveResult unwrappedFuture = result.getSpecialization().get(resolvedClass, "T");
-          return unwrappedFuture == null ? MonkeyClassResolveResult.EMPTY : unwrappedFuture;
-        }
-        else {
-          return result;
-        }
-      }
-    }
-
-    return MonkeyResolveUtil.getMonkeyClassResolveResult(resolve(), tryGetLeftResolveResult(this).getSpecialization());
-  }*/
-
-/*  @NotNull
-  private static MonkeyClassResolveResult tryGetLeftResolveResult(MonkeyExpression expression) {
-    final MonkeyReference[] childReferences = PsiTreeUtil.getChildrenOfType(expression, MonkeyReference.class);
-    final MonkeyReference leftReference = childReferences != null ? childReferences[0] : null;
-    return leftReference != null
-        ? leftReference.resolveMonkeyClass()
-        : MonkeyClassResolveResult.create(PsiTreeUtil.getParentOfType(expression, MonkeyClass.class));
-  }*/
 
   @NotNull
   @Override
