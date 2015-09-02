@@ -62,4 +62,10 @@ public class MonkeyUtil {
   public static Set<String> getKeywords() {
     return keywords;
   }
+
+  public static boolean isRealDevice(String deviceId) {
+    return !deviceId.equalsIgnoreCase("round_watch") &&
+        !deviceId.equalsIgnoreCase("square_watch") &&
+        !deviceId.equalsIgnoreCase("semi_round_watch");
+  }
 }

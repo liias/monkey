@@ -10,21 +10,15 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static ee.edio.garmin.psi.MonkeyTypes.*;
 import ee.edio.garmin.psi.*;
 
-public class MonkeyVariableDeclaratorImpl extends MonkeyPsiCompositeElementImpl implements MonkeyVariableDeclarator {
+public class MonkeyIdImpl extends MonkeyPsiCompositeElementImpl implements MonkeyId {
 
-  public MonkeyVariableDeclaratorImpl(ASTNode node) {
+  public MonkeyIdImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitVariableDeclarator(this);
+    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitId(this);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public MonkeyVariableInitializer getVariableInitializer() {
-    return findChildByClass(MonkeyVariableInitializer.class);
   }
 
   @Override

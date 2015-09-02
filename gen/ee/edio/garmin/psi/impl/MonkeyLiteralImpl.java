@@ -23,6 +23,12 @@ public class MonkeyLiteralImpl extends MonkeyPsiCompositeElementImpl implements 
 
   @Override
   @Nullable
+  public MonkeyStringLiteral getStringLiteral() {
+    return findChildByClass(MonkeyStringLiteral.class);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getCharliteral() {
     return findChildByType(CHARLITERAL);
   }
@@ -49,12 +55,6 @@ public class MonkeyLiteralImpl extends MonkeyPsiCompositeElementImpl implements 
   @Nullable
   public PsiElement getLongliteral() {
     return findChildByType(LONGLITERAL);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getStringliteral() {
-    return findChildByType(STRINGLITERAL);
   }
 
 }

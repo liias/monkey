@@ -114,7 +114,6 @@ tokens = [
 
     IDENTIFIER = 'regexp:[a-zA-Z$_][a-zA-Z0-9$_]*'
 
-
     LONGLITERAL = 'regexp:\d+[lL]'
     INTLITERAL = 'regexp:\d+'
 
@@ -124,12 +123,7 @@ tokens = [
     STRINGLITERAL = "regexp:(\"([^\"\\]|\\.)*\")"
     CHARLITERAL = "regexp:('([^'\\]|\\.)*')"
   ]
-
-
-  // extends(".*Expression")="expression"
 }
-
-
 
 monkeyCFile ::= compilationUnit*
 
@@ -167,19 +161,25 @@ classBodyDeclaration ::= SEMI | block | memberDecl | usingDeclaration
 
 memberDecl ::= constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration
 
-functionDeclaration ::= modifiers FUNCTION IDENTIFIER formalParameters (THROWS qualifiedNameList)?
-                        LBRACE (explicitConstructorInvocation)? (blockStatement)* RBRACE
+componentName ::= id
+{mixin="ee.edio.garmin.psi.impl.MonkeyNamedElementImpl" implements="ee.edio.garmin.psi.MonkeyNamedElement"}
+
+id ::= IDENTIFIER
+
+functionDeclaration ::= modifiers FUNCTION componentName formalParameters (THROWS qualifiedNameList)?
+                        LBRACE (explicitConstructorInvocation)? (blockStatement)* RBRACE {
+  pin=3
+  mixin="ee.edio.garmin.psi.impl.AbstractMonkeyComponentImpl"
+  implements="ee.edio.garmin.psi.MonkeyComponent"
+  //methods=[getKey getValue setName getNameIdentifier]
+}
 
 constDeclaration ::= modifiers CONST variableDeclarator SEMI
 
 fieldDeclaration ::= modifiers VAR variableDeclarator
                     (COMMA variableDeclarator)* SEMI
 
-variableDeclarator ::= IDENTIFIER (LBRACKET RBRACKET)* (EQ variableInitializer)? {
-mixin="ee.edio.garmin.psi.impl.MonkeyNamedElementImpl"
-implements="ee.edio.garmin.psi.MonkeyNamedElement" methods=[getKey getValue setName getNameIdentifier]
-}
-
+variableDeclarator ::= IDENTIFIER (LBRACKET RBRACKET)* (EQ variableInitializer)?
 type ::= classOrInterfaceType (LBRACKET RBRACKET)*
 
 classOrInterfaceType ::= IDENTIFIER (DOT IDENTIFIER)*
@@ -190,9 +190,7 @@ formalParameters ::= LPAREN (formalParameterDecls)? RPAREN
 
 formalParameterDecls ::= normalParameterDecl (COMMA normalParameterDecl)*
 
-normalParameterDecl ::= IDENTIFIER (LBRACKET RBRACKET)* {mixin="ee.edio.garmin.psi.impl.MonkeyNamedElementImpl"
-  implements="ee.edio.garmin.psi.MonkeyNamedElement" methods=[getKey getValue setName getNameIdentifier]
-}
+normalParameterDecl ::= IDENTIFIER (LBRACKET RBRACKET)*
 
 //NOTE: the position of Identifier 'super' is set to the type args position here
 explicitConstructorInvocation ::= SUPER arguments SEMI
@@ -304,17 +302,25 @@ unaryExpression ::= PLUS unaryExpression
 
 unaryExpressionNotPlusMinus ::= TILDE unaryExpression
                               | BANG unaryExpression
-                              | primary (selector)* (PLUSPLUS | SUBSUB)?
+                              | primary selector* (PLUSPLUS | SUBSUB)?
 
 /**
  * have to use scope here, parameter passing isn't well supported in antlr.
  */
 primary ::= parExpression
-          | IDENTIFIER (DOT IDENTIFIER)* (identifierSuffix)?
+          | referenceExpression (DOT referenceExpression)* identifierSuffix?
           | literal
           | symbol
           | creator
-          | VOID DOT CLASS
+          | VOID DOT CLASS {
+
+}
+
+referenceExpression ::= id {
+  mixin="ee.edio.garmin.psi.impl.MonkeyReferenceImpl"
+  implements="ee.edio.garmin.psi.MonkeyReference"
+}
+
 
 identifierSuffix ::= (LBRACKET RBRACKET) + DOT CLASS
                    | (LBRACKET expression RBRACKET)+
@@ -341,18 +347,25 @@ arrayInitializer ::= LBRACE (variableInitializer (COMMA variableInitializer)*)? 
 
 variableInitializer ::= arrayInitializer | expression
 
-classCreatorRest ::= arguments (classBody)?
+classCreatorRest ::= arguments classBody?
 
 arguments ::= LPAREN (expressionList)? RPAREN
 
 symbol ::= COLON IDENTIFIER
+
+// maybe use built-in string instead of STRINGLITERAL?
+stringLiteral ::= STRINGLITERAL {
+  implements = "com.intellij.psi.PsiLanguageInjectionHost"
+  methods = [isValidHost updateText createLiteralTextEscaper]
+}
+
 
 literal ::= INTLITERAL
           | LONGLITERAL
           | FLOATLITERAL
           | DOUBLELITERAL
           | CHARLITERAL
-          | STRINGLITERAL
+          | stringLiteral
           | TRUE
           | FALSE
           | NULL

@@ -3,6 +3,7 @@ package ee.edio.garmin.psi;
 
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.PsiLanguageInjectionHost;
 
 public class MonkeyVisitor extends PsiElementVisitor {
 
@@ -72,6 +73,10 @@ public class MonkeyVisitor extends PsiElementVisitor {
 
   public void visitClassOrInterfaceType(@NotNull MonkeyClassOrInterfaceType o) {
     visitPsiCompositeElement(o);
+  }
+
+  public void visitComponentName(@NotNull MonkeyComponentName o) {
+    visitNamedElement(o);
   }
 
   public void visitConditionalAndExpression(@NotNull MonkeyConditionalAndExpression o) {
@@ -159,10 +164,14 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitFunctionDeclaration(@NotNull MonkeyFunctionDeclaration o) {
-    visitPsiCompositeElement(o);
+    visitComponent(o);
   }
 
   public void visitHasExpression(@NotNull MonkeyHasExpression o) {
+    visitPsiCompositeElement(o);
+  }
+
+  public void visitId(@NotNull MonkeyId o) {
     visitPsiCompositeElement(o);
   }
 
@@ -219,7 +228,7 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitNormalParameterDecl(@NotNull MonkeyNormalParameterDecl o) {
-    visitNamedElement(o);
+    visitPsiCompositeElement(o);
   }
 
   public void visitParExpression(@NotNull MonkeyParExpression o) {
@@ -236,6 +245,10 @@ public class MonkeyVisitor extends PsiElementVisitor {
 
   public void visitQualifiedNameList(@NotNull MonkeyQualifiedNameList o) {
     visitPsiCompositeElement(o);
+  }
+
+  public void visitReferenceExpression(@NotNull MonkeyReferenceExpression o) {
+    visitReference(o);
   }
 
   public void visitRelationalExpression(@NotNull MonkeyRelationalExpression o) {
@@ -260,6 +273,10 @@ public class MonkeyVisitor extends PsiElementVisitor {
 
   public void visitStatement(@NotNull MonkeyStatement o) {
     visitPsiCompositeElement(o);
+  }
+
+  public void visitStringLiteral(@NotNull MonkeyStringLiteral o) {
+    visitPsiLanguageInjectionHost(o);
   }
 
   public void visitSwitchBlockStatementGroup(@NotNull MonkeySwitchBlockStatementGroup o) {
@@ -299,15 +316,27 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitVariableDeclarator(@NotNull MonkeyVariableDeclarator o) {
-    visitNamedElement(o);
+    visitPsiCompositeElement(o);
   }
 
   public void visitVariableInitializer(@NotNull MonkeyVariableInitializer o) {
     visitPsiCompositeElement(o);
   }
 
+  public void visitComponent(@NotNull MonkeyComponent o) {
+    visitPsiCompositeElement(o);
+  }
+
   public void visitNamedElement(@NotNull MonkeyNamedElement o) {
     visitPsiCompositeElement(o);
+  }
+
+  public void visitReference(@NotNull MonkeyReference o) {
+    visitPsiCompositeElement(o);
+  }
+
+  public void visitPsiLanguageInjectionHost(@NotNull PsiLanguageInjectionHost o) {
+    visitElement(o);
   }
 
   public void visitPsiCompositeElement(@NotNull MonkeyPsiCompositeElement o) {

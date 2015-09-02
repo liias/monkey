@@ -46,6 +46,12 @@ public class MonkeyPrimaryImpl extends MonkeyPsiCompositeElementImpl implements 
   }
 
   @Override
+  @NotNull
+  public List<MonkeyReferenceExpression> getReferenceExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyReferenceExpression.class);
+  }
+
+  @Override
   @Nullable
   public MonkeySymbol getSymbol() {
     return findChildByClass(MonkeySymbol.class);

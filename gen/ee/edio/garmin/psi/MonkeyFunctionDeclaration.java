@@ -5,15 +5,18 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MonkeyFunctionDeclaration extends MonkeyPsiCompositeElement {
+public interface MonkeyFunctionDeclaration extends MonkeyComponent {
 
   @NotNull
   List<MonkeyBlockStatement> getBlockStatementList();
 
+  @NotNull
+  MonkeyComponentName getComponentName();
+
   @Nullable
   MonkeyExplicitConstructorInvocation getExplicitConstructorInvocation();
 
-  @NotNull
+  @Nullable
   MonkeyFormalParameters getFormalParameters();
 
   @NotNull
@@ -21,8 +24,5 @@ public interface MonkeyFunctionDeclaration extends MonkeyPsiCompositeElement {
 
   @Nullable
   MonkeyQualifiedNameList getQualifiedNameList();
-
-  @NotNull
-  PsiElement getIdentifier();
 
 }

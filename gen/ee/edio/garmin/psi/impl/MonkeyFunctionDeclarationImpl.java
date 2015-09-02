@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static ee.edio.garmin.psi.MonkeyTypes.*;
 import ee.edio.garmin.psi.*;
 
-public class MonkeyFunctionDeclarationImpl extends MonkeyPsiCompositeElementImpl implements MonkeyFunctionDeclaration {
+public class MonkeyFunctionDeclarationImpl extends AbstractMonkeyComponentImpl implements MonkeyFunctionDeclaration {
 
   public MonkeyFunctionDeclarationImpl(ASTNode node) {
     super(node);
@@ -28,15 +28,21 @@ public class MonkeyFunctionDeclarationImpl extends MonkeyPsiCompositeElementImpl
   }
 
   @Override
+  @NotNull
+  public MonkeyComponentName getComponentName() {
+    return findNotNullChildByClass(MonkeyComponentName.class);
+  }
+
+  @Override
   @Nullable
   public MonkeyExplicitConstructorInvocation getExplicitConstructorInvocation() {
     return findChildByClass(MonkeyExplicitConstructorInvocation.class);
   }
 
   @Override
-  @NotNull
+  @Nullable
   public MonkeyFormalParameters getFormalParameters() {
-    return findNotNullChildByClass(MonkeyFormalParameters.class);
+    return findChildByClass(MonkeyFormalParameters.class);
   }
 
   @Override
@@ -49,12 +55,6 @@ public class MonkeyFunctionDeclarationImpl extends MonkeyPsiCompositeElementImpl
   @Nullable
   public MonkeyQualifiedNameList getQualifiedNameList() {
     return findChildByClass(MonkeyQualifiedNameList.class);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getIdentifier() {
-    return findNotNullChildByType(IDENTIFIER);
   }
 
 }

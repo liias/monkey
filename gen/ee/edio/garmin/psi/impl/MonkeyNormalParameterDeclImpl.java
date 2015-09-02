@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static ee.edio.garmin.psi.MonkeyTypes.*;
 import ee.edio.garmin.psi.*;
 
-public class MonkeyNormalParameterDeclImpl extends MonkeyNamedElementImpl implements MonkeyNormalParameterDecl {
+public class MonkeyNormalParameterDeclImpl extends MonkeyPsiCompositeElementImpl implements MonkeyNormalParameterDecl {
 
   public MonkeyNormalParameterDeclImpl(ASTNode node) {
     super(node);
@@ -25,22 +25,6 @@ public class MonkeyNormalParameterDeclImpl extends MonkeyNamedElementImpl implem
   @NotNull
   public PsiElement getIdentifier() {
     return findNotNullChildByType(IDENTIFIER);
-  }
-
-  public String getKey() {
-    return MonkeyPsiImplUtil.getKey(this);
-  }
-
-  public String getValue() {
-    return MonkeyPsiImplUtil.getValue(this);
-  }
-
-  public PsiElement setName(String newName) {
-    return MonkeyPsiImplUtil.setName(this, newName);
-  }
-
-  public PsiElement getNameIdentifier() {
-    return MonkeyPsiImplUtil.getNameIdentifier(this);
   }
 
 }

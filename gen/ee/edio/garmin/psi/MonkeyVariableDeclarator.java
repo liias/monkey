@@ -5,20 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MonkeyVariableDeclarator extends MonkeyNamedElement {
+public interface MonkeyVariableDeclarator extends MonkeyPsiCompositeElement {
 
   @Nullable
   MonkeyVariableInitializer getVariableInitializer();
 
   @NotNull
   PsiElement getIdentifier();
-
-  String getKey();
-
-  String getValue();
-
-  PsiElement setName(String newName);
-
-  PsiElement getNameIdentifier();
 
 }

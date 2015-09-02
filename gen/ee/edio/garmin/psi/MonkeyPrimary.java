@@ -19,6 +19,9 @@ public interface MonkeyPrimary extends MonkeyPsiCompositeElement {
   @Nullable
   MonkeyParExpression getParExpression();
 
+  @NotNull
+  List<MonkeyReferenceExpression> getReferenceExpressionList();
+
   @Nullable
   MonkeySymbol getSymbol();
 

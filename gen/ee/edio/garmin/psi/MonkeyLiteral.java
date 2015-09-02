@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyLiteral extends MonkeyPsiCompositeElement {
 
   @Nullable
+  MonkeyStringLiteral getStringLiteral();
+
+  @Nullable
   PsiElement getCharliteral();
 
   @Nullable
@@ -21,8 +24,5 @@ public interface MonkeyLiteral extends MonkeyPsiCompositeElement {
 
   @Nullable
   PsiElement getLongliteral();
-
-  @Nullable
-  PsiElement getStringliteral();
 
 }

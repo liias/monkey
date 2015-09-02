@@ -25,6 +25,7 @@ public interface MonkeyTypes {
   IElementType CLASS_CREATOR_REST = new MonkeyElementType("CLASS_CREATOR_REST");
   IElementType CLASS_DECLARATION = new MonkeyElementType("CLASS_DECLARATION");
   IElementType CLASS_OR_INTERFACE_TYPE = new MonkeyElementType("CLASS_OR_INTERFACE_TYPE");
+  IElementType COMPONENT_NAME = new MonkeyElementType("COMPONENT_NAME");
   IElementType CONDITIONAL_AND_EXPRESSION = new MonkeyElementType("CONDITIONAL_AND_EXPRESSION");
   IElementType CONDITIONAL_EXPRESSION = new MonkeyElementType("CONDITIONAL_EXPRESSION");
   IElementType CONDITIONAL_OR_EXPRESSION = new MonkeyElementType("CONDITIONAL_OR_EXPRESSION");
@@ -48,6 +49,7 @@ public interface MonkeyTypes {
   IElementType FOR_STATEMENT = new MonkeyElementType("FOR_STATEMENT");
   IElementType FUNCTION_DECLARATION = new MonkeyElementType("FUNCTION_DECLARATION");
   IElementType HAS_EXPRESSION = new MonkeyElementType("HAS_EXPRESSION");
+  IElementType ID = new MonkeyElementType("ID");
   IElementType IDENTIFIER_SUFFIX = new MonkeyElementType("IDENTIFIER_SUFFIX");
   IElementType INCLUSIVE_OR_EXPRESSION = new MonkeyElementType("INCLUSIVE_OR_EXPRESSION");
   IElementType INSTANCE_OF_EXPRESSION = new MonkeyElementType("INSTANCE_OF_EXPRESSION");
@@ -66,12 +68,14 @@ public interface MonkeyTypes {
   IElementType PRIMARY = new MonkeyElementType("PRIMARY");
   IElementType QUALIFIED_NAME = new MonkeyElementType("QUALIFIED_NAME");
   IElementType QUALIFIED_NAME_LIST = new MonkeyElementType("QUALIFIED_NAME_LIST");
+  IElementType REFERENCE_EXPRESSION = new MonkeyElementType("REFERENCE_EXPRESSION");
   IElementType RELATIONAL_EXPRESSION = new MonkeyElementType("RELATIONAL_EXPRESSION");
   IElementType RELATIONAL_OP = new MonkeyElementType("RELATIONAL_OP");
   IElementType SELECTOR = new MonkeyElementType("SELECTOR");
   IElementType SHIFT_EXPRESSION = new MonkeyElementType("SHIFT_EXPRESSION");
   IElementType SHIFT_OP = new MonkeyElementType("SHIFT_OP");
   IElementType STATEMENT = new MonkeyElementType("STATEMENT");
+  IElementType STRING_LITERAL = new MonkeyElementType("STRING_LITERAL");
   IElementType SWITCH_BLOCK_STATEMENT_GROUP = new MonkeyElementType("SWITCH_BLOCK_STATEMENT_GROUP");
   IElementType SWITCH_BLOCK_STATEMENT_GROUPS = new MonkeyElementType("SWITCH_BLOCK_STATEMENT_GROUPS");
   IElementType SWITCH_LABEL = new MonkeyElementType("SWITCH_LABEL");
@@ -229,6 +233,9 @@ public interface MonkeyTypes {
       else if (type == CLASS_OR_INTERFACE_TYPE) {
         return new MonkeyClassOrInterfaceTypeImpl(node);
       }
+      else if (type == COMPONENT_NAME) {
+        return new MonkeyComponentNameImpl(node);
+      }
       else if (type == CONDITIONAL_AND_EXPRESSION) {
         return new MonkeyConditionalAndExpressionImpl(node);
       }
@@ -298,6 +305,9 @@ public interface MonkeyTypes {
       else if (type == HAS_EXPRESSION) {
         return new MonkeyHasExpressionImpl(node);
       }
+      else if (type == ID) {
+        return new MonkeyIdImpl(node);
+      }
       else if (type == IDENTIFIER_SUFFIX) {
         return new MonkeyIdentifierSuffixImpl(node);
       }
@@ -352,6 +362,9 @@ public interface MonkeyTypes {
       else if (type == QUALIFIED_NAME_LIST) {
         return new MonkeyQualifiedNameListImpl(node);
       }
+      else if (type == REFERENCE_EXPRESSION) {
+        return new MonkeyReferenceExpressionImpl(node);
+      }
       else if (type == RELATIONAL_EXPRESSION) {
         return new MonkeyRelationalExpressionImpl(node);
       }
@@ -369,6 +382,9 @@ public interface MonkeyTypes {
       }
       else if (type == STATEMENT) {
         return new MonkeyStatementImpl(node);
+      }
+      else if (type == STRING_LITERAL) {
+        return new MonkeyStringLiteralImpl(node);
       }
       else if (type == SWITCH_BLOCK_STATEMENT_GROUP) {
         return new MonkeySwitchBlockStatementGroupImpl(node);

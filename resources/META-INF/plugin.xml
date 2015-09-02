@@ -33,6 +33,8 @@
     <lang.commenter language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyCommenter"/>
     <lang.documentationProvider language="MonkeyC"
                                 implementationClass="ee.edio.garmin.documentation.MonkeyDocumentationProvider"/>
+    <lang.elementManipulator forClass="ee.edio.garmin.psi.impl.MonkeyStringLiteralImpl"
+                             implementationClass="ee.edio.garmin.psi.impl.manipulators.MonkeyStringManipulator"/>
     <lang.findUsagesProvider language="MonkeyC" implementationClass="ee.edio.garmin.MonkeyFindUsagesProvider"/>
     <lang.foldingBuilder language="MonkeyC" implementationClass="ee.edio.garmin.editor.MonkeyFoldingBuilder"/>
     <lang.formatter language="MonkeyC" implementationClass="ee.edio.garmin.formatter.MonkeyFormattingModelBuilder"/>
