@@ -10,7 +10,7 @@ import ee.edio.garmin.MonkeyStringLiteralEscaper;
 public interface MonkeyStringLiteral extends PsiLanguageInjectionHost {
 
   @NotNull
-  PsiElement getStringliteral();
+  PsiElement getString();
 
   boolean isValidHost();
 

@@ -30,7 +30,7 @@ LONGLITERAL=[0-9]+[lL]
 INTLITERAL=[0-9]+
 FLOATLITERAL=[0-9]+(\.[0-9]*)?[fF]?
 DOUBLELITERAL=[0-9]+(\.[0-9]*)?[dD]
-STRINGLITERAL=(\"([^\"\\]|\\.)*\")
+STRING=(\"([^\"\\]|\\.)*\")
 CHARLITERAL=('([^'\\]|\\.)*')
 
 %%
@@ -127,7 +127,7 @@ CHARLITERAL=('([^'\\]|\\.)*')
   {INTLITERAL}               { return INTLITERAL; }
   {FLOATLITERAL}             { return FLOATLITERAL; }
   {DOUBLELITERAL}            { return DOUBLELITERAL; }
-  {STRINGLITERAL}            { return STRINGLITERAL; }
+  {STRING}                   { return STRING; }
   {CHARLITERAL}              { return CHARLITERAL; }
 
   [^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }

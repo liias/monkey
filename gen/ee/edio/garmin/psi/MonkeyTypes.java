@@ -161,7 +161,7 @@ public interface MonkeyTypes {
   IElementType STAR = new MonkeyTokenType("*");
   IElementType STAREQ = new MonkeyTokenType("*=");
   IElementType STATIC = new MonkeyTokenType("static");
-  IElementType STRINGLITERAL = new MonkeyTokenType("STRINGLITERAL");
+  IElementType STRING = new MonkeyTokenType("string");
   IElementType STRING_A = new MonkeyTokenType("\"");
   IElementType STRING_B = new MonkeyTokenType("'");
   IElementType SUB = new MonkeyTokenType("-");

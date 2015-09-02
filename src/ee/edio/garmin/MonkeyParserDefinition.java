@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 public class MonkeyParserDefinition implements ParserDefinition {
   public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
   public static final TokenSet COMMENTS = TokenSet.create(MonkeyTypes.SINGLE_LINE_COMMENT);
-  public static final TokenSet STRINGS = TokenSet.create(MonkeyTypes.STRING_LITERAL);
 
   public static final IFileElementType FILE = new IFileElementType(Language.findInstance(MonkeyLanguage.class));
 
@@ -56,7 +55,7 @@ public class MonkeyParserDefinition implements ParserDefinition {
   @NotNull
   @Override
   public TokenSet getStringLiteralElements() {
-    return STRINGS;
+    return MonkeyTokenTypesSets.STRINGS;
   }
 
   @NotNull

@@ -120,7 +120,7 @@ tokens = [
     FLOATLITERAL = 'regexp:\d+(\.\d*)?[fF]?'
     DOUBLELITERAL = 'regexp:\d+(\.\d*)?[dD]'
 
-    STRINGLITERAL = "regexp:(\"([^\"\\]|\\.)*\")"
+    string = "regexp:(\"([^\"\\]|\\.)*\")"
     CHARLITERAL = "regexp:('([^'\\]|\\.)*')"
   ]
 }
@@ -354,7 +354,7 @@ arguments ::= LPAREN (expressionList)? RPAREN
 symbol ::= COLON IDENTIFIER
 
 // maybe use built-in string instead of STRINGLITERAL?
-stringLiteral ::= STRINGLITERAL {
+stringLiteral ::= string {
   implements = "com.intellij.psi.PsiLanguageInjectionHost"
   methods = [isValidHost updateText createLiteralTextEscaper]
 }

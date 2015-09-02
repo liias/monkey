@@ -24,8 +24,8 @@ public class MonkeyStringLiteralImpl extends MonkeyPsiCompositeElementImpl imple
 
   @Override
   @NotNull
-  public PsiElement getStringliteral() {
-    return findNotNullChildByType(STRINGLITERAL);
+  public PsiElement getString() {
+    return findNotNullChildByType(STRING);
   }
 
   public boolean isValidHost() {

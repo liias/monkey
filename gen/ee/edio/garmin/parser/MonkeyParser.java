@@ -2687,13 +2687,13 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // STRINGLITERAL
+  // string
   public static boolean stringLiteral(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "stringLiteral")) return false;
-    if (!nextTokenIs(b, STRINGLITERAL)) return false;
+    if (!nextTokenIs(b, STRING)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, STRINGLITERAL);
+    r = consumeToken(b, STRING);
     exit_section_(b, m, STRING_LITERAL, r);
     return r;
   }

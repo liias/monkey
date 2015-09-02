@@ -4,6 +4,8 @@ import com.intellij.psi.tree.TokenSet;
 import ee.edio.garmin.psi.MonkeyTypes;
 
 public interface MonkeyTokenTypesSets {
+  TokenSet STRINGS = TokenSet.create(MonkeyTypes.STRING);
+
   TokenSet BUILT_IN_IDENTIFIERS = TokenSet.create(
       MonkeyTypes.AND,
       MonkeyTypes.AS,
