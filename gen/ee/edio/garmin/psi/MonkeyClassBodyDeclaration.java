@@ -11,7 +11,16 @@ public interface MonkeyClassBodyDeclaration extends MonkeyPsiCompositeElement {
   MonkeyBlock getBlock();
 
   @Nullable
-  MonkeyMemberDecl getMemberDecl();
+  MonkeyClassDeclaration getClassDeclaration();
+
+  @Nullable
+  MonkeyConstDeclaration getConstDeclaration();
+
+  @Nullable
+  MonkeyFieldDeclaration getFieldDeclaration();
+
+  @Nullable
+  MonkeyFunctionDeclaration getFunctionDeclaration();
 
   @Nullable
   MonkeyUsingDeclaration getUsingDeclaration();

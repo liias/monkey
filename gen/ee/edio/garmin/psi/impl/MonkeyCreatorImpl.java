@@ -35,8 +35,8 @@ public class MonkeyCreatorImpl extends MonkeyPsiCompositeElementImpl implements 
 
   @Override
   @Nullable
-  public MonkeyClassOrInterfaceType getClassOrInterfaceType() {
-    return findChildByClass(MonkeyClassOrInterfaceType.class);
+  public MonkeyQualifiedName getQualifiedName() {
+    return findChildByClass(MonkeyQualifiedName.class);
   }
 
 }

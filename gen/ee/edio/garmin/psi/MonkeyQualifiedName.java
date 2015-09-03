@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface MonkeyQualifiedName extends MonkeyPsiCompositeElement {
 
+  @NotNull
+  List<MonkeyComponentName> getComponentNameList();
+
 }

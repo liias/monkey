@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static ee.edio.garmin.psi.MonkeyTypes.*;
 import ee.edio.garmin.psi.*;
 
-public class MonkeyInclusiveOrExpressionImpl extends MonkeyPsiCompositeElementImpl implements MonkeyInclusiveOrExpression {
+public class MonkeyInclusiveOrExpressionImpl extends MonkeyExpressionImpl implements MonkeyInclusiveOrExpression {
 
   public MonkeyInclusiveOrExpressionImpl(ASTNode node) {
     super(node);
@@ -23,8 +23,8 @@ public class MonkeyInclusiveOrExpressionImpl extends MonkeyPsiCompositeElementIm
 
   @Override
   @NotNull
-  public List<MonkeyExclusiveOrExpression> getExclusiveOrExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExclusiveOrExpression.class);
+  public List<MonkeyExpression> getExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
   }
 
 }

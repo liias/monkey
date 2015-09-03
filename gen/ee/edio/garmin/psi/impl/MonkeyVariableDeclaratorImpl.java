@@ -22,15 +22,15 @@ public class MonkeyVariableDeclaratorImpl extends MonkeyPsiCompositeElementImpl 
   }
 
   @Override
-  @Nullable
-  public MonkeyVariableInitializer getVariableInitializer() {
-    return findChildByClass(MonkeyVariableInitializer.class);
+  @NotNull
+  public MonkeyComponentName getComponentName() {
+    return findNotNullChildByClass(MonkeyComponentName.class);
   }
 
   @Override
-  @NotNull
-  public PsiElement getIdentifier() {
-    return findNotNullChildByType(IDENTIFIER);
+  @Nullable
+  public MonkeyVariableInitializer getVariableInitializer() {
+    return findChildByClass(MonkeyVariableInitializer.class);
   }
 
 }

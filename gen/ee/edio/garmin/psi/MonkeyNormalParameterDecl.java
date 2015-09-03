@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyNormalParameterDecl extends MonkeyPsiCompositeElement {
 
   @NotNull
-  PsiElement getIdentifier();
+  MonkeyComponentName getComponentName();
 
 }

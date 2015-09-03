@@ -123,27 +123,27 @@ tokens = [
     string = "regexp:(\"([^\"\\]|\\.)*\")"
     CHARLITERAL = "regexp:('([^'\\]|\\.)*')"
   ]
+
+  extends(".*Expression")="expression"
 }
 
 monkeyCFile ::= compilationUnit*
 
-private compilationUnit ::= usingDeclaration | moduleDeclaration | memberDecl | blockStatement | SEMI
+private compilationUnit ::= usingDeclaration | moduleDeclaration | constDeclaration | fieldDeclaration
+                          | functionDeclaration | classDeclaration | blockStatement | SEMI
 
-usingDeclaration ::= USING IDENTIFIER (DOT IDENTIFIER)+ (AS IDENTIFIER)? SEMI {pin=1}
+usingDeclaration ::= USING qualifiedName (AS componentName)? SEMI {pin=1}
 
-moduleDeclaration ::= modifiers MODULE IDENTIFIER moduleBody
+moduleDeclaration ::= modifiers MODULE componentName moduleBody
 
 moduleBody ::= classBody
 
-classDeclaration ::= normalClassDeclaration | enumDeclaration
-
-normalClassDeclaration ::= modifiers CLASS IDENTIFIER (EXTENDS type)? classBody
+classDeclaration ::= modifiers CLASS componentName (EXTENDS type)? classBody
+                   | modifiers ENUM componentName enumBody
 
 modifiers ::= annotation? STATIC? HIDDEN?
 
 annotation ::= LPAREN symbol RPAREN
-
-enumDeclaration ::= modifiers ENUM IDENTIFIER enumBody
 
 enumBody ::= LBRACE enumConstants? COMMA? enumBodyDeclarations? RBRACE
 
@@ -151,15 +151,13 @@ enumConstants ::= enumConstant (COMMA enumConstant)*
 
 /* TODO: $GScope::name = names.empty. enum constant body is actually
  an anonymous class, where constructor isn't allowed, have to add this check */
-enumConstant ::= IDENTIFIER (arguments)? (classBody)?
+enumConstant ::= componentName (arguments)? (classBody)?
 
 enumBodyDeclarations ::= SEMI classBodyDeclaration*
 
 classBody ::= LBRACE classBodyDeclaration* RBRACE
 
-classBodyDeclaration ::= SEMI | block | memberDecl | usingDeclaration
-
-memberDecl ::= constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration
+classBodyDeclaration ::= usingDeclaration | block | constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration | SEMI
 
 componentName ::= id
 {mixin="ee.edio.garmin.psi.impl.MonkeyNamedElementImpl" implements="ee.edio.garmin.psi.MonkeyNamedElement"}
@@ -179,10 +177,8 @@ constDeclaration ::= modifiers CONST variableDeclarator SEMI
 fieldDeclaration ::= modifiers VAR variableDeclarator
                     (COMMA variableDeclarator)* SEMI
 
-variableDeclarator ::= IDENTIFIER (LBRACKET RBRACKET)* (EQ variableInitializer)?
-type ::= classOrInterfaceType (LBRACKET RBRACKET)*
-
-classOrInterfaceType ::= IDENTIFIER (DOT IDENTIFIER)*
+variableDeclarator ::= componentName (LBRACKET RBRACKET)* (EQ variableInitializer)?
+type ::= qualifiedName (LBRACKET RBRACKET)*
 
 qualifiedNameList ::= qualifiedName (COMMA qualifiedName)*
 
@@ -190,15 +186,15 @@ formalParameters ::= LPAREN (formalParameterDecls)? RPAREN
 
 formalParameterDecls ::= normalParameterDecl (COMMA normalParameterDecl)*
 
-normalParameterDecl ::= IDENTIFIER (LBRACKET RBRACKET)*
+normalParameterDecl ::= componentName (LBRACKET RBRACKET)*
 
 //NOTE: the position of Identifier 'super' is set to the type args position here
 explicitConstructorInvocation ::= SUPER arguments SEMI
                                 | primary DOT SUPER arguments SEMI
 
-qualifiedName ::= IDENTIFIER (DOT IDENTIFIER)*
+qualifiedName ::= componentName (DOT componentName)*
 
-block ::= LBRACE (blockStatement)* RBRACE
+block ::= LBRACE blockStatement* RBRACE
 
 blockStatement ::= localVariableDeclarationStatement
                  | classDeclaration
@@ -217,8 +213,8 @@ statement ::= block
             | SWITCH parExpression LBRACE switchBlockStatementGroups RBRACE
             | RETURN expression? SEMI
             | THROW expression SEMI
-            | BREAK IDENTIFIER? SEMI
-            | CONTINUE IDENTIFIER? SEMI
+            | BREAK referenceExpression? SEMI
+            | CONTINUE referenceExpression? SEMI
             | expression SEMI
             | IDENTIFIER COLON statement
             | SEMI
@@ -308,7 +304,7 @@ unaryExpressionNotPlusMinus ::= TILDE unaryExpression
  * have to use scope here, parameter passing isn't well supported in antlr.
  */
 primary ::= parExpression
-          | referenceExpression (DOT referenceExpression)* identifierSuffix?
+          | referenceExpression qualifiedReferenceExpression* identifierSuffix?
           | literal
           | symbol
           | creator
@@ -316,11 +312,13 @@ primary ::= parExpression
 
 }
 
-referenceExpression ::= id {
+//referenceExpression ::= id {
+referenceExpression ::= componentName {
   mixin="ee.edio.garmin.psi.impl.MonkeyReferenceImpl"
   implements="ee.edio.garmin.psi.MonkeyReference"
 }
 
+qualifiedReferenceExpression ::= DOT referenceExpression {elementType="referenceExpression"}
 
 identifierSuffix ::= (LBRACKET RBRACKET) + DOT CLASS
                    | (LBRACKET expression RBRACKET)+
@@ -332,7 +330,7 @@ identifierSuffix ::= (LBRACKET RBRACKET) + DOT CLASS
 selector ::= DOT IDENTIFIER (arguments)?
            | LBRACKET expression RBRACKET
 
-creator ::= NEW classOrInterfaceType classCreatorRest | arrayCreator
+creator ::= NEW qualifiedName classCreatorRest | arrayCreator
 
 arrayCreator ::= NEW LBRACKET expression RBRACKET // new [expression evaluating to integer]
                | LBRACKET (expression (COMMA expression)* )? RBRACKET // [expression1, expression2, ...]
@@ -351,7 +349,7 @@ classCreatorRest ::= arguments classBody?
 
 arguments ::= LPAREN (expressionList)? RPAREN
 
-symbol ::= COLON IDENTIFIER
+symbol ::= COLON IDENTIFIER {pin=1}
 
 // maybe use built-in string instead of STRINGLITERAL?
 stringLiteral ::= string {

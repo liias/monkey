@@ -18,7 +18,7 @@ public class MonkeyElementGenerator {
   public static MonkeyId createIdentifierFromText(Project myProject, String name) {
     final PsiFile dummyFile = createDummyFile(myProject, "function " + name + "(){}");
 
-    final MonkeyComponent monkeyComponent = PsiTreeUtil.getChildOfType(dummyFile.getFirstChild(), MonkeyComponent.class);
+    final MonkeyComponent monkeyComponent = PsiTreeUtil.getChildOfType(dummyFile, MonkeyComponent.class);
     //final MonkeyComponent monkeyComponent = PsiTreeUtil.getChildOfType(dummyFile, MonkeyComponent.class);
     final MonkeyComponentName componentName = monkeyComponent == null ? null : monkeyComponent.getComponentName();
     return componentName == null ? null : componentName.getId();

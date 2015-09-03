@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyType extends MonkeyPsiCompositeElement {
 
   @NotNull
-  MonkeyClassOrInterfaceType getClassOrInterfaceType();
+  MonkeyQualifiedName getQualifiedName();
 
 }

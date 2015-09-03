@@ -8,11 +8,11 @@ import com.intellij.psi.PsiLanguageInjectionHost;
 public class MonkeyVisitor extends PsiElementVisitor {
 
   public void visitAdditiveExpression(@NotNull MonkeyAdditiveExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitAndExpression(@NotNull MonkeyAndExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitAnnotation(@NotNull MonkeyAnnotation o) {
@@ -71,24 +71,20 @@ public class MonkeyVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
-  public void visitClassOrInterfaceType(@NotNull MonkeyClassOrInterfaceType o) {
-    visitPsiCompositeElement(o);
-  }
-
   public void visitComponentName(@NotNull MonkeyComponentName o) {
     visitNamedElement(o);
   }
 
   public void visitConditionalAndExpression(@NotNull MonkeyConditionalAndExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitConditionalExpression(@NotNull MonkeyConditionalExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitConditionalOrExpression(@NotNull MonkeyConditionalOrExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitConstDeclaration(@NotNull MonkeyConstDeclaration o) {
@@ -119,16 +115,12 @@ public class MonkeyVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
-  public void visitEnumDeclaration(@NotNull MonkeyEnumDeclaration o) {
-    visitPsiCompositeElement(o);
-  }
-
   public void visitEqualityExpression(@NotNull MonkeyEqualityExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitExclusiveOrExpression(@NotNull MonkeyExclusiveOrExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitExplicitConstructorInvocation(@NotNull MonkeyExplicitConstructorInvocation o) {
@@ -168,7 +160,7 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitHasExpression(@NotNull MonkeyHasExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitId(@NotNull MonkeyId o) {
@@ -180,11 +172,11 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitInclusiveOrExpression(@NotNull MonkeyInclusiveOrExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitInstanceOfExpression(@NotNull MonkeyInstanceOfExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitKeyValueInitializer(@NotNull MonkeyKeyValueInitializer o) {
@@ -203,10 +195,6 @@ public class MonkeyVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
-  public void visitMemberDecl(@NotNull MonkeyMemberDecl o) {
-    visitPsiCompositeElement(o);
-  }
-
   public void visitModifiers(@NotNull MonkeyModifiers o) {
     visitPsiCompositeElement(o);
   }
@@ -220,11 +208,7 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitMultiplicativeExpression(@NotNull MonkeyMultiplicativeExpression o) {
-    visitPsiCompositeElement(o);
-  }
-
-  public void visitNormalClassDeclaration(@NotNull MonkeyNormalClassDeclaration o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitNormalParameterDecl(@NotNull MonkeyNormalParameterDecl o) {
@@ -232,7 +216,7 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitParExpression(@NotNull MonkeyParExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitPrimary(@NotNull MonkeyPrimary o) {
@@ -248,11 +232,12 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitReferenceExpression(@NotNull MonkeyReferenceExpression o) {
-    visitReference(o);
+    visitExpression(o);
+    // visitReference(o);
   }
 
   public void visitRelationalExpression(@NotNull MonkeyRelationalExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitRelationalOp(@NotNull MonkeyRelationalOp o) {
@@ -264,7 +249,7 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitShiftExpression(@NotNull MonkeyShiftExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitShiftOp(@NotNull MonkeyShiftOp o) {
@@ -304,7 +289,7 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitUnaryExpression(@NotNull MonkeyUnaryExpression o) {
-    visitPsiCompositeElement(o);
+    visitExpression(o);
   }
 
   public void visitUnaryExpressionNotPlusMinus(@NotNull MonkeyUnaryExpressionNotPlusMinus o) {
@@ -328,10 +313,6 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitNamedElement(@NotNull MonkeyNamedElement o) {
-    visitPsiCompositeElement(o);
-  }
-
-  public void visitReference(@NotNull MonkeyReference o) {
     visitPsiCompositeElement(o);
   }
 

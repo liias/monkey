@@ -10,44 +10,39 @@ import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.indexing.FileBasedIndex;
 import ee.edio.garmin.psi.MonkeyFile;
 import ee.edio.garmin.psi.MonkeyNamedElement;
+import ee.edio.garmin.psi.MonkeyReference;
+import ee.edio.garmin.psi.MonkeyReferenceExpression;
+import ee.edio.garmin.psi.impl.MonkeyReferenceExpressionImpl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public class MonkeyUtil {
 
-  public static List<MonkeyNamedElement> findProperties(Project project, String key) {
-    List<MonkeyNamedElement> result = null;
+  public static List<MonkeyNamedElement> findReferences(Project project, MonkeyReference monkeyReference) {
+    final MonkeyReferenceExpression referenceExpression = (MonkeyReferenceExpression) monkeyReference;
+
+    final String name = referenceExpression.getComponentName().getName();
+    if (name == null) {
+      return new ArrayList<>();
+    }
+    List<MonkeyNamedElement> result = new ArrayList<>();
     Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, MonkeyFileType.INSTANCE,
         GlobalSearchScope.allScope(project));
     for (VirtualFile virtualFile : virtualFiles) {
       MonkeyFile monkeyFile = (MonkeyFile) PsiManager.getInstance(project).findFile(virtualFile);
       if (monkeyFile != null) {
-        MonkeyNamedElement[] properties = PsiTreeUtil.getChildrenOfType(monkeyFile, MonkeyNamedElement.class);
-        if (properties != null) {
-          for (MonkeyNamedElement property : properties) {
-            if (key.equals(property.getName())) {
-              if (result == null) {
-                result = new ArrayList<>();
-              }
-              result.add(property);
+        MonkeyNamedElement[] references = PsiTreeUtil.getChildrenOfType(monkeyFile.getFirstChild(), MonkeyNamedElement.class);
+        if (references != null) {
+          for (MonkeyNamedElement reference : references) {
+            if (name.equals(reference.getName())) {
+              result.add(reference);
             }
           }
-        }
-      }
-    }
-    return result != null ? result : Collections.<MonkeyNamedElement>emptyList();
-  }
 
-  public static List<MonkeyNamedElement> findProperties(Project project) {
-    List<MonkeyNamedElement> result = new ArrayList<>();
-    Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, MonkeyFileType.INSTANCE,
-        GlobalSearchScope.allScope(project));
-    for (VirtualFile virtualFile : virtualFiles) {
-      MonkeyFile simpleFile = (MonkeyFile) PsiManager.getInstance(project).findFile(virtualFile);
-      if (simpleFile != null) {
-        MonkeyNamedElement[] properties = PsiTreeUtil.getChildrenOfType(simpleFile, MonkeyNamedElement.class);
-        if (properties != null) {
-          Collections.addAll(result, properties);
+          //Collections.addAll(result, references);
         }
       }
     }

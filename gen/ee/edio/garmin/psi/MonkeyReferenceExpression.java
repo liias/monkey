@@ -5,9 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MonkeyReferenceExpression extends MonkeyReference {
+public interface MonkeyReferenceExpression extends MonkeyExpression, MonkeyReference {
 
   @NotNull
-  MonkeyId getId();
+  MonkeyComponentName getComponentName();
 
 }

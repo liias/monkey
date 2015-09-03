@@ -29,8 +29,26 @@ public class MonkeyClassBodyDeclarationImpl extends MonkeyPsiCompositeElementImp
 
   @Override
   @Nullable
-  public MonkeyMemberDecl getMemberDecl() {
-    return findChildByClass(MonkeyMemberDecl.class);
+  public MonkeyClassDeclaration getClassDeclaration() {
+    return findChildByClass(MonkeyClassDeclaration.class);
+  }
+
+  @Override
+  @Nullable
+  public MonkeyConstDeclaration getConstDeclaration() {
+    return findChildByClass(MonkeyConstDeclaration.class);
+  }
+
+  @Override
+  @Nullable
+  public MonkeyFieldDeclaration getFieldDeclaration() {
+    return findChildByClass(MonkeyFieldDeclaration.class);
+  }
+
+  @Override
+  @Nullable
+  public MonkeyFunctionDeclaration getFunctionDeclaration() {
+    return findChildByClass(MonkeyFunctionDeclaration.class);
   }
 
   @Override

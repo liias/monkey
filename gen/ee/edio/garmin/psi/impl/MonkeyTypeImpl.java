@@ -23,8 +23,8 @@ public class MonkeyTypeImpl extends MonkeyPsiCompositeElementImpl implements Mon
 
   @Override
   @NotNull
-  public MonkeyClassOrInterfaceType getClassOrInterfaceType() {
-    return findNotNullChildByClass(MonkeyClassOrInterfaceType.class);
+  public MonkeyQualifiedName getQualifiedName() {
+    return findNotNullChildByClass(MonkeyQualifiedName.class);
   }
 
 }

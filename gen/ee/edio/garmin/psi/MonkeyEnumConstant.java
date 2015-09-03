@@ -14,6 +14,6 @@ public interface MonkeyEnumConstant extends MonkeyPsiCompositeElement {
   MonkeyClassBody getClassBody();
 
   @NotNull
-  PsiElement getIdentifier();
+  MonkeyComponentName getComponentName();
 
 }

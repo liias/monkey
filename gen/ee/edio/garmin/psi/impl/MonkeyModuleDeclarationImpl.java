@@ -23,6 +23,12 @@ public class MonkeyModuleDeclarationImpl extends MonkeyPsiCompositeElementImpl i
 
   @Override
   @NotNull
+  public MonkeyComponentName getComponentName() {
+    return findNotNullChildByClass(MonkeyComponentName.class);
+  }
+
+  @Override
+  @NotNull
   public MonkeyModifiers getModifiers() {
     return findNotNullChildByClass(MonkeyModifiers.class);
   }
@@ -31,12 +37,6 @@ public class MonkeyModuleDeclarationImpl extends MonkeyPsiCompositeElementImpl i
   @NotNull
   public MonkeyModuleBody getModuleBody() {
     return findNotNullChildByClass(MonkeyModuleBody.class);
-  }
-
-  @Override
-  @NotNull
-  public PsiElement getIdentifier() {
-    return findNotNullChildByType(IDENTIFIER);
   }
 
 }

@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static ee.edio.garmin.psi.MonkeyTypes.*;
 import ee.edio.garmin.psi.*;
 
-public class MonkeyParExpressionImpl extends MonkeyPsiCompositeElementImpl implements MonkeyParExpression {
+public class MonkeyParExpressionImpl extends MonkeyExpressionImpl implements MonkeyParExpression {
 
   public MonkeyParExpressionImpl(ASTNode node) {
     super(node);

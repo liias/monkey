@@ -5,10 +5,10 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MonkeyShiftExpression extends MonkeyPsiCompositeElement {
+public interface MonkeyShiftExpression extends MonkeyExpression {
 
   @NotNull
-  List<MonkeyAdditiveExpression> getAdditiveExpressionList();
+  List<MonkeyExpression> getExpressionList();
 
   @NotNull
   List<MonkeyShiftOp> getShiftOpList();

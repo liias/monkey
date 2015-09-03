@@ -23,8 +23,8 @@ public class MonkeyReferenceExpressionImpl extends MonkeyReferenceImpl implement
 
   @Override
   @NotNull
-  public MonkeyId getId() {
-    return findNotNullChildByClass(MonkeyId.class);
+  public MonkeyComponentName getComponentName() {
+    return findNotNullChildByClass(MonkeyComponentName.class);
   }
 
 }

@@ -14,6 +14,6 @@ public interface MonkeyCreator extends MonkeyPsiCompositeElement {
   MonkeyClassCreatorRest getClassCreatorRest();
 
   @Nullable
-  MonkeyClassOrInterfaceType getClassOrInterfaceType();
+  MonkeyQualifiedName getQualifiedName();
 
 }

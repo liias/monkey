@@ -7,4 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface MonkeyUsingDeclaration extends MonkeyPsiCompositeElement {
 
+  @Nullable
+  MonkeyComponentName getComponentName();
+
+  @Nullable
+  MonkeyQualifiedName getQualifiedName();
+
 }

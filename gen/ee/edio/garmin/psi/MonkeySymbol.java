@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface MonkeySymbol extends MonkeyPsiCompositeElement {
 
-  @NotNull
+  @Nullable
   PsiElement getIdentifier();
 
 }

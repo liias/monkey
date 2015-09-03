@@ -16,9 +16,6 @@ public interface MonkeyStatement extends MonkeyPsiCompositeElement {
   @Nullable
   MonkeyForStatement getForStatement();
 
-  @Nullable
-  MonkeyParExpression getParExpression();
-
   @NotNull
   List<MonkeyStatement> getStatementList();
 

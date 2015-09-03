@@ -23,14 +23,32 @@ public class MonkeyClassDeclarationImpl extends MonkeyPsiCompositeElementImpl im
 
   @Override
   @Nullable
-  public MonkeyEnumDeclaration getEnumDeclaration() {
-    return findChildByClass(MonkeyEnumDeclaration.class);
+  public MonkeyClassBody getClassBody() {
+    return findChildByClass(MonkeyClassBody.class);
+  }
+
+  @Override
+  @NotNull
+  public MonkeyComponentName getComponentName() {
+    return findNotNullChildByClass(MonkeyComponentName.class);
   }
 
   @Override
   @Nullable
-  public MonkeyNormalClassDeclaration getNormalClassDeclaration() {
-    return findChildByClass(MonkeyNormalClassDeclaration.class);
+  public MonkeyEnumBody getEnumBody() {
+    return findChildByClass(MonkeyEnumBody.class);
+  }
+
+  @Override
+  @NotNull
+  public MonkeyModifiers getModifiers() {
+    return findNotNullChildByClass(MonkeyModifiers.class);
+  }
+
+  @Override
+  @Nullable
+  public MonkeyType getType() {
+    return findChildByClass(MonkeyType.class);
   }
 
 }

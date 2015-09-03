@@ -2,8 +2,6 @@ package ee.edio.garmin;
 
 import com.intellij.lang.refactoring.RefactoringSupportProvider;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.search.LocalSearchScope;
-import ee.edio.garmin.psi.MonkeyMemberDecl;
 import ee.edio.garmin.psi.MonkeyNamedElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

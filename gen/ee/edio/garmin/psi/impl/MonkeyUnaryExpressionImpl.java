@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static ee.edio.garmin.psi.MonkeyTypes.*;
 import ee.edio.garmin.psi.*;
 
-public class MonkeyUnaryExpressionImpl extends MonkeyPsiCompositeElementImpl implements MonkeyUnaryExpression {
+public class MonkeyUnaryExpressionImpl extends MonkeyExpressionImpl implements MonkeyUnaryExpression {
 
   public MonkeyUnaryExpressionImpl(ASTNode node) {
     super(node);

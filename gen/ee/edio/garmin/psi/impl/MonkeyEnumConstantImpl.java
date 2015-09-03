@@ -35,8 +35,8 @@ public class MonkeyEnumConstantImpl extends MonkeyPsiCompositeElementImpl implem
 
   @Override
   @NotNull
-  public PsiElement getIdentifier() {
-    return findNotNullChildByType(IDENTIFIER);
+  public MonkeyComponentName getComponentName() {
+    return findNotNullChildByClass(MonkeyComponentName.class);
   }
 
 }

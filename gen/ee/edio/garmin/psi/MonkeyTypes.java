@@ -24,7 +24,6 @@ public interface MonkeyTypes {
   IElementType CLASS_BODY_DECLARATION = new MonkeyElementType("CLASS_BODY_DECLARATION");
   IElementType CLASS_CREATOR_REST = new MonkeyElementType("CLASS_CREATOR_REST");
   IElementType CLASS_DECLARATION = new MonkeyElementType("CLASS_DECLARATION");
-  IElementType CLASS_OR_INTERFACE_TYPE = new MonkeyElementType("CLASS_OR_INTERFACE_TYPE");
   IElementType COMPONENT_NAME = new MonkeyElementType("COMPONENT_NAME");
   IElementType CONDITIONAL_AND_EXPRESSION = new MonkeyElementType("CONDITIONAL_AND_EXPRESSION");
   IElementType CONDITIONAL_EXPRESSION = new MonkeyElementType("CONDITIONAL_EXPRESSION");
@@ -36,7 +35,6 @@ public interface MonkeyTypes {
   IElementType ENUM_BODY_DECLARATIONS = new MonkeyElementType("ENUM_BODY_DECLARATIONS");
   IElementType ENUM_CONSTANT = new MonkeyElementType("ENUM_CONSTANT");
   IElementType ENUM_CONSTANTS = new MonkeyElementType("ENUM_CONSTANTS");
-  IElementType ENUM_DECLARATION = new MonkeyElementType("ENUM_DECLARATION");
   IElementType EQUALITY_EXPRESSION = new MonkeyElementType("EQUALITY_EXPRESSION");
   IElementType EXCLUSIVE_OR_EXPRESSION = new MonkeyElementType("EXCLUSIVE_OR_EXPRESSION");
   IElementType EXPLICIT_CONSTRUCTOR_INVOCATION = new MonkeyElementType("EXPLICIT_CONSTRUCTOR_INVOCATION");
@@ -57,12 +55,10 @@ public interface MonkeyTypes {
   IElementType LITERAL = new MonkeyElementType("LITERAL");
   IElementType LOCAL_VARIABLE_DECLARATION = new MonkeyElementType("LOCAL_VARIABLE_DECLARATION");
   IElementType LOCAL_VARIABLE_DECLARATION_STATEMENT = new MonkeyElementType("LOCAL_VARIABLE_DECLARATION_STATEMENT");
-  IElementType MEMBER_DECL = new MonkeyElementType("MEMBER_DECL");
   IElementType MODIFIERS = new MonkeyElementType("MODIFIERS");
   IElementType MODULE_BODY = new MonkeyElementType("MODULE_BODY");
   IElementType MODULE_DECLARATION = new MonkeyElementType("MODULE_DECLARATION");
   IElementType MULTIPLICATIVE_EXPRESSION = new MonkeyElementType("MULTIPLICATIVE_EXPRESSION");
-  IElementType NORMAL_CLASS_DECLARATION = new MonkeyElementType("NORMAL_CLASS_DECLARATION");
   IElementType NORMAL_PARAMETER_DECL = new MonkeyElementType("NORMAL_PARAMETER_DECL");
   IElementType PAR_EXPRESSION = new MonkeyElementType("PAR_EXPRESSION");
   IElementType PRIMARY = new MonkeyElementType("PRIMARY");
@@ -230,9 +226,6 @@ public interface MonkeyTypes {
       else if (type == CLASS_DECLARATION) {
         return new MonkeyClassDeclarationImpl(node);
       }
-      else if (type == CLASS_OR_INTERFACE_TYPE) {
-        return new MonkeyClassOrInterfaceTypeImpl(node);
-      }
       else if (type == COMPONENT_NAME) {
         return new MonkeyComponentNameImpl(node);
       }
@@ -265,9 +258,6 @@ public interface MonkeyTypes {
       }
       else if (type == ENUM_CONSTANTS) {
         return new MonkeyEnumConstantsImpl(node);
-      }
-      else if (type == ENUM_DECLARATION) {
-        return new MonkeyEnumDeclarationImpl(node);
       }
       else if (type == EQUALITY_EXPRESSION) {
         return new MonkeyEqualityExpressionImpl(node);
@@ -329,9 +319,6 @@ public interface MonkeyTypes {
       else if (type == LOCAL_VARIABLE_DECLARATION_STATEMENT) {
         return new MonkeyLocalVariableDeclarationStatementImpl(node);
       }
-      else if (type == MEMBER_DECL) {
-        return new MonkeyMemberDeclImpl(node);
-      }
       else if (type == MODIFIERS) {
         return new MonkeyModifiersImpl(node);
       }
@@ -343,9 +330,6 @@ public interface MonkeyTypes {
       }
       else if (type == MULTIPLICATIVE_EXPRESSION) {
         return new MonkeyMultiplicativeExpressionImpl(node);
-      }
-      else if (type == NORMAL_CLASS_DECLARATION) {
-        return new MonkeyNormalClassDeclarationImpl(node);
       }
       else if (type == NORMAL_PARAMETER_DECL) {
         return new MonkeyNormalParameterDeclImpl(node);

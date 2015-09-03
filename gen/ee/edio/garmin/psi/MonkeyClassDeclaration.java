@@ -8,9 +8,18 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyClassDeclaration extends MonkeyPsiCompositeElement {
 
   @Nullable
-  MonkeyEnumDeclaration getEnumDeclaration();
+  MonkeyClassBody getClassBody();
+
+  @NotNull
+  MonkeyComponentName getComponentName();
 
   @Nullable
-  MonkeyNormalClassDeclaration getNormalClassDeclaration();
+  MonkeyEnumBody getEnumBody();
+
+  @NotNull
+  MonkeyModifiers getModifiers();
+
+  @Nullable
+  MonkeyType getType();
 
 }

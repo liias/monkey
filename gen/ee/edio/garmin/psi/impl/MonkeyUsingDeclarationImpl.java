@@ -21,4 +21,16 @@ public class MonkeyUsingDeclarationImpl extends MonkeyPsiCompositeElementImpl im
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public MonkeyComponentName getComponentName() {
+    return findChildByClass(MonkeyComponentName.class);
+  }
+
+  @Override
+  @Nullable
+  public MonkeyQualifiedName getQualifiedName() {
+    return findChildByClass(MonkeyQualifiedName.class);
+  }
+
 }

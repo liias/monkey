@@ -8,12 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyModuleDeclaration extends MonkeyPsiCompositeElement {
 
   @NotNull
+  MonkeyComponentName getComponentName();
+
+  @NotNull
   MonkeyModifiers getModifiers();
 
   @NotNull
   MonkeyModuleBody getModuleBody();
-
-  @NotNull
-  PsiElement getIdentifier();
 
 }

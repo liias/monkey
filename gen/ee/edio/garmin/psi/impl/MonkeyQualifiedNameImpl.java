@@ -21,4 +21,10 @@ public class MonkeyQualifiedNameImpl extends MonkeyPsiCompositeElementImpl imple
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public List<MonkeyComponentName> getComponentNameList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyComponentName.class);
+  }
+
 }

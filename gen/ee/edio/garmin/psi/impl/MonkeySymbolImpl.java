@@ -22,9 +22,9 @@ public class MonkeySymbolImpl extends MonkeyPsiCompositeElementImpl implements M
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PsiElement getIdentifier() {
-    return findNotNullChildByType(IDENTIFIER);
+    return findChildByType(IDENTIFIER);
   }
 
 }

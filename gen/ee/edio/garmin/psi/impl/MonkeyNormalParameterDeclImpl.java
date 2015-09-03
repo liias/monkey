@@ -23,8 +23,8 @@ public class MonkeyNormalParameterDeclImpl extends MonkeyPsiCompositeElementImpl
 
   @Override
   @NotNull
-  public PsiElement getIdentifier() {
-    return findNotNullChildByType(IDENTIFIER);
+  public MonkeyComponentName getComponentName() {
+    return findNotNullChildByClass(MonkeyComponentName.class);
   }
 
 }
