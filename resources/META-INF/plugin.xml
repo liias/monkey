@@ -52,6 +52,8 @@
 
     <gotoClassContributor implementation="ee.edio.garmin.MonkeyGoToClassContributor"/>
 
+    <internalFileTemplate name="Monkey C File"/>
+
     <!-- run application -->
     <programRunner id="MonkeyCRunner" implementation="ee.edio.garmin.runconfig.MonkeyProgramRunner"/>
     <runConfigurationProducer implementation="ee.edio.garmin.runconfig.MonkeyModuleConfigurationProducer"/>
@@ -69,7 +71,10 @@
   </project-components>
 
   <actions>
-    <!-- Add your actions here -->
+    <action id="Monkey.NewMonkeyFile" class="ee.edio.garmin.ide.actions.CreateMonkeyFileAction"
+            text="Monkey C File" description="Create new Monkey C source file">
+      <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
+    </action>
   </actions>
 
 </idea-plugin>
