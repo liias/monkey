@@ -50,6 +50,8 @@
     <completion.contributor language="MonkeyC"
                             implementationClass="ee.edio.garmin.completion.MonkeyCompletionContributor"/>
 
+    <fileTemplateGroup implementation="ee.edio.garmin.ide.fileTemplates.MonkeyFileTemplateProvider"/>
+
     <gotoClassContributor implementation="ee.edio.garmin.MonkeyGoToClassContributor"/>
 
     <internalFileTemplate name="Monkey C File"/>
