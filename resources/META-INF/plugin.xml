@@ -66,6 +66,7 @@
     <moduleExtension implementation="ee.edio.garmin.configuration.TargetDeviceModuleExtension"/>
 
     <dom.fileDescription implementation="ee.edio.garmin.dom.manifest.ManifestDomFileDescription"/>
+    <dom.fileDescription implementation="ee.edio.garmin.dom.sdk.projectinfo.ProjectInfoDomFileDescription"/>
   </extensions>
 
   <application-components>

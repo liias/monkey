@@ -1,5 +1,7 @@
 package ee.edio.garmin;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.intellij.compiler.CompilerWorkspaceConfiguration;
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.Disposable;
@@ -12,47 +14,49 @@ import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.DumbAwareRunnable;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.startup.StartupManager;
-import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.ReadonlyStatusHandler;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.ExternalChangeAction;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.DocumentUtil;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xml.DomElement;
-import com.intellij.util.xml.DomFileElement;
-import com.intellij.util.xml.DomManager;
+import com.intellij.util.xml.GenericAttributeValue;
 import ee.edio.garmin.dom.manifest.Manifest;
-import ee.edio.garmin.ide.fileTemplates.MonkeyFileTemplateProvider;
-import ee.edio.garmin.module.AppType;
+import ee.edio.garmin.dom.sdk.projectinfo.NewProjectFileMap;
+import ee.edio.garmin.dom.sdk.projectinfo.ProjectInfo;
 import ee.edio.garmin.module.MonkeyModuleWizardStep;
 import ee.edio.garmin.sdk.MonkeySdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static ee.edio.garmin.MonkeyUtil.createChildDirectoryIfNotExist;
+import static ee.edio.garmin.MonkeyUtil.loadDomElement;
 
 public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePathsBuilder, ModuleBuilderListener {
   private static final Logger LOG = Logger.getInstance("#ee.edio.garmin.MonkeyModuleBuilder");
   public static final String MANIFEST_XML = "manifest.xml";
-  private final AppType appType;
+  public static final String PROJECT_INFO_XML = "projectInfo.xml";
+  private final String appType;
 
-  public MonkeyModuleBuilder(AppType appType) {
+  public MonkeyModuleBuilder(String appType) {
     this.appType = appType;
   }
 
@@ -98,66 +102,69 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
     } catch (IOException e) {
       LOG.error(e);
     }
-    createManifestFile(project, contentRoot);
-    createResourcesAndLibs(project, contentRoot);
+
+    final Sdk sdk = ModuleRootManager.getInstance(module).getSdk();
+    final MonkeySdkType sdkType = MonkeySdkType.getInstance();
+    final VirtualFile sdkBinDir = sdkType.getBinDir(sdk);
+    createResourcesAndLibs(project, contentRoot, sdkBinDir);
 
     PsiDirectory sourceDir = sourceRoot != null ? PsiManager.getInstance(project).findDirectory(sourceRoot) : null;
-    createFilesAndSetupManifest(project, module, contentRoot, sourceDir);
+    fillTemplates(project, module, contentRoot, sourceDir);
   }
 
-  private void createResourcesAndLibs(final Project project, final VirtualFile rootDir) {
+  private void createResourcesAndLibs(final Project project, final VirtualFile rootDir, VirtualFile sdkBinDir) {
+    ProjectInfo sdkProjectInfo = getSdkProjectInfo(project, sdkBinDir);
+    List<NewProjectFileMap> newProjectFileMaps = sdkProjectInfo.getNewProjectFilesMaps().getNewProjectFileMaps();
+    final NewProjectFileMap newProjectFileMap = Iterables.find(newProjectFileMaps, new Predicate<NewProjectFileMap>() {
+      @Override
+      public boolean apply(@Nullable NewProjectFileMap newProjectFileMap) {
+        return newProjectFileMap != null && appType.equals(newProjectFileMap.getAppType().getStringValue());
+      }
+    });
+    final GenericAttributeValue<String> baseDir = newProjectFileMap.getBaseDir(); // e.g templates/watch-app/simple
+
     try {
-      VirtualFile resourcesDir = createChildDirectoryIfNotExist(project, rootDir, "resources");
-      createFileFromResource(project, resourcesDir, "resources.xml", "/icons/sdk.png");
+      for (ee.edio.garmin.dom.sdk.projectinfo.File file : newProjectFileMap.getFiles()) {
+        final String relativeFilePath = file.getValue(); // e.g resources/images/launcher_icon.png
+        final VirtualFile templateFile = sdkBinDir.findFileByRelativePath(baseDir + File.separator + relativeFilePath);
+        //final File projectFilePath = new File(rootDir.getPath() + File.separator + relativeFilePath);
+        //FileUtil.createParentDirs(projectFilePath);
+        //final VirtualFile childDir = rootDir.findFileByRelativePath(projectFilePath.getParent());
+        //final String fileName = projectFilePath.getName();
 
-      VirtualFile imagesDir = createChildDirectoryIfNotExist(project, resourcesDir, "images");
-      createFileFromResource(project, imagesDir, "launcher_icon.png", "/icons/sdk.png");
-      createFileFromResource(project, imagesDir, "monkey.png", "/icons/module.png");
-
-      VirtualFile layoutsDir = createChildDirectoryIfNotExist(project, resourcesDir, "layouts");
-      createFileFromResource(project, layoutsDir, "layout.xml", "/icons/module.png");
-
-      VirtualFile menusDir = createChildDirectoryIfNotExist(project, resourcesDir, "menus");
-      createFileFromResource(project, menusDir, "menu.xml", "/icons/module.png");
-
-      VirtualFile sourceDir = createChildDirectoryIfNotExist(project, rootDir, "source");
-      createFileFromResource(project, sourceDir, "app.mc", "/icons/module.png");
-      createFileFromResource(project, sourceDir, "MenuDelegate.mc", "/icons/module.png");
-      createFileFromResource(project, sourceDir, "View.mc", "/icons/module.png");
-
+        // this handles creating child directories as well
+        VfsUtil.copyFileRelative(project, templateFile, rootDir, relativeFilePath);
+      }
     } catch (IOException e) {
       LOG.error(e);
     }
+
+/*    for (String language : languages) {
+      IFolder folder = project.getFolder("resources-" + language);
+      if (!folder.exists()) {
+        folder.create(true, true, null);
+      }
+    }*/
+
+    //String sanitizedName = IQProjectSupport.sanitizeProjectName(name);
+    String name = "okei";
+    String sanitizedName = "okei";
+    Map<String, String> substitutions = new HashMap<>();
+    substitutions.put("appName", name);
+    substitutions.put("appClassName", sanitizedName + "App");
+    substitutions.put("viewClassName", sanitizedName + "View");
+    substitutions.put("delegateClassName", sanitizedName + "Delegate");
+    substitutions.put("menuDelegateClassName", sanitizedName + "MenuDelegate");
   }
 
-  private static void createFileFromResource(Project project, VirtualFile drawableDir, String name, String resourceFilePath)
-      throws IOException {
-    if (drawableDir.findChild(name) != null) {
-      return;
-    }
-    VirtualFile resFile = drawableDir.createChildData(project, name);
-    try (InputStream stream = MonkeyModuleBuilder.class.getResourceAsStream(resourceFilePath)) {
-      byte[] bytes = FileUtil.adaptiveLoadBytes(stream);
-      resFile.setBinaryContent(bytes);
-    }
-  }
-
-  private static void createManifestFile(final Project project, VirtualFile contentRoot) {
-    try {
-      MonkeyFileTemplateProvider.createFromTemplate(project, contentRoot, MonkeyFileTemplateProvider.APP_MANIFEST_TEMPLATE, MANIFEST_XML);
-    } catch (Exception e) {
-      LOG.error(e);
-    }
-  }
-
-  private void createFilesAndSetupManifest(final Project project, final Module module, final VirtualFile contentRoot, PsiDirectory sourceDir) {
+  private void fillTemplates(final Project project, final Module module, final VirtualFile contentRoot, PsiDirectory sourceDir) {
     CommandProcessor.getInstance().executeCommand(project, new ExternalChangeAction() {
       @Override
       public void run() {
         Runnable action = new Runnable() {
           @Override
           public void run() {
-            final Manifest manifest = getManifest(project, module, contentRoot);
+            final Manifest manifest = getManifest(project, contentRoot);
             if (manifest != null) {
               StartupManager.getInstance(project).runWhenProjectIsInitialized(new Runnable() {
                 @Override
@@ -165,7 +172,6 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
                   FileDocumentManager.getInstance().saveAllDocuments();
                 }
               });
-
               configureManifest(manifest, module, appType);
             }
           }
@@ -178,64 +184,55 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
 
   }
 
-
-  private static void configureManifest(Manifest manifest, Module module, AppType appType) {
-    final XmlTag manifestTag = manifest.getXmlTag();
-    if (manifestTag == null) {
-      return;
+  private static PsiFile getValidatedPsiFile(DomElement domElement) {
+    final XmlTag rootTag = domElement.getXmlTag();
+    if (rootTag == null) {
+      return null;
     }
 
-    final PsiFile manifestFile = manifestTag.getContainingFile();
+    final PsiFile psiFile = rootTag.getContainingFile();
+    if (psiFile == null) {
+      return null;
+    }
+
+    final VirtualFile virtualFile = psiFile.getVirtualFile();
+    if (virtualFile == null ||
+        !ReadonlyStatusHandler.ensureFilesWritable(psiFile.getProject(), virtualFile)) {
+      return null;
+    }
+
+    return psiFile;
+  }
+
+  private static void configureManifest(Manifest manifest, Module module, String appType) {
+    if (appType == null) {
+      throw new RuntimeException("app type is null");
+    }
+    final PsiFile manifestFile = getValidatedPsiFile(manifest);
     if (manifestFile == null) {
       return;
     }
 
-    final VirtualFile vManifestFile = manifestFile.getVirtualFile();
-    if (vManifestFile == null ||
-        !ReadonlyStatusHandler.ensureFilesWritable(manifestFile.getProject(), vManifestFile)) {
-      return;
-    }
-
     final String applicationId = MonkeyUtil.generateProjectId();
+    final String entryClassName = module.getName() + "App";
+
     manifest.getApplication().getId().setValue(applicationId);
-    // main class is class which extends Toybox.Application.AppBase
-    final String mainClassName = module.getName() + "App";
-    manifest.getApplication().getEntry().setValue(mainClassName);
-
-    String type = "watch-app";
-    switch (appType) {
-      case WATCH_APP:
-        type = "watch-app";
-        break;
-      case WIDGET:
-        type = "widget";
-        break;
-      case DATA_FIELD:
-        type = "datafield";
-        break;
-      case WATCH_FACE:
-        type = "watchface";
-        break;
-    }
-    // app appType can be: watchface, datafield, widget, watch-app
-    manifest.getApplication().getType().setValue(type);
-
-/*
-      usesSdkTag = manifestTag.addSubTag(usesSdkTag, true);
-      usesSdkTag.setAttribute("minSdkVersion", SdkConstants.NS_RESOURCES, target.getVersion().getApiString());
-    */
+    manifest.getApplication().getType().setValue(appType);
+    manifest.getApplication().getName().setValue("AppName");
+    // entry is a class which extends Toybox.Application.AppBase
+    manifest.getApplication().getEntry().setValue(entryClassName);
+    manifest.getApplication().getLauncherIcon().setValue("LauncherIcon");
     CodeStyleManager.getInstance(manifestFile.getProject()).reformat(manifestFile);
   }
 
-  private static Manifest getManifest(Project project, Module module, VirtualFile contentRoot) {
-    VirtualFile manifestFile = getManifestFile(module, contentRoot);
-
-
-    return manifestFile != null ? loadDomElement(project, manifestFile, Manifest.class) : null;
+  private static ProjectInfo getSdkProjectInfo(Project project, VirtualFile sdkBinDir) {
+    final VirtualFile projectInfoFile = sdkBinDir.findChild(PROJECT_INFO_XML);
+    return projectInfoFile != null ? loadDomElement(project, projectInfoFile, ProjectInfo.class) : null;
   }
 
-  private static VirtualFile getManifestFile(Module module, VirtualFile contentRoot) {
-    return contentRoot.findChild(MANIFEST_XML);
+  private static Manifest getManifest(Project project, VirtualFile contentRoot) {
+    VirtualFile manifestFile = contentRoot.findChild(MANIFEST_XML);
+    return manifestFile != null ? loadDomElement(project, manifestFile, Manifest.class) : null;
   }
 
   @Override
@@ -271,36 +268,5 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
     return new ModuleWizardStep[]{new MonkeyModuleWizardStep(this, context)};
   }
 
-  @Nullable
-  public static <T extends DomElement> T loadDomElement(@NotNull final Project project,
-                                                        @NotNull final VirtualFile file,
-                                                        @NotNull final Class<T> aClass) {
-    return ApplicationManager.getApplication().runReadAction(new Computable<T>() {
-      @Override
-      @Nullable
-      public T compute() {
-        if (project.isDisposed()) return null;
-        PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
-        if (psiFile instanceof XmlFile) {
-          return loadDomElementWithReadPermission(project, (XmlFile) psiFile, aClass);
-        } else {
-          return null;
-        }
-      }
-    });
-  }
 
-  /**
-   * This method should be called under a read action.
-   */
-  @Nullable
-  public static <T extends DomElement> T loadDomElementWithReadPermission(@NotNull Project project,
-                                                                          @NotNull XmlFile xmlFile,
-                                                                          @NotNull Class<T> aClass) {
-    ApplicationManager.getApplication().assertReadAccessAllowed();
-    DomManager domManager = DomManager.getDomManager(project);
-    DomFileElement<T> element = domManager.getFileElement(xmlFile, aClass);
-    if (element == null) return null;
-    return element.getRootElement();
-  }
 }

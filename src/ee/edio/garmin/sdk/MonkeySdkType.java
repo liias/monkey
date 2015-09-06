@@ -1,6 +1,7 @@
 package ee.edio.garmin.sdk;
 
 import com.intellij.openapi.projectRoots.*;
+import com.intellij.openapi.vfs.VirtualFile;
 import ee.edio.garmin.MonkeyConstants;
 import ee.edio.garmin.MonkeyIcons;
 import org.jdom.Element;
@@ -79,6 +80,10 @@ public class MonkeySdkType extends SdkType {
     return getBinPath(sdk) + File.separator + "monkeybrains.jar";
   }
 
+  public VirtualFile getBinDir(@NotNull Sdk sdk) {
+    return sdk.getHomeDirectory().findChild("bin");
+  }
+
   public String getBinPath(@NotNull Sdk sdk) {
     return getConvertedHomePath(sdk) + "bin";
   }
@@ -90,5 +95,4 @@ public class MonkeySdkType extends SdkType {
     }
     return path;
   }
-
 }

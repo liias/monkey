@@ -1,17 +1,26 @@
 package ee.edio.garmin;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.indexing.FileBasedIndex;
+import com.intellij.util.xml.DomElement;
+import com.intellij.util.xml.DomFileElement;
+import com.intellij.util.xml.DomManager;
 import ee.edio.garmin.psi.MonkeyFile;
 import ee.edio.garmin.psi.MonkeyNamedElement;
 import ee.edio.garmin.psi.MonkeyReference;
 import ee.edio.garmin.psi.MonkeyReferenceExpression;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.*;
@@ -69,5 +78,39 @@ public class MonkeyUtil {
   public static VirtualFile createChildDirectoryIfNotExist(Project project, VirtualFile parent, String name) throws IOException {
     final VirtualFile child = parent.findChild(name);
     return child == null ? parent.createChildDirectory(project, name) : child;
+  }
+
+
+  @Nullable
+  public static <T extends DomElement> T loadDomElement(@NotNull final Project project,
+                                                        @NotNull final VirtualFile file,
+                                                        @NotNull final Class<T> aClass) {
+    return ApplicationManager.getApplication().runReadAction(new Computable<T>() {
+      @Override
+      @Nullable
+      public T compute() {
+        if (project.isDisposed()) return null;
+        PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
+        if (psiFile instanceof XmlFile) {
+          return loadDomElementWithReadPermission(project, (XmlFile) psiFile, aClass);
+        } else {
+          return null;
+        }
+      }
+    });
+  }
+
+  /**
+   * This method should be called under a read action.
+   */
+  @Nullable
+  public static <T extends DomElement> T loadDomElementWithReadPermission(@NotNull Project project,
+                                                                          @NotNull XmlFile xmlFile,
+                                                                          @NotNull Class<T> aClass) {
+    ApplicationManager.getApplication().assertReadAccessAllowed();
+    DomManager domManager = DomManager.getDomManager(project);
+    DomFileElement<T> element = domManager.getFileElement(xmlFile, aClass);
+    if (element == null) return null;
+    return element.getRootElement();
   }
 }
