@@ -35,6 +35,7 @@ import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomManager;
 import ee.edio.garmin.dom.manifest.Manifest;
 import ee.edio.garmin.ide.fileTemplates.MonkeyFileTemplateProvider;
+import ee.edio.garmin.module.AppType;
 import ee.edio.garmin.module.MonkeyModuleWizardStep;
 import ee.edio.garmin.sdk.MonkeySdkType;
 import org.jetbrains.annotations.NotNull;
@@ -49,10 +50,10 @@ import static ee.edio.garmin.MonkeyUtil.createChildDirectoryIfNotExist;
 public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePathsBuilder, ModuleBuilderListener {
   private static final Logger LOG = Logger.getInstance("#ee.edio.garmin.MonkeyModuleBuilder");
   public static final String MANIFEST_XML = "manifest.xml";
-  private final String type;
+  private final AppType appType;
 
-  public MonkeyModuleBuilder(String type) {
-    this.type = type;
+  public MonkeyModuleBuilder(AppType appType) {
+    this.appType = appType;
   }
 
   @Override
@@ -86,8 +87,8 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
   }
 
   @Override
-  public boolean isTemplate() {
-    return true;
+  protected boolean isAvailable() {
+    return false;
   }
 
   private void createProject(Project project, VirtualFile contentRoot, Module module) {
@@ -165,7 +166,7 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
                 }
               });
 
-              configureManifest(manifest, module);
+              configureManifest(manifest, module, appType);
             }
           }
         };
@@ -178,7 +179,7 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
   }
 
 
-  private static void configureManifest(Manifest manifest, Module module) {
+  private static void configureManifest(Manifest manifest, Module module, AppType appType) {
     final XmlTag manifestTag = manifest.getXmlTag();
     if (manifestTag == null) {
       return;
@@ -201,9 +202,23 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
     final String mainClassName = module.getName() + "App";
     manifest.getApplication().getEntry().setValue(mainClassName);
 
-    // app type can be: watchface, datafield, widget, watch-app
-    final String appType = "watch-app";
-    manifest.getApplication().getType().setValue(appType);
+    String type = "watch-app";
+    switch (appType) {
+      case WATCH_APP:
+        type = "watch-app";
+        break;
+      case WIDGET:
+        type = "widget";
+        break;
+      case DATA_FIELD:
+        type = "datafield";
+        break;
+      case WATCH_FACE:
+        type = "watchface";
+        break;
+    }
+    // app appType can be: watchface, datafield, widget, watch-app
+    manifest.getApplication().getType().setValue(type);
 
 /*
       usesSdkTag = manifestTag.addSubTag(usesSdkTag, true);

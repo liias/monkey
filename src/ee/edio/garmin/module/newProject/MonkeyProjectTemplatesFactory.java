@@ -6,23 +6,17 @@ import com.intellij.platform.ProjectTemplatesFactory;
 import com.intellij.platform.templates.BuilderBasedTemplate;
 import ee.edio.garmin.MonkeyIcons;
 import ee.edio.garmin.MonkeyModuleBuilder;
+import ee.edio.garmin.module.AppType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
 public class MonkeyProjectTemplatesFactory extends ProjectTemplatesFactory {
-
-  public static final String WATCH_FACE = "Watch Face";
-  public static final String DATA_FIELD = "Data field";
-  public static final String WIDGET = "Widget";
-  public static final String WATCH_APP = "Application";
-
-
   @NotNull
   @Override
   public String[] getGroups() {
-    return new String[]{"Monkey C "};
+    return new String[]{"Connect IQ"};
   }
 
   @Override
@@ -39,11 +33,11 @@ public class MonkeyProjectTemplatesFactory extends ProjectTemplatesFactory {
   @Override
   public ProjectTemplate[] createTemplates(@Nullable String group, WizardContext context) {
     ProjectTemplate[] templates = {
-        new MonkeyProjectTemplate("app", "long description is here", new MonkeyModuleBuilder(WATCH_APP)),
-        new MonkeyProjectTemplate("watch face", "long description is here", new MonkeyModuleBuilder(WATCH_FACE)),
-        new MonkeyProjectTemplate(DATA_FIELD, "long description is here", new MonkeyModuleBuilder(DATA_FIELD)),
+        new MonkeyProjectTemplate("Watch App", "Watch apps have full control of the device", new MonkeyModuleBuilder(AppType.WATCH_APP)),
+        new MonkeyProjectTemplate("Widget", "Widgets provide information at-a-glance to the user", new MonkeyModuleBuilder(AppType.WIDGET)),
+        new MonkeyProjectTemplate("Data Field", "Data fields allow customization of Garmin activities", new MonkeyModuleBuilder(AppType.DATA_FIELD)),
+        new MonkeyProjectTemplate("Watch Face", "Watch faces provide custom displays for the home screen of the watch", new MonkeyModuleBuilder(AppType.WATCH_FACE)),
     };
-
     return templates;
   }
 
