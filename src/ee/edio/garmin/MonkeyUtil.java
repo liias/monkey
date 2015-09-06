@@ -12,12 +12,9 @@ import ee.edio.garmin.psi.MonkeyFile;
 import ee.edio.garmin.psi.MonkeyNamedElement;
 import ee.edio.garmin.psi.MonkeyReference;
 import ee.edio.garmin.psi.MonkeyReferenceExpression;
-import ee.edio.garmin.psi.impl.MonkeyReferenceExpressionImpl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 public class MonkeyUtil {
 
@@ -62,5 +59,15 @@ public class MonkeyUtil {
     return !deviceId.equalsIgnoreCase("round_watch") &&
         !deviceId.equalsIgnoreCase("square_watch") &&
         !deviceId.equalsIgnoreCase("semi_round_watch");
+  }
+
+  public static String generateProjectId() {
+    UUID id = UUID.randomUUID();
+    return String.format("%016X%016X", id.getMostSignificantBits(), id.getLeastSignificantBits());
+  }
+
+  public static VirtualFile createChildDirectoryIfNotExist(Project project, VirtualFile parent, String name) throws IOException {
+    final VirtualFile child = parent.findChild(name);
+    return child == null ? parent.createChildDirectory(project, name) : child;
   }
 }

@@ -2,7 +2,6 @@ package ee.edio.garmin.module;
 
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.ide.util.projectWizard.WizardContext;
-import com.intellij.openapi.Disposable;
 import ee.edio.garmin.MonkeyModuleBuilder;
 
 import javax.swing.*;
@@ -12,8 +11,7 @@ public class MonkeyModuleWizardStep extends ModuleWizardStep {
 
   private JPanel myPanel;
 
-
-  public MonkeyModuleWizardStep(MonkeyModuleBuilder moduleBuilder, WizardContext context, Disposable parentDisposable) {
+  public MonkeyModuleWizardStep(MonkeyModuleBuilder moduleBuilder, WizardContext context) {
     myAppPropertiesEditor = new MonkeyAppPropertiesEditor(moduleBuilder.getName(), context.getModulesProvider());
 
     myPanel = new JPanel();

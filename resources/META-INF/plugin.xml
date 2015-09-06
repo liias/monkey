@@ -52,6 +52,8 @@
 
     <fileTemplateGroup implementation="ee.edio.garmin.ide.fileTemplates.MonkeyFileTemplateProvider"/>
 
+    <projectTemplatesFactory implementation="ee.edio.garmin.module.newProject.MonkeyProjectTemplatesFactory"/>
+
     <gotoClassContributor implementation="ee.edio.garmin.MonkeyGoToClassContributor"/>
 
     <internalFileTemplate name="Monkey C File"/>
@@ -62,6 +64,8 @@
     <configurationType implementation="ee.edio.garmin.runconfig.MonkeyConfigurationType"/>
 
     <moduleExtension implementation="ee.edio.garmin.configuration.TargetDeviceModuleExtension"/>
+
+    <dom.fileDescription implementation="ee.edio.garmin.dom.manifest.ManifestDomFileDescription"/>
   </extensions>
 
   <application-components>

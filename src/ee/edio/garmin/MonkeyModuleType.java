@@ -25,7 +25,7 @@ public class MonkeyModuleType extends ModuleType<MonkeyModuleBuilder> {
   @NotNull
   @Override
   public MonkeyModuleBuilder createModuleBuilder() {
-    return new MonkeyModuleBuilder();
+    return new MonkeyModuleBuilder(null);
   }
 
   @NotNull
