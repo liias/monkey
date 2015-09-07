@@ -254,8 +254,8 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
     XmlTag productsRootTag = products.getXmlTag();
     XmlTag productTag = productsRootTag.createChildTag("product", productsRootTag.getNamespace(), "", false);
     productTag = productsRootTag.addSubTag(productTag, true);
-    // TODO:make into self-closing tag somehow
     productTag.setAttribute("id", null, "square_watch");
+    productTag.collapseIfEmpty();
     //productTag.setAttribute("id", null, "round_watch");
 
     CodeStyleManager.getInstance(manifestFile.getProject()).reformat(manifestFile);
