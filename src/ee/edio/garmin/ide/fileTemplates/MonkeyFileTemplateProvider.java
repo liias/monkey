@@ -1,27 +1,20 @@
 package ee.edio.garmin.ide.fileTemplates;
 
 import com.intellij.ide.fileTemplates.*;
-import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
 import ee.edio.garmin.MonkeyIcons;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Properties;
 
 public class MonkeyFileTemplateProvider implements FileTemplateGroupDescriptorFactory {
-  @NonNls
-  public static final String APP_MANIFEST_TEMPLATE = "manifest.xml";
-
   @Override
   public FileTemplateGroupDescriptor getFileTemplatesDescriptor() {
-    final FileTemplateGroupDescriptor group = new FileTemplateGroupDescriptor("Connect IQ", MonkeyIcons.SDK);
-    group.addTemplate(new FileTemplateDescriptor(APP_MANIFEST_TEMPLATE, StdFileTypes.XML.getIcon()));
-    return group;
+    return new FileTemplateGroupDescriptor("Connect IQ", MonkeyIcons.SDK);
   }
 
   public static PsiElement createFromTemplate(@NotNull Project project, @NotNull VirtualFile rootDir, @NotNull String templateName, @NotNull String fileName) throws Exception {
