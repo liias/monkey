@@ -19,9 +19,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfiguration> implements PanelWithAnchor {
+
   public static final ImmutableList<TargetDevice> ALL_DEVICES = new ImmutableList.Builder<TargetDevice>()
-      .add(new TargetDevice("square_watch", "Square Watch"))
-      .add(new TargetDevice("round_watch", "Round Watch"))
+      .add(TargetDevice.SQUARE_WATCH)
+      .add(TargetDevice.ROUND_WATCH)
       .add(new TargetDevice("vivoactive", "vívoactive"))
       .add(new TargetDevice("fenix3", "fēnix™ 3"))
       .add(new TargetDevice("d2bravo", "D2™ Bravo"))

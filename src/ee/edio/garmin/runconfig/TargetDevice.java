@@ -1,6 +1,9 @@
 package ee.edio.garmin.runconfig;
 
 public class TargetDevice {
+  public static final TargetDevice SQUARE_WATCH = new TargetDevice("square_watch", "Square Watch");
+  public static final TargetDevice ROUND_WATCH = new TargetDevice("round_watch", "Round Watch");
+
   private String id;
   private String name;
 
@@ -43,7 +46,7 @@ public class TargetDevice {
   }
 
   public static TargetDevice fromId(String targetDeviceId) {
-    return new TargetDevice(targetDeviceId, "hihii");
+    return new TargetDevice(targetDeviceId, targetDeviceId);
   }
 
   @Override

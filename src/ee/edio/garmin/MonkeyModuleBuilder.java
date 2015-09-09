@@ -3,6 +3,9 @@ package ee.edio.garmin;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.intellij.compiler.CompilerWorkspaceConfiguration;
+import com.intellij.execution.RunManager;
+import com.intellij.execution.RunnerAndConfigurationSettings;
+import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
@@ -35,11 +38,15 @@ import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.DocumentUtil;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
+import ee.edio.garmin.configuration.TargetDeviceModuleExtension;
 import ee.edio.garmin.dom.manifest.Manifest;
 import ee.edio.garmin.dom.manifest.Products;
 import ee.edio.garmin.dom.sdk.projectinfo.NewProjectFileMap;
 import ee.edio.garmin.dom.sdk.projectinfo.ProjectInfo;
 import ee.edio.garmin.module.MonkeyModuleWizardStep;
+import ee.edio.garmin.runconfig.MonkeyConfigurationType;
+import ee.edio.garmin.runconfig.MonkeyModuleBasedConfiguration;
+import ee.edio.garmin.runconfig.TargetDevice;
 import ee.edio.garmin.sdk.MonkeySdkType;
 import ee.edio.garmin.util.ExternalTemplateUtil;
 import org.apache.commons.lang.WordUtils;
@@ -63,6 +70,7 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
   public static final String MANIFEST_XML = "manifest.xml";
   public static final String PROJECT_INFO_XML = "projectInfo.xml";
   public static final String FILE_TYPE_SOURCE = "source";
+  public static final TargetDevice DEFAULT_TARGET_DEVICE = TargetDevice.SQUARE_WATCH;
   private final String appType;
 
   public MonkeyModuleBuilder(String appType) {
@@ -70,33 +78,36 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
   }
 
   @Override
-  public void setupRootModel(ModifiableRootModel modifiableRootModel) throws ConfigurationException {
+  public void setupRootModel(ModifiableRootModel rootModel) throws ConfigurationException {
     addListener(this);
 
-    final Module module = modifiableRootModel.getModule();
+    final Module module = rootModel.getModule();
     final MonkeySdkType sdkType = MonkeySdkType.getInstance();
     // this code from here....
     Sdk sdk = findAndSetSdk(module, sdkType);
     final List<Pair<String, String>> sourcePaths = constructSourcePaths();
     setSourcePaths(sourcePaths);
-    super.setupRootModel(modifiableRootModel);
+    super.setupRootModel(rootModel);
     final String contentEntryPath = getContentEntryPath();
     final VirtualFile moduleContentRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(contentEntryPath.replace('\\', '/'));
-    final ContentEntry[] contentEntries = modifiableRootModel.getContentEntries();
+    final ContentEntry[] contentEntries = rootModel.getContentEntries();
     if (contentEntries != null && contentEntries.length == 1) {
       final ContentEntry contentEntry = contentEntries[0];
       final String path = getContentEntryPath() + File.separator + "resources";
       new File(path).mkdirs();
       final VirtualFile sourceRoot = LocalFileSystem.getInstance()
           .refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
-      // TODO: there can be many resource folders, e.g based on language that come from SDK example projext definitions
+      // TODO: there can be many resource folders, e.g based on language or device that come from SDK's example project definitions
       contentEntry.addSourceFolder(sourceRoot, JavaResourceRootType.RESOURCE, JavaResourceRootType.RESOURCE.createDefaultProperties());
     }
     // ... to here is just awful. TODO: Get rid of extending JavaModuleBuilder
 
-    final Project project = modifiableRootModel.getProject();
+    final TargetDeviceModuleExtension targetDeviceModuleExtension = rootModel.getModuleExtension(TargetDeviceModuleExtension.class);
+    targetDeviceModuleExtension.setTargetDevice(DEFAULT_TARGET_DEVICE);
 
-    VirtualFile[] files = modifiableRootModel.getContentRoots();
+    final Project project = rootModel.getProject();
+
+    VirtualFile[] files = rootModel.getContentRoots();
 
     if (files.length > 0) {
       final VirtualFile contentRoot = files[0];
@@ -138,6 +149,7 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
     VirtualFile sdkBinDir = sdkType.getBinDir(sdk);
     createResourcesAndLibs(module, contentRoot, sdkBinDir);
     fillTemplates(module, contentRoot);
+    setupRunConfiguration(module);
   }
 
   private Sdk findAndSetSdk(Module module, MonkeySdkType sdkType) {
@@ -272,9 +284,8 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
     XmlTag productsRootTag = products.getXmlTag();
     XmlTag productTag = productsRootTag.createChildTag("product", productsRootTag.getNamespace(), "", false);
     productTag = productsRootTag.addSubTag(productTag, true);
-    productTag.setAttribute("id", null, "square_watch");
+    productTag.setAttribute("id", null, DEFAULT_TARGET_DEVICE.getId());
     productTag.collapseIfEmpty();
-    //productTag.setAttribute("id", null, "round_watch");
 
     CodeStyleManager.getInstance(manifestFile.getProject()).reformat(manifestFile);
   }
@@ -307,6 +318,18 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
   private static Manifest getManifest(Project project, VirtualFile contentRoot) {
     VirtualFile manifestFile = contentRoot.findChild(MANIFEST_XML);
     return manifestFile != null ? loadDomElement(project, manifestFile, Manifest.class) : null;
+  }
+
+  private void setupRunConfiguration(Module module) {
+    final Project project = module.getProject();
+    final RunManager runManager = RunManager.getInstance(project);
+    final ConfigurationFactory configurationFactory = MonkeyConfigurationType.getInstance().getFactory();
+    final RunnerAndConfigurationSettings settings = runManager.createRunConfiguration(module.getName(), configurationFactory);
+    final MonkeyModuleBasedConfiguration configuration = (MonkeyModuleBasedConfiguration) settings.getConfiguration();
+    configuration.setModule(module);
+    configuration.setTargetDeviceId(DEFAULT_TARGET_DEVICE.getId());
+    runManager.addConfiguration(settings, false);
+    runManager.setSelectedConfiguration(settings);
   }
 
   @NotNull
