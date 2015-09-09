@@ -28,9 +28,9 @@ public class MonkeyClassDeclarationImpl extends MonkeyPsiCompositeElementImpl im
   }
 
   @Override
-  @NotNull
+  @Nullable
   public MonkeyComponentName getComponentName() {
-    return findNotNullChildByClass(MonkeyComponentName.class);
+    return findChildByClass(MonkeyComponentName.class);
   }
 
   @Override

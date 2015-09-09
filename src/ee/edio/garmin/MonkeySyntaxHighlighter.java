@@ -63,6 +63,14 @@ public class MonkeySyntaxHighlighter extends SyntaxHighlighterBase {
       MonkeyTypes.SLASH
   );
 
+  private static final TokenSet NUMBER_LITERALS = TokenSet.create(
+      MonkeyTypes.INTLITERAL,
+      MonkeyTypes.LONGLITERAL,
+      MonkeyTypes.FLOATLITERAL,
+      MonkeyTypes.DOUBLELITERAL,
+      MonkeyTypes.HEX_LITERAL
+  );
+
   private static final Map<IElementType, TextAttributesKey> TYPE_KEY_MAP = createTypeKeyMap();
 
   private static Map<IElementType, TextAttributesKey> createTypeKeyMap() {
@@ -70,12 +78,9 @@ public class MonkeySyntaxHighlighter extends SyntaxHighlighterBase {
     fillMap(aMap, KEYWORD_TOKENS, MC_KEYWORD);
     fillMap(aMap, OPERATOR_TOKENS, MC_OPERATOR);
     fillMap(aMap, MonkeyTokenTypesSets.STRINGS, MC_STRING);
+    fillMap(aMap, NUMBER_LITERALS, MC_NUMBER);
     aMap.put(MonkeyTypes.SINGLE_LINE_COMMENT, MC_LINE_COMMENT);
     aMap.put(MonkeyTypes.BLOCK_COMMENT, MC_BLOCK_COMMENT);
-    aMap.put(MonkeyTypes.INTLITERAL, MC_NUMBER);
-    aMap.put(MonkeyTypes.LONGLITERAL, MC_NUMBER);
-    aMap.put(MonkeyTypes.FLOATLITERAL, MC_NUMBER);
-    aMap.put(MonkeyTypes.DOUBLELITERAL, MC_NUMBER);
 
     return Collections.unmodifiableMap(aMap);
   }

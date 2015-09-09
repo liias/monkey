@@ -22,21 +22,15 @@ public class MonkeyEnumConstantImpl extends MonkeyPsiCompositeElementImpl implem
   }
 
   @Override
-  @Nullable
-  public MonkeyArguments getArguments() {
-    return findChildByClass(MonkeyArguments.class);
-  }
-
-  @Override
-  @Nullable
-  public MonkeyClassBody getClassBody() {
-    return findChildByClass(MonkeyClassBody.class);
-  }
-
-  @Override
   @NotNull
   public MonkeyComponentName getComponentName() {
     return findNotNullChildByClass(MonkeyComponentName.class);
+  }
+
+  @Override
+  @Nullable
+  public PsiElement getIntliteral() {
+    return findChildByType(INTLITERAL);
   }
 
 }

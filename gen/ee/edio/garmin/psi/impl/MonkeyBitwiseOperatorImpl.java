@@ -10,21 +10,15 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static ee.edio.garmin.psi.MonkeyTypes.*;
 import ee.edio.garmin.psi.*;
 
-public class MonkeyMultiplicativeExpressionImpl extends MonkeyExpressionImpl implements MonkeyMultiplicativeExpression {
+public class MonkeyBitwiseOperatorImpl extends MonkeyPsiCompositeElementImpl implements MonkeyBitwiseOperator {
 
-  public MonkeyMultiplicativeExpressionImpl(ASTNode node) {
+  public MonkeyBitwiseOperatorImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitMultiplicativeExpression(this);
+    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitBitwiseOperator(this);
     else super.accept(visitor);
-  }
-
-  @Override
-  @NotNull
-  public List<MonkeyExpression> getExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
   }
 
 }

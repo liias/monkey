@@ -20,6 +20,9 @@ public interface MonkeyLiteral extends MonkeyPsiCompositeElement {
   PsiElement getFloatliteral();
 
   @Nullable
+  PsiElement getHexLiteral();
+
+  @Nullable
   PsiElement getIntliteral();
 
   @Nullable

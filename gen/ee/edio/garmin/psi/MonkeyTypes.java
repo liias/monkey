@@ -15,6 +15,8 @@ public interface MonkeyTypes {
   IElementType ARRAY_CREATOR = new MonkeyElementType("ARRAY_CREATOR");
   IElementType ARRAY_INITIALIZER = new MonkeyElementType("ARRAY_INITIALIZER");
   IElementType ASSIGNMENT_OPERATOR = new MonkeyElementType("ASSIGNMENT_OPERATOR");
+  IElementType BITWISE_EXPRESSION = new MonkeyElementType("BITWISE_EXPRESSION");
+  IElementType BITWISE_OPERATOR = new MonkeyElementType("BITWISE_OPERATOR");
   IElementType BLOCK = new MonkeyElementType("BLOCK");
   IElementType BLOCK_STATEMENT = new MonkeyElementType("BLOCK_STATEMENT");
   IElementType CATCHES = new MonkeyElementType("CATCHES");
@@ -84,7 +86,7 @@ public interface MonkeyTypes {
   IElementType VARIABLE_DECLARATOR = new MonkeyElementType("VARIABLE_DECLARATOR");
   IElementType VARIABLE_INITIALIZER = new MonkeyElementType("VARIABLE_INITIALIZER");
 
-  IElementType AMP = new MonkeyTokenType("AMP");
+  IElementType AMP = new MonkeyTokenType("&");
   IElementType AMPAMP = new MonkeyTokenType("&&");
   IElementType AMPEQ = new MonkeyTokenType("&=");
   IElementType AND = new MonkeyTokenType("and");
@@ -123,6 +125,7 @@ public interface MonkeyTypes {
   IElementType FUNCTION = new MonkeyTokenType("function");
   IElementType GT = new MonkeyTokenType(">");
   IElementType HAS = new MonkeyTokenType("has");
+  IElementType HEX_LITERAL = new MonkeyTokenType("HEX_LITERAL");
   IElementType HIDDEN = new MonkeyTokenType("hidden");
   IElementType IDENTIFIER = new MonkeyTokenType("IDENTIFIER");
   IElementType IF = new MonkeyTokenType("if");
@@ -198,6 +201,12 @@ public interface MonkeyTypes {
       }
       else if (type == ASSIGNMENT_OPERATOR) {
         return new MonkeyAssignmentOperatorImpl(node);
+      }
+      else if (type == BITWISE_EXPRESSION) {
+        return new MonkeyBitwiseExpressionImpl(node);
+      }
+      else if (type == BITWISE_OPERATOR) {
+        return new MonkeyBitwiseOperatorImpl(node);
       }
       else if (type == BLOCK) {
         return new MonkeyBlockImpl(node);

@@ -81,6 +81,8 @@ tokens = [
 
     EQGT = "=>"
 
+    AMP = "&"
+
     BARBAR = "||"
     AMPAMP = "&&"
     PLUSPLUS = "++"
@@ -117,6 +119,8 @@ tokens = [
     LONGLITERAL = 'regexp:\d+[lL]'
     INTLITERAL = 'regexp:\d+'
 
+    HEX_LITERAL = 'regexp:0[Xx][0-9a-fA-F]*'
+
     FLOATLITERAL = 'regexp:\d+(\.\d*)?[fF]?'
     DOUBLELITERAL = 'regexp:\d+(\.\d*)?[dD]'
 
@@ -139,7 +143,7 @@ moduleDeclaration ::= modifiers MODULE componentName moduleBody
 moduleBody ::= classBody
 
 classDeclaration ::= modifiers CLASS componentName (EXTENDS type)? classBody
-                   | modifiers ENUM componentName enumBody
+                   | modifiers ENUM componentName? enumBody
 
 modifiers ::= annotation? STATIC? HIDDEN?
 
@@ -149,9 +153,7 @@ enumBody ::= LBRACE enumConstants? COMMA? enumBodyDeclarations? RBRACE
 
 enumConstants ::= enumConstant (COMMA enumConstant)*
 
-/* TODO: $GScope::name = names.empty. enum constant body is actually
- an anonymous class, where constructor isn't allowed, have to add this check */
-enumConstant ::= componentName (arguments)? (classBody)?
+enumConstant ::= componentName (EQ INTLITERAL)?
 
 enumBodyDeclarations ::= SEMI classBodyDeclaration*
 
@@ -256,6 +258,8 @@ assignmentOperator ::= EQ
                      | GT GT GT EQ
                      | GT GT EQ
 
+bitwiseOperator ::= AMP | CARET| BAR
+
 conditionalExpression ::= conditionalOrExpression (QUES expression COLON conditionalExpression)?
 
 conditionalOrExpression ::= conditionalAndExpression ((BARBAR | OR) conditionalAndExpression)*
@@ -284,7 +288,9 @@ shiftOp ::= LT LT | GT GT GT | GT GT
 
 additiveExpression ::= multiplicativeExpression ((PLUS | SUB) multiplicativeExpression)*
 
-multiplicativeExpression ::= unaryExpression ((STAR | SLASH | PERCENT) unaryExpression)*
+multiplicativeExpression ::= bitwiseExpression ((STAR | SLASH | PERCENT) unaryExpression)*
+
+bitwiseExpression ::= unaryExpression (bitwiseOperator unaryExpression)*
 
 /**
  * NOTE: for '+' and '-', if the next token is int or long integral, then it's not a unary expression.
@@ -362,6 +368,7 @@ literal ::= INTLITERAL
           | LONGLITERAL
           | FLOATLITERAL
           | DOUBLELITERAL
+          | HEX_LITERAL
           | CHARLITERAL
           | stringLiteral
           | TRUE

@@ -7,13 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface MonkeyEnumConstant extends MonkeyPsiCompositeElement {
 
-  @Nullable
-  MonkeyArguments getArguments();
-
-  @Nullable
-  MonkeyClassBody getClassBody();
-
   @NotNull
   MonkeyComponentName getComponentName();
+
+  @Nullable
+  PsiElement getIntliteral();
 
 }

@@ -47,6 +47,12 @@ public class MonkeyLiteralImpl extends MonkeyPsiCompositeElementImpl implements 
 
   @Override
   @Nullable
+  public PsiElement getHexLiteral() {
+    return findChildByType(HEX_LITERAL);
+  }
+
+  @Override
+  @Nullable
   public PsiElement getIntliteral() {
     return findChildByType(INTLITERAL);
   }

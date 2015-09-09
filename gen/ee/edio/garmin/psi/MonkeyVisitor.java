@@ -35,6 +35,14 @@ public class MonkeyVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
+  public void visitBitwiseExpression(@NotNull MonkeyBitwiseExpression o) {
+    visitExpression(o);
+  }
+
+  public void visitBitwiseOperator(@NotNull MonkeyBitwiseOperator o) {
+    visitPsiCompositeElement(o);
+  }
+
   public void visitBlock(@NotNull MonkeyBlock o) {
     visitPsiCompositeElement(o);
   }

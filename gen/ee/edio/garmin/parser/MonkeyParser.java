@@ -44,6 +44,12 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     else if (t == ASSIGNMENT_OPERATOR) {
       r = assignmentOperator(b, 0);
     }
+    else if (t == BITWISE_EXPRESSION) {
+      r = bitwiseExpression(b, 0);
+    }
+    else if (t == BITWISE_OPERATOR) {
+      r = bitwiseOperator(b, 0);
+    }
     else if (t == BLOCK) {
       r = block(b, 0);
     }
@@ -259,11 +265,11 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   public static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
-    create_token_set_(ADDITIVE_EXPRESSION, AND_EXPRESSION, CONDITIONAL_AND_EXPRESSION, CONDITIONAL_EXPRESSION,
-      CONDITIONAL_OR_EXPRESSION, EQUALITY_EXPRESSION, EXCLUSIVE_OR_EXPRESSION, EXPRESSION,
-      HAS_EXPRESSION, INCLUSIVE_OR_EXPRESSION, INSTANCE_OF_EXPRESSION, MULTIPLICATIVE_EXPRESSION,
-      PAR_EXPRESSION, REFERENCE_EXPRESSION, RELATIONAL_EXPRESSION, SHIFT_EXPRESSION,
-      UNARY_EXPRESSION),
+    create_token_set_(ADDITIVE_EXPRESSION, AND_EXPRESSION, BITWISE_EXPRESSION, CONDITIONAL_AND_EXPRESSION,
+      CONDITIONAL_EXPRESSION, CONDITIONAL_OR_EXPRESSION, EQUALITY_EXPRESSION, EXCLUSIVE_OR_EXPRESSION,
+      EXPRESSION, HAS_EXPRESSION, INCLUSIVE_OR_EXPRESSION, INSTANCE_OF_EXPRESSION,
+      MULTIPLICATIVE_EXPRESSION, PAR_EXPRESSION, REFERENCE_EXPRESSION, RELATIONAL_EXPRESSION,
+      SHIFT_EXPRESSION, UNARY_EXPRESSION),
   };
 
   /* ********************************************************** */
@@ -569,6 +575,54 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // unaryExpression (bitwiseOperator unaryExpression)*
+  public static boolean bitwiseExpression(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bitwiseExpression")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _COLLAPSE_, "<bitwise expression>");
+    r = unaryExpression(b, l + 1);
+    r = r && bitwiseExpression_1(b, l + 1);
+    exit_section_(b, l, m, BITWISE_EXPRESSION, r, false, null);
+    return r;
+  }
+
+  // (bitwiseOperator unaryExpression)*
+  private static boolean bitwiseExpression_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bitwiseExpression_1")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!bitwiseExpression_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "bitwiseExpression_1", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // bitwiseOperator unaryExpression
+  private static boolean bitwiseExpression_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bitwiseExpression_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = bitwiseOperator(b, l + 1);
+    r = r && unaryExpression(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // AMP | CARET| BAR
+  public static boolean bitwiseOperator(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "bitwiseOperator")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, "<bitwise operator>");
+    r = consumeToken(b, AMP);
+    if (!r) r = consumeToken(b, CARET);
+    if (!r) r = consumeToken(b, BAR);
+    exit_section_(b, l, m, BITWISE_OPERATOR, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // LBRACE blockStatement* RBRACE
   public static boolean block(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "block")) return false;
@@ -759,7 +813,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // modifiers CLASS componentName (EXTENDS type)? classBody
-  //                    | modifiers ENUM componentName enumBody
+  //                    | modifiers ENUM componentName? enumBody
   public static boolean classDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classDeclaration")) return false;
     boolean r;
@@ -802,17 +856,24 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // modifiers ENUM componentName enumBody
+  // modifiers ENUM componentName? enumBody
   private static boolean classDeclaration_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classDeclaration_1")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = modifiers(b, l + 1);
     r = r && consumeToken(b, ENUM);
-    r = r && componentName(b, l + 1);
+    r = r && classDeclaration_1_2(b, l + 1);
     r = r && enumBody(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
+  }
+
+  // componentName?
+  private static boolean classDeclaration_1_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "classDeclaration_1_2")) return false;
+    componentName(b, l + 1);
+    return true;
   }
 
   /* ********************************************************** */
@@ -1138,7 +1199,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // componentName (arguments)? (classBody)?
+  // componentName (EQ INTLITERAL)?
   public static boolean enumConstant(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "enumConstant")) return false;
     if (!nextTokenIs(b, IDENTIFIER)) return false;
@@ -1146,41 +1207,23 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = componentName(b, l + 1);
     r = r && enumConstant_1(b, l + 1);
-    r = r && enumConstant_2(b, l + 1);
     exit_section_(b, m, ENUM_CONSTANT, r);
     return r;
   }
 
-  // (arguments)?
+  // (EQ INTLITERAL)?
   private static boolean enumConstant_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "enumConstant_1")) return false;
     enumConstant_1_0(b, l + 1);
     return true;
   }
 
-  // (arguments)
+  // EQ INTLITERAL
   private static boolean enumConstant_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "enumConstant_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = arguments(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (classBody)?
-  private static boolean enumConstant_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "enumConstant_2")) return false;
-    enumConstant_2_0(b, l + 1);
-    return true;
-  }
-
-  // (classBody)
-  private static boolean enumConstant_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "enumConstant_2_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = classBody(b, l + 1);
+    r = consumeTokens(b, 0, EQ, INTLITERAL);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -1874,6 +1917,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   //           | LONGLITERAL
   //           | FLOATLITERAL
   //           | DOUBLELITERAL
+  //           | HEX_LITERAL
   //           | CHARLITERAL
   //           | stringLiteral
   //           | TRUE
@@ -1887,6 +1931,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, LONGLITERAL);
     if (!r) r = consumeToken(b, FLOATLITERAL);
     if (!r) r = consumeToken(b, DOUBLELITERAL);
+    if (!r) r = consumeToken(b, HEX_LITERAL);
     if (!r) r = consumeToken(b, CHARLITERAL);
     if (!r) r = stringLiteral(b, l + 1);
     if (!r) r = consumeToken(b, TRUE);
@@ -2020,12 +2065,12 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // unaryExpression ((STAR | SLASH | PERCENT) unaryExpression)*
+  // bitwiseExpression ((STAR | SLASH | PERCENT) unaryExpression)*
   public static boolean multiplicativeExpression(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "multiplicativeExpression")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _COLLAPSE_, "<multiplicative expression>");
-    r = unaryExpression(b, l + 1);
+    r = bitwiseExpression(b, l + 1);
     r = r && multiplicativeExpression_1(b, l + 1);
     exit_section_(b, l, m, MULTIPLICATIVE_EXPRESSION, r, false, null);
     return r;

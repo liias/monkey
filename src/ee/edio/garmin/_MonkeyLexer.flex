@@ -28,6 +28,7 @@ BLOCK_COMMENT="/"\*([^*]|\*+[^*/])*(\*+"/")?
 IDENTIFIER=[a-zA-Z$_][a-zA-Z0-9$_]*
 LONGLITERAL=[0-9]+[lL]
 INTLITERAL=[0-9]+
+HEX_LITERAL=0[Xx][0-9a-fA-F]*
 FLOATLITERAL=[0-9]+(\.[0-9]*)?[fF]?
 DOUBLELITERAL=[0-9]+(\.[0-9]*)?[dD]
 STRING=(\"([^\"\\]|\\.)*\")
@@ -92,6 +93,7 @@ CHARLITERAL=('([^'\\]|\\.)*')
   "<"                        { return LT; }
   ">"                        { return GT; }
   "=>"                       { return EQGT; }
+  "&"                        { return AMP; }
   "||"                       { return BARBAR; }
   "&&"                       { return AMPAMP; }
   "++"                       { return PLUSPLUS; }
@@ -116,7 +118,6 @@ CHARLITERAL=('([^'\\]|\\.)*')
   "THROWS"                   { return THROWS; }
   "SUPER"                    { return SUPER; }
   "BAREQ"                    { return BAREQ; }
-  "AMP"                      { return AMP; }
   "VOID"                     { return VOID; }
 
   {WHITE_SPACE}              { return WHITE_SPACE; }
@@ -125,6 +126,7 @@ CHARLITERAL=('([^'\\]|\\.)*')
   {IDENTIFIER}               { return IDENTIFIER; }
   {LONGLITERAL}              { return LONGLITERAL; }
   {INTLITERAL}               { return INTLITERAL; }
+  {HEX_LITERAL}              { return HEX_LITERAL; }
   {FLOATLITERAL}             { return FLOATLITERAL; }
   {DOUBLELITERAL}            { return DOUBLELITERAL; }
   {STRING}                   { return STRING; }
