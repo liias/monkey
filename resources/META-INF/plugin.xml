@@ -9,8 +9,10 @@
     ]]></description>
 
   <change-notes><![CDATA[
+    <p>0.1.2</p>
     <ul>
-      <li>More flexible grammar</li>
+      <li>Use SDK project templates to generate new module/project</li>
+      <li>Added action to project tree: New Monkey C File</li>
     </ul>
     ]]>
   </change-notes>

@@ -5,9 +5,6 @@ import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.Required;
 
 public interface Application extends ManifestDomElement {
-
-//  <iq:application entry="mybApp" id="" launcherIcon="LauncherIcon" name="AppName" type="watch-app">
-
   @Required
   GenericAttributeValue<String> getEntry();
 

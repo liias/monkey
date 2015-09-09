@@ -16,12 +16,15 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
+import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.util.Pair;
+import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.ReadonlyStatusHandler;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -30,7 +33,6 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.DocumentUtil;
-import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
 import ee.edio.garmin.dom.manifest.Manifest;
@@ -44,19 +46,15 @@ import org.apache.commons.lang.WordUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.jps.model.java.JavaResourceRootType;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static ee.edio.garmin.MonkeyUtil.loadDomElement;
 
@@ -74,12 +72,32 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
   @Override
   public void setupRootModel(ModifiableRootModel modifiableRootModel) throws ConfigurationException {
     addListener(this);
-    super.setupRootModel(modifiableRootModel);
-
-    final Project project = modifiableRootModel.getProject();
-    VirtualFile[] files = modifiableRootModel.getContentRoots();
 
     final Module module = modifiableRootModel.getModule();
+    final MonkeySdkType sdkType = MonkeySdkType.getInstance();
+    // this code from here....
+    Sdk sdk = findAndSetSdk(module, sdkType);
+    final List<Pair<String, String>> sourcePaths = constructSourcePaths();
+    setSourcePaths(sourcePaths);
+    super.setupRootModel(modifiableRootModel);
+    final String contentEntryPath = getContentEntryPath();
+    final VirtualFile moduleContentRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(contentEntryPath.replace('\\', '/'));
+    final ContentEntry[] contentEntries = modifiableRootModel.getContentEntries();
+    if (contentEntries != null && contentEntries.length == 1) {
+      final ContentEntry contentEntry = contentEntries[0];
+      final String path = getContentEntryPath() + File.separator + "resources";
+      new File(path).mkdirs();
+      final VirtualFile sourceRoot = LocalFileSystem.getInstance()
+          .refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
+      // TODO: there can be many resource folders, e.g based on language that come from SDK example projext definitions
+      contentEntry.addSourceFolder(sourceRoot, JavaResourceRootType.RESOURCE, JavaResourceRootType.RESOURCE.createDefaultProperties());
+    }
+    // ... to here is just awful. TODO: Get rid of extending JavaModuleBuilder
+
+    final Project project = modifiableRootModel.getProject();
+
+    VirtualFile[] files = modifiableRootModel.getContentRoots();
+
     if (files.length > 0) {
       final VirtualFile contentRoot = files[0];
       StartupManager.getInstance(project).runWhenProjectIsInitialized(new DumbAwareRunnable() {
@@ -101,28 +119,28 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
     }
   }
 
+  private List<Pair<String, String>> constructSourcePaths() {
+    final List<Pair<String, String>> paths = new ArrayList<Pair<String, String>>();
+    @NonNls final String path = getContentEntryPath() + File.separator + "source";
+    new File(path).mkdirs();
+    paths.add(Pair.create(path, ""));
+    return paths;
+  }
+
   @Override
   protected boolean isAvailable() {
     return false;
   }
 
   private void createProject(Project project, VirtualFile contentRoot, Module module) {
-    VirtualFile sourceRoot = null;
-    try {
-      sourceRoot = contentRoot.createChildDirectory(this, "source");
-    } catch (IOException e) {
-      LOG.error(e);
-    }
-
     final MonkeySdkType sdkType = MonkeySdkType.getInstance();
-    Sdk sdk = findSdk(module, sdkType);
+    Sdk sdk = findAndSetSdk(module, sdkType);
     VirtualFile sdkBinDir = sdkType.getBinDir(sdk);
     createResourcesAndLibs(module, contentRoot, sdkBinDir);
-    //PsiDirectory sourceDir = sourceRoot != null ? PsiManager.getInstance(project).findDirectory(sourceRoot) : null;
     fillTemplates(module, contentRoot);
   }
 
-  private Sdk findSdk(Module module, MonkeySdkType sdkType) {
+  private Sdk findAndSetSdk(Module module, MonkeySdkType sdkType) {
     Sdk sdk = ModuleRootManager.getInstance(module).getSdk();
     if (sdk == null) {
       sdk = ProjectRootManager.getInstance(module.getProject()).getProjectSdk();
@@ -289,11 +307,6 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
   private static Manifest getManifest(Project project, VirtualFile contentRoot) {
     VirtualFile manifestFile = contentRoot.findChild(MANIFEST_XML);
     return manifestFile != null ? loadDomElement(project, manifestFile, Manifest.class) : null;
-  }
-
-  @Override
-  public List<Pair<String, String>> getSourcePaths() {
-    return ContainerUtil.emptyList();
   }
 
   @NotNull
