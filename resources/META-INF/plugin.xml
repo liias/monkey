@@ -13,6 +13,8 @@
     <ul>
       <li>Use SDK project templates to generate new module/project</li>
       <li>Added action to project tree: New Monkey C File</li>
+      <li>Improve grammar (now all garmin samples pass)</li>
+      <li>Highlights references, but gets it completely wrong, so don't use renaming or trust find usages capabilities yet</li>
     </ul>
     ]]>
   </change-notes>
