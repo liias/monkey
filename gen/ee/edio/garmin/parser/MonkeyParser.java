@@ -185,6 +185,9 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     else if (t == NORMAL_PARAMETER_DECL) {
       r = normalParameterDecl(b, 0);
     }
+    else if (t == OBJECT_CREATOR) {
+      r = objectCreator(b, 0);
+    }
     else if (t == PAR_EXPRESSION) {
       r = parExpression(b, 0);
     }
@@ -1046,26 +1049,14 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // NEW qualifiedName classCreatorRest | arrayCreator
+  // objectCreator | arrayCreator
   public static boolean creator(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "creator")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<creator>");
-    r = creator_0(b, l + 1);
+    r = objectCreator(b, l + 1);
     if (!r) r = arrayCreator(b, l + 1);
     exit_section_(b, l, m, CREATOR, r, false, null);
-    return r;
-  }
-
-  // NEW qualifiedName classCreatorRest
-  private static boolean creator_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "creator_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, NEW);
-    r = r && qualifiedName(b, l + 1);
-    r = r && classCreatorRest(b, l + 1);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -2144,6 +2135,21 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     r = consumeTokens(b, 0, LBRACKET, RBRACKET);
     exit_section_(b, m, null, r);
     return r;
+  }
+
+  /* ********************************************************** */
+  // NEW qualifiedName classCreatorRest
+  public static boolean objectCreator(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "objectCreator")) return false;
+    if (!nextTokenIs(b, NEW)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, null);
+    r = consumeToken(b, NEW);
+    r = r && qualifiedName(b, l + 1);
+    p = r; // pin = 2
+    r = r && classCreatorRest(b, l + 1);
+    exit_section_(b, l, m, OBJECT_CREATOR, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */

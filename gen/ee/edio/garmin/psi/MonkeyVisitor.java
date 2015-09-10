@@ -223,6 +223,10 @@ public class MonkeyVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
+  public void visitObjectCreator(@NotNull MonkeyObjectCreator o) {
+    visitPsiCompositeElement(o);
+  }
+
   public void visitParExpression(@NotNull MonkeyParExpression o) {
     visitExpression(o);
   }

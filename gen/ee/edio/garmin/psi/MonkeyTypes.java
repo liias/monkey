@@ -62,6 +62,7 @@ public interface MonkeyTypes {
   IElementType MODULE_DECLARATION = new MonkeyElementType("MODULE_DECLARATION");
   IElementType MULTIPLICATIVE_EXPRESSION = new MonkeyElementType("MULTIPLICATIVE_EXPRESSION");
   IElementType NORMAL_PARAMETER_DECL = new MonkeyElementType("NORMAL_PARAMETER_DECL");
+  IElementType OBJECT_CREATOR = new MonkeyElementType("OBJECT_CREATOR");
   IElementType PAR_EXPRESSION = new MonkeyElementType("PAR_EXPRESSION");
   IElementType PRIMARY = new MonkeyElementType("PRIMARY");
   IElementType QUALIFIED_NAME = new MonkeyElementType("QUALIFIED_NAME");
@@ -342,6 +343,9 @@ public interface MonkeyTypes {
       }
       else if (type == NORMAL_PARAMETER_DECL) {
         return new MonkeyNormalParameterDeclImpl(node);
+      }
+      else if (type == OBJECT_CREATOR) {
+        return new MonkeyObjectCreatorImpl(node);
       }
       else if (type == PAR_EXPRESSION) {
         return new MonkeyParExpressionImpl(node);

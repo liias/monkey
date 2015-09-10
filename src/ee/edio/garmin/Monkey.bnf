@@ -121,8 +121,9 @@ tokens = [
 
     HEX_LITERAL = 'regexp:0[Xx][0-9a-fA-F]*'
 
-    FLOATLITERAL = 'regexp:\d+(\.\d*)?[fF]?'
-    DOUBLELITERAL = 'regexp:\d+(\.\d*)?[dD]'
+    // 0 can be omitted before dot
+    FLOATLITERAL = 'regexp:(\d+)?(\.\d+)?[fF]?'
+    DOUBLELITERAL = 'regexp:(\d+)?(\.\d+)?[dD]'
 
     string = "regexp:(\"([^\"\\]|\\.)*\")"
     CHARLITERAL = "regexp:('([^'\\]|\\.)*')"
@@ -336,7 +337,8 @@ identifierSuffix ::= (LBRACKET RBRACKET) + DOT CLASS
 selector ::= DOT IDENTIFIER (arguments)?
            | LBRACKET expression RBRACKET
 
-creator ::= NEW qualifiedName classCreatorRest | arrayCreator
+creator ::= objectCreator | arrayCreator
+objectCreator ::= NEW qualifiedName classCreatorRest {pin=2}
 
 arrayCreator ::= NEW LBRACKET expression RBRACKET // new [expression evaluating to integer]
                | LBRACKET (expression (COMMA expression)* )? RBRACKET // [expression1, expression2, ...]

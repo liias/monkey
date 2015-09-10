@@ -10,27 +10,27 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static ee.edio.garmin.psi.MonkeyTypes.*;
 import ee.edio.garmin.psi.*;
 
-public class MonkeyCreatorImpl extends MonkeyPsiCompositeElementImpl implements MonkeyCreator {
+public class MonkeyObjectCreatorImpl extends MonkeyPsiCompositeElementImpl implements MonkeyObjectCreator {
 
-  public MonkeyCreatorImpl(ASTNode node) {
+  public MonkeyObjectCreatorImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitCreator(this);
+    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitObjectCreator(this);
     else super.accept(visitor);
   }
 
   @Override
   @Nullable
-  public MonkeyArrayCreator getArrayCreator() {
-    return findChildByClass(MonkeyArrayCreator.class);
+  public MonkeyClassCreatorRest getClassCreatorRest() {
+    return findChildByClass(MonkeyClassCreatorRest.class);
   }
 
   @Override
-  @Nullable
-  public MonkeyObjectCreator getObjectCreator() {
-    return findChildByClass(MonkeyObjectCreator.class);
+  @NotNull
+  public MonkeyQualifiedName getQualifiedName() {
+    return findNotNullChildByClass(MonkeyQualifiedName.class);
   }
 
 }

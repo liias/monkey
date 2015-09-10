@@ -5,12 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MonkeyCreator extends MonkeyPsiCompositeElement {
+public interface MonkeyObjectCreator extends MonkeyPsiCompositeElement {
 
   @Nullable
-  MonkeyArrayCreator getArrayCreator();
+  MonkeyClassCreatorRest getClassCreatorRest();
 
-  @Nullable
-  MonkeyObjectCreator getObjectCreator();
+  @NotNull
+  MonkeyQualifiedName getQualifiedName();
 
 }
