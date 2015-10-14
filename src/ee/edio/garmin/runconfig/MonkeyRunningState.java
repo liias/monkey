@@ -96,7 +96,7 @@ public class MonkeyRunningState extends CommandLineState {
     String sdkBinPath = sdkPath + "bin" + File.separator;
     GeneralCommandLine commandLine = new GeneralCommandLine()
         .withWorkDirectory(sdkBinPath);
-    commandLine.setExePath(sdkBinPath + "connectiq.bat");
+    commandLine.setExePath(sdkBinPath + "connectiq");
     return commandLine;
   }
 
@@ -128,7 +128,7 @@ public class MonkeyRunningState extends CommandLineState {
         .withCharset(CharsetToolkit.UTF8_CHARSET);
     EncodingEnvironmentUtil.setLocaleEnvironmentIfMac(commandLine);
 
-    commandLine.setExePath(sdkBinPath + "monkeydo.bat");
+    commandLine.setExePath(sdkBinPath + "monkeydo");
     commandLine.addParameters(parameters.build());
     return commandLine;
   }

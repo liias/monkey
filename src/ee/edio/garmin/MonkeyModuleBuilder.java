@@ -147,8 +147,11 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
     final MonkeySdkType sdkType = MonkeySdkType.getInstance();
     Sdk sdk = findAndSetSdk(module, sdkType);
     VirtualFile sdkBinDir = sdkType.getBinDir(sdk);
-    createResourcesAndLibs(module, contentRoot, sdkBinDir);
-    fillTemplates(module, contentRoot);
+    // add new files only if manifest file does not exist already
+    if (contentRoot.findChild(MANIFEST_XML) == null) {
+      createResourcesAndLibs(module, contentRoot, sdkBinDir);
+      fillTemplates(module, contentRoot);
+    }
     setupRunConfiguration(module);
   }
 

@@ -96,6 +96,7 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
   private static void runBuildProcess(@NotNull CompileContext context, @NotNull GeneralCommandLine commandLine, @NotNull String path)
       throws ProjectBuildException {
     try {
+      LOG.debug(commandLine.getCommandLineString());
       final Process process = commandLine.createProcess();
       BaseOSProcessHandler handler = new BaseOSProcessHandler(process, commandLine.getCommandLineString(), Charset.defaultCharset());
       handler.startNotify();
@@ -189,7 +190,8 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     GeneralCommandLine commandLine = new GeneralCommandLine();
     commandLine.setExePath(javaPath);
     commandLine.addParameters("-Dfile.encoding=UTF-8", "-Dapple.awt.UIElement=true");
-    String classPath = toolsJarPath + ";" + monkeybrainsJarPath + ";";
+    String classPathSeparator = File.pathSeparator;
+    String classPath = toolsJarPath + classPathSeparator + monkeybrainsJarPath + classPathSeparator;
     commandLine.addParameters("-classpath", classPath);
     commandLine.addParameters(MONKEYBRAINS_FQN);
     commandLine.addParameters(parameters.build());
