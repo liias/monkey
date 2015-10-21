@@ -1,12 +1,16 @@
 package ee.edio.garmin.psi.impl;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
+import ee.edio.garmin.MonkeyComponentType;
 import ee.edio.garmin.psi.MonkeyComponent;
 import ee.edio.garmin.psi.MonkeyComponentName;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
 
 abstract public class AbstractMonkeyComponentImpl extends MonkeyPsiCompositeElementImpl implements MonkeyComponent {
   public AbstractMonkeyComponentImpl(@NotNull ASTNode node) {
@@ -37,7 +41,31 @@ abstract public class AbstractMonkeyComponentImpl extends MonkeyPsiCompositeElem
     return getComponentName();
   }
 
-  public String toString(){
+  @Override
+  public ItemPresentation getPresentation() {
+    return new ItemPresentation() {
+      @Nullable
+      @Override
+      public String getPresentableText() {
+        return getName();
+      }
+
+      @Nullable
+      @Override
+      public String getLocationString() {
+        return null;
+      }
+
+      @Nullable
+      @Override
+      public Icon getIcon(boolean unused) {
+        return AbstractMonkeyComponentImpl.this.getIcon(0);
+      }
+
+    };
+  }
+
+  public String toString() {
     return "MonkeyComponent:" + getText();
   }
 }

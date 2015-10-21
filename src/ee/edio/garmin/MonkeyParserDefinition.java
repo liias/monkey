@@ -27,7 +27,7 @@ public class MonkeyParserDefinition implements ParserDefinition {
   @NotNull
   @Override
   public Lexer createLexer(Project project) {
-    return new FlexAdapter(new _MonkeyLexer(null));
+    return new MonkeyLexer();
   }
 
   @Override

@@ -8,8 +8,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.usageView.UsageViewLongNameLocation;
 import com.intellij.usageView.UsageViewShortNameLocation;
 import ee.edio.garmin.findUsages.MonkeyWordsScanner;
-import ee.edio.garmin.psi.MonkeyUsingDeclaration;
-import ee.edio.garmin.psi.MonkeyFunctionDeclaration;
 import ee.edio.garmin.psi.MonkeyNamedElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,13 +34,8 @@ public class MonkeyFindUsagesProvider implements FindUsagesProvider {
   @NotNull
   @Override
   public String getType(@NotNull PsiElement element) {
-    if (element instanceof MonkeyFunctionDeclaration) {
-      return "function";
-    }
-    if (element instanceof MonkeyUsingDeclaration) {
-      return "using";
-    }
-    return "";
+    MonkeyComponentType type = MonkeyComponentType.typeOf(element);
+    return type == null ? "reference" : type.toString().toLowerCase();
   }
 
   @NotNull

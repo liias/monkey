@@ -88,7 +88,7 @@ public class MonkeySyntaxHighlighter extends SyntaxHighlighterBase {
   @NotNull
   @Override
   public Lexer getHighlightingLexer() {
-    return new FlexAdapter(new _MonkeyLexer(null));
+    return new MonkeyLexer();
   }
 
   @NotNull
