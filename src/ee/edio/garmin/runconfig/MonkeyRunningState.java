@@ -17,7 +17,9 @@ import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.util.ProgramParametersUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.vfs.CharsetToolkit;
+import ee.edio.garmin.sdk.MonkeySdkType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -92,11 +94,11 @@ public class MonkeyRunningState extends CommandLineState {
   private GeneralCommandLine createRunSimulatorCmd() throws ExecutionException {
     final MonkeyParameters monkeyParameters = getMonkeyParameters();
     final Sdk sdk = monkeyParameters.getSdk();
-    String sdkPath = sdk.getHomePath() + File.separator;
-    String sdkBinPath = sdkPath + "bin" + File.separator;
+    String sdkBinPath = MonkeySdkType.getBinPath(sdk);
     GeneralCommandLine commandLine = new GeneralCommandLine()
         .withWorkDirectory(sdkBinPath);
-    commandLine.setExePath(sdkBinPath + "connectiq");
+    String connectiq = SystemInfo.isWindows ? "connectiq.bat" : "connectiq";
+    commandLine.setExePath(sdkBinPath + connectiq);
     return commandLine;
   }
 
@@ -128,7 +130,8 @@ public class MonkeyRunningState extends CommandLineState {
         .withCharset(CharsetToolkit.UTF8_CHARSET);
     EncodingEnvironmentUtil.setLocaleEnvironmentIfMac(commandLine);
 
-    commandLine.setExePath(sdkBinPath + "monkeydo");
+    String monkeydo = SystemInfo.isWindows ? "monkeydo.bat" : "monkeydo";
+    commandLine.setExePath(sdkBinPath + monkeydo);
     commandLine.addParameters(parameters.build());
     return commandLine;
   }

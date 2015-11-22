@@ -73,19 +73,19 @@ public class MonkeySdkType extends SdkType {
   }
 
   public String getMonkeydoBatPath(@NotNull Sdk sdk) {
-    return getBinPath(sdk) + File.separator + "monkeydo.bat";
+    return getBinPath(sdk) + "monkeydo.bat";
   }
 
   public String getMonkeybrainsJarPath(@NotNull Sdk sdk) {
-    return getBinPath(sdk) + File.separator + "monkeybrains.jar";
+    return getBinPath(sdk) + "monkeybrains.jar";
   }
 
   public VirtualFile getBinDir(@NotNull Sdk sdk) {
     return sdk.getHomeDirectory().findChild("bin");
   }
 
-  public String getBinPath(@NotNull Sdk sdk) {
-    return getConvertedHomePath(sdk) + "bin";
+  public static String getBinPath(@NotNull Sdk sdk) {
+    return getConvertedHomePath(sdk) + "bin" + File.separator;
   }
 
   private static String getConvertedHomePath(@NotNull Sdk sdk) {
