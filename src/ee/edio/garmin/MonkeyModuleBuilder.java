@@ -44,6 +44,7 @@ import ee.edio.garmin.dom.manifest.Products;
 import ee.edio.garmin.dom.sdk.projectinfo.NewProjectFileMap;
 import ee.edio.garmin.dom.sdk.projectinfo.ProjectInfo;
 import ee.edio.garmin.module.MonkeyModuleWizardStep;
+import ee.edio.garmin.module.newProject.MonkeyApplicationModifiedSettingsStep;
 import ee.edio.garmin.runconfig.MonkeyConfigurationType;
 import ee.edio.garmin.runconfig.MonkeyModuleBasedConfiguration;
 import ee.edio.garmin.runconfig.TargetDevice;
@@ -146,13 +147,15 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
   private void createProject(Project project, VirtualFile contentRoot, Module module) {
     final MonkeySdkType sdkType = MonkeySdkType.getInstance();
     Sdk sdk = findAndSetSdk(module, sdkType);
-    VirtualFile sdkBinDir = sdkType.getBinDir(sdk);
-    // add new files only if manifest file does not exist already
-    if (contentRoot.findChild(MANIFEST_XML) == null) {
-      createResourcesAndLibs(module, contentRoot, sdkBinDir);
-      fillTemplates(module, contentRoot);
+    if (sdk != null) {
+      VirtualFile sdkBinDir = sdkType.getBinDir(sdk);
+      // add new files only if manifest file does not exist already
+      if (contentRoot.findChild(MANIFEST_XML) == null) {
+        createResourcesAndLibs(module, contentRoot, sdkBinDir);
+        fillTemplates(module, contentRoot);
+      }
+      setupRunConfiguration(module);
     }
-    setupRunConfiguration(module);
   }
 
   private Sdk findAndSetSdk(Module module, MonkeySdkType sdkType) {
@@ -354,5 +357,14 @@ public class MonkeyModuleBuilder extends JavaModuleBuilder implements SourcePath
   @Override
   public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext context, @NotNull ModulesProvider modulesProvider) {
     return new ModuleWizardStep[]{new MonkeyModuleWizardStep(this, context)};
+  }
+
+  @Nullable
+  @Override
+  public ModuleWizardStep modifySettingsStep(@NotNull SettingsStep settingsStep) {
+    if (appType == null) {
+      return super.modifyProjectTypeStep(settingsStep);
+    }
+    return new MonkeyApplicationModifiedSettingsStep(this, settingsStep);
   }
 }
