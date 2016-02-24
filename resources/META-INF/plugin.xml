@@ -1,0 +1,40 @@
+<idea-plugin version="2">
+  <id>io.github.liias.monkey</id>
+  <name>Monkey C</name>
+  <version>0.2</version>
+  <vendor email="madisliias@gmail.com" url="https://liias.github.io">Madis Liias</vendor>
+
+  <description><![CDATA[
+      Unofficial support for Monkey C language
+    ]]></description>
+
+  <change-notes><![CDATA[
+      Separated language plugin from Connect IQ plugin.
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="141.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileTypeFactory implementation="io.github.liias.monkey.file.MonkeyFileTypeFactory"/>
+    <lang.parserDefinition language="MonkeyC"
+                           implementationClass="io.github.liias.monkey.parser.MonkeyParserDefinition"/>
+
+    <lang.findUsagesProvider language="MonkeyC"
+                             implementationClass="io.github.liias.monkey.ide.findUsages.MonkeyFindUsagesProvider"/>
+
+    <lang.refactoringSupport language="MonkeyC"
+                             implementationClass="io.github.liias.monkey.ide.refactoring.MonkeyRefactoringSupportProvider"/>
+
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+</idea-plugin>

@@ -1,0 +1,167 @@
+{
+  parserClass="io.github.liias.monkey.parser.MonkeyParser"
+  parserUtilClass="io.github.liias.monkey.parser.MonkeyParserUtil"
+
+  implements="io.github.liias.monkey.psi.MonkeyPsiCompositeElement"
+  extends="io.github.liias.monkey.psi.impl.MonkeyPsiCompositeElementImpl"
+
+  elementTypeHolderClass="io.github.liias.monkey.psi.MonkeyTypes"
+  elementTypePrefix=""
+  elementTypeClass="io.github.liias.monkey.psi.MonkeyElementType"
+  tokenTypeClass="io.github.liias.monkey.psi.MonkeyTokenType"
+
+  psiClassPrefix="Monkey"
+  psiImplClassSuffix="Impl"
+  psiPackage="io.github.liias.monkey.psi"
+  psiImplPackage="io.github.liias.monkey.psi.impl"
+  psiImplUtilClass="io.github.liias.monkey.psi.impl.MonkeyPsiImplUtil"
+
+  tokens = [
+    DOT = "."
+    SEMI = ";"
+    QUES = "?"
+    COLON = ":"
+    CLASS = "class"
+    FUNCTION = "function"
+    RETURN = "return"
+    NEW = "new"
+    VAR = "var"
+    CONST = "const"
+    MODULE = "module"
+    USING = "using"
+    AS = "as"
+    ENUM = "enum"
+    EXTENDS = "extends"
+    NULL = "null"
+    NATIVE = "native"
+    HIDDEN = "hidden"
+    STATIC = "static"
+    INSTANCEOF = "instanceof"
+    HAS = "has"
+    IF = "if"
+    ELSE = "else"
+    DO = "do"
+    WHILE = "while"
+    FOR = "for"
+    BREAK = "break"
+    CONTINUE = "continue"
+    SWITCH = "switch"
+    DEFAULT = "default"
+    CASE = "case"
+    TRY = "try"
+    CATCH = "catch"
+    FINALLY = "finally"
+    THROW = "throw"
+    AND = "and"
+    OR = "or"
+    TRUE = "true"
+    FALSE = "false"
+    //SINGLE_LINE_COMMENT = "//"
+    MULTI_LINE_COMMENT_START = "/*"
+    MULTI_LINE_COMMENT_END = "*/"
+    STRING_A = "\""
+    STRING_B = "\'"
+
+    LBRACE = "{"
+    RBRACE = "}"
+
+    LBRACKET = "["
+    RBRACKET = "]"
+
+    LPAREN = "("
+    RPAREN = ")"
+    COMMA = ","
+    STAR = "*"
+    BAR = "|"
+    LT = "<"
+    GT = ">"
+
+    EQGT = "=>"
+
+    AMP = "&"
+
+    BARBAR = "||"
+    AMPAMP = "&&"
+    PLUSPLUS = "++"
+    SUBSUB = "--"
+    EQ = "="
+
+    EQEQ = "=="
+    BANGEQ = "!="
+    PLUSEQ = "+="
+    SUBEQ = "-="
+    STAREQ = "*="
+    SLASHEQ = "/="
+    AMPEQ = "&="
+    CARETEQ = "|="
+    PERCENTEQ = "%="
+
+    CARET = "^"
+    PERCENT = "%"
+    TILDE = "~"
+    BANG = "!"
+
+    PLUS = "+"
+    SUB = "-"
+    STAR = "*"
+    SLASH = "/"
+
+    // WHITE_SPACE is overwritten by JFlex, this here is only for Live Preview
+    WHITE_SPACE='regexp:\s+'
+    SINGLE_LINE_COMMENT='regexp://.*'
+    BLOCK_COMMENT='regexp:/\*([^*]|\*+[^*/])*(\*+/)?'
+
+    IDENTIFIER = 'regexp:[a-zA-Z$_][a-zA-Z0-9$_]*'
+
+    LONGLITERAL = 'regexp:\d+[lL]'
+    INTLITERAL = 'regexp:\d+'
+
+    HEX_LITERAL = 'regexp:0[Xx][0-9a-fA-F]*'
+
+    // 0 can be omitted before dot
+    FLOATLITERAL = 'regexp:(\d+)?(\.\d+)?[fF]?'
+    DOUBLELITERAL = 'regexp:(\d+)?(\.\d+)?[dD]'
+
+    string = "regexp:(\"([^\"\\]|\\.)*\")"
+    CHARLITERAL = "regexp:('([^'\\]|\\.)*')"
+  ]
+
+  extends(".*Expression")="expression"
+}
+
+monkeyCFile ::= compilationUnit*
+
+private compilationUnit ::= classDeclaration
+
+classDeclaration ::= CLASS componentName classBody
+{pin=2 mixin="io.github.liias.monkey.psi.impl.AbstractMonkeyPsiClass" implements="io.github.liias.monkey.psi.MonkeyClass"}
+
+classBody ::= LBRACE classBodyMembers RBRACE {pin=1}
+classBodyMembers ::= classBodyMember* {implements="io.github.liias.monkey.psi.MonkeyExecutionScope"}
+
+private classBodyMember ::= fieldDeclaration
+
+fieldDeclaration ::= VAR componentName (EQ expression)? SEMI {
+pin=2
+mixin="io.github.liias.monkey.psi.impl.AbstractMonkeyComponentImpl"
+implements="io.github.liias.monkey.psi.MonkeyComponent"
+}
+
+expression ::= primary
+private primary ::= literalExpression | referenceExpression
+
+referenceExpression ::= << nonStrictID >> {
+  mixin="io.github.liias.monkey.psi.impl.MonkeyReferenceImpl"
+  implements="io.github.liias.monkey.psi.MonkeyReference"
+}
+
+literalExpression ::= INTLITERAL
+
+componentName ::= << nonStrictID >>
+{mixin="io.github.liias.monkey.psi.impl.MonkeyNamedElementImpl" implements="io.github.liias.monkey.psi.MonkeyNamedElement"}
+
+// see nonStrictID
+id ::= IDENTIFIER
+
+
+
