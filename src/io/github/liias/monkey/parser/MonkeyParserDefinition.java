@@ -9,7 +9,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import io.github.liias.monkey.MonkeyLanguage;
@@ -19,9 +18,6 @@ import io.github.liias.monkey.psi.MonkeyTypes;
 import org.jetbrains.annotations.NotNull;
 
 public class MonkeyParserDefinition implements ParserDefinition {
-  public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-  public static final TokenSet COMMENTS = TokenSet.create(MonkeyTypes.SINGLE_LINE_COMMENT);
-
   public static final IFileElementType FILE = new IFileElementType(Language.findInstance(MonkeyLanguage.class));
 
   @NotNull
@@ -43,13 +39,13 @@ public class MonkeyParserDefinition implements ParserDefinition {
   @NotNull
   @Override
   public TokenSet getWhitespaceTokens() {
-    return WHITE_SPACES;
+    return MonkeyTokenTypesSets.WHITE_SPACES;
   }
 
   @NotNull
   @Override
   public TokenSet getCommentTokens() {
-    return COMMENTS;
+    return MonkeyTokenTypesSets.COMMENTS;
   }
 
   @NotNull

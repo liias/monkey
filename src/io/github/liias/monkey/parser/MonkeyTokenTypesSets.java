@@ -1,10 +1,13 @@
 package io.github.liias.monkey.parser;
 
+import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.TokenSet;
 import io.github.liias.monkey.psi.MonkeyTypes;
 
 public interface MonkeyTokenTypesSets {
   TokenSet STRINGS = TokenSet.create(MonkeyTypes.STRING);
+  TokenSet COMMENTS = TokenSet.create(MonkeyTypes.SINGLE_LINE_COMMENT);
+  TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
 
   TokenSet BUILT_IN_IDENTIFIERS = TokenSet.create(
       MonkeyTypes.AND,
