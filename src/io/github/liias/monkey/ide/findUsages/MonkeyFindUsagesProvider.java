@@ -34,7 +34,6 @@ public class MonkeyFindUsagesProvider implements FindUsagesProvider {
   public String getType(@NotNull PsiElement element) {
     final MonkeyComponentType type = MonkeyComponentType.typeOf(element.getParent());
     return type == null ? "reference" : type.toString().toLowerCase(Locale.US);
-
   }
 
   @NotNull

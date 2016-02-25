@@ -8,7 +8,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import io.github.liias.monkey.psi.MonkeyId;
 import io.github.liias.monkey.psi.MonkeyNamedElement;
-import io.github.liias.monkey.util.MonkeyElementGenerator;
+import io.github.liias.monkey.psi.util.MonkeyElementGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

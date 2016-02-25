@@ -33,6 +33,19 @@ public class MonkeyResolver implements ResolveCache.AbstractResolver<MonkeyRefer
     PsiTreeUtil.treeWalkUp(resolveProcessor, scopeElement, null, ResolveState.initial());
 
     // todo: add super, global, etc (check monkey c docs for order)
+
+    /*
+    Scoping
+    Monkey C is a message-passed language. When a function is called, the virtual machine does a look up operation
+    at runtime to find the function being called. Here is the hierarchy that it will search:
+
+    1. Instance members of the class
+    2. Members of the superclass
+    3. Static members of the class
+    4. Members of the parent module, and the parent modules up to the global namespace
+    5. Members of the superclass’s parent module up to the global namespace
+    */
+
     return result;
   }
 }

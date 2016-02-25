@@ -1,4 +1,4 @@
-package io.github.liias.monkey.util;
+package io.github.liias.monkey.psi.util;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
