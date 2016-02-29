@@ -40,6 +40,7 @@
     <lang.psiStructureViewFactory language="MonkeyC"
                                   implementationClass="io.github.liias.monkey.ide.structure.MonkeyStructureViewFactory"/>
 
+    <lang.commenter language="MonkeyC" implementationClass="io.github.liias.monkey.ide.MonkeyCommenter"/>
 
   </extensions>
 
