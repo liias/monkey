@@ -53,4 +53,10 @@ public abstract class MonkeyNamedElementImpl extends MonkeyPsiCompositeElementIm
   public MonkeyId getId() {
     return PsiTreeUtil.getRequiredChildOfType(this, MonkeyId.class);
   }
+
+  @Override
+  public String toString() {
+    return "MonkeyComponentName:" + getName();
+  }
+
 }

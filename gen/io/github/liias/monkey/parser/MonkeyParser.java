@@ -122,12 +122,12 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // << nonStrictID >>
+  // << strictID >>
   public static boolean componentName(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "componentName")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<component name>");
-    r = nonStrictID(b, l + 1);
+    r = strictID(b, l + 1);
     exit_section_(b, l, m, COMPONENT_NAME, r, false, null);
     return r;
   }
@@ -227,12 +227,12 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // << nonStrictID >>
+  // << strictID >>
   public static boolean referenceExpression(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "referenceExpression")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _COLLAPSE_, "<reference expression>");
-    r = nonStrictID(b, l + 1);
+    r = strictID(b, l + 1);
     exit_section_(b, l, m, REFERENCE_EXPRESSION, r, false, null);
     return r;
   }

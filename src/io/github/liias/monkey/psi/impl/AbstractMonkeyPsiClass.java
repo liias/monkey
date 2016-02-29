@@ -9,4 +9,9 @@ abstract public class AbstractMonkeyPsiClass extends AbstractMonkeyComponentImpl
   public AbstractMonkeyPsiClass(@NotNull ASTNode node) {
     super(node);
   }
+
+  @Override
+  public String toString() {
+    return "MonkeyClassDeclaration:" + getName();
+  }
 }

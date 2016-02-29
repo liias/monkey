@@ -150,17 +150,17 @@ implements="io.github.liias.monkey.psi.MonkeyComponent"
 expression ::= primary
 private primary ::= literalExpression | referenceExpression
 
-referenceExpression ::= << nonStrictID >> {
+referenceExpression ::= << strictID >> {
   mixin="io.github.liias.monkey.psi.impl.MonkeyReferenceImpl"
   implements="io.github.liias.monkey.psi.MonkeyReference"
 }
 
 literalExpression ::= INTLITERAL
 
-componentName ::= << nonStrictID >>
+componentName ::= << strictID >>
 {mixin="io.github.liias.monkey.psi.impl.MonkeyNamedElementImpl" implements="io.github.liias.monkey.psi.MonkeyNamedElement"}
 
-// see nonStrictID
+// see strictID
 id ::= IDENTIFIER
 
 
