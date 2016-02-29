@@ -21,6 +21,7 @@
   <depends>com.intellij.modules.lang</depends>
 
   <extensions defaultExtensionNs="com.intellij">
+    <!-- Important stuff -->
     <fileTypeFactory implementation="io.github.liias.monkey.file.MonkeyFileTypeFactory"/>
     <lang.parserDefinition language="MonkeyC"
                            implementationClass="io.github.liias.monkey.parser.MonkeyParserDefinition"/>
@@ -30,6 +31,15 @@
 
     <lang.refactoringSupport language="MonkeyC"
                              implementationClass="io.github.liias.monkey.ide.refactoring.MonkeyRefactoringSupportProvider"/>
+
+
+    <!-- Nice to have stuff -->
+    <lang.syntaxHighlighterFactory language="MonkeyC"
+                                   implementationClass="io.github.liias.monkey.highlighting.MonkeySyntaxHighlighterFactory"/>
+
+    <lang.psiStructureViewFactory language="MonkeyC"
+                                  implementationClass="io.github.liias.monkey.ide.structure.MonkeyStructureViewFactory"/>
+
 
   </extensions>
 
