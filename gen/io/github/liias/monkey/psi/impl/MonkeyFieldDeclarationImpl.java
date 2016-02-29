@@ -22,15 +22,21 @@ public class MonkeyFieldDeclarationImpl extends AbstractMonkeyComponentImpl impl
   }
 
   @Override
-  @NotNull
+  @Nullable
   public MonkeyComponentName getComponentName() {
-    return findNotNullChildByClass(MonkeyComponentName.class);
+    return findChildByClass(MonkeyComponentName.class);
   }
 
   @Override
   @Nullable
   public MonkeyExpression getExpression() {
     return findChildByClass(MonkeyExpression.class);
+  }
+
+  @Override
+  @NotNull
+  public MonkeyModifiers getModifiers() {
+    return findNotNullChildByClass(MonkeyModifiers.class);
   }
 
 }

@@ -8,6 +8,7 @@ import io.github.liias.monkey.psi.impl.*;
 
 public interface MonkeyTypes {
 
+  IElementType ANNOTATION = new MonkeyElementType("ANNOTATION");
   IElementType CLASS_BODY = new MonkeyElementType("CLASS_BODY");
   IElementType CLASS_BODY_MEMBERS = new MonkeyElementType("CLASS_BODY_MEMBERS");
   IElementType CLASS_DECLARATION = new MonkeyElementType("CLASS_DECLARATION");
@@ -16,7 +17,11 @@ public interface MonkeyTypes {
   IElementType FIELD_DECLARATION = new MonkeyElementType("FIELD_DECLARATION");
   IElementType ID = new MonkeyElementType("ID");
   IElementType LITERAL_EXPRESSION = new MonkeyElementType("LITERAL_EXPRESSION");
+  IElementType MODIFIERS = new MonkeyElementType("MODIFIERS");
+  IElementType QUALIFIED_NAME = new MonkeyElementType("QUALIFIED_NAME");
   IElementType REFERENCE_EXPRESSION = new MonkeyElementType("REFERENCE_EXPRESSION");
+  IElementType SYMBOL = new MonkeyElementType("SYMBOL");
+  IElementType USING_DECLARATION = new MonkeyElementType("USING_DECLARATION");
 
   IElementType AMP = new MonkeyTokenType("&");
   IElementType AMPAMP = new MonkeyTokenType("&&");
@@ -109,7 +114,10 @@ public interface MonkeyTypes {
   class Factory {
     public static PsiElement createElement(ASTNode node) {
       IElementType type = node.getElementType();
-       if (type == CLASS_BODY) {
+       if (type == ANNOTATION) {
+        return new MonkeyAnnotationImpl(node);
+      }
+      else if (type == CLASS_BODY) {
         return new MonkeyClassBodyImpl(node);
       }
       else if (type == CLASS_BODY_MEMBERS) {
@@ -133,8 +141,20 @@ public interface MonkeyTypes {
       else if (type == LITERAL_EXPRESSION) {
         return new MonkeyLiteralExpressionImpl(node);
       }
+      else if (type == MODIFIERS) {
+        return new MonkeyModifiersImpl(node);
+      }
+      else if (type == QUALIFIED_NAME) {
+        return new MonkeyQualifiedNameImpl(node);
+      }
       else if (type == REFERENCE_EXPRESSION) {
         return new MonkeyReferenceExpressionImpl(node);
+      }
+      else if (type == SYMBOL) {
+        return new MonkeySymbolImpl(node);
+      }
+      else if (type == USING_DECLARATION) {
+        return new MonkeyUsingDeclarationImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

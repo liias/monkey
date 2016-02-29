@@ -23,7 +23,10 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     boolean r;
     b = adapt_builder_(t, b, this, EXTENDS_SETS_);
     Marker m = enter_section_(b, 0, _COLLAPSE_, null);
-    if (t == CLASS_BODY) {
+    if (t == ANNOTATION) {
+      r = annotation(b, 0);
+    }
+    else if (t == CLASS_BODY) {
       r = classBody(b, 0);
     }
     else if (t == CLASS_BODY_MEMBERS) {
@@ -47,8 +50,20 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     else if (t == LITERAL_EXPRESSION) {
       r = literalExpression(b, 0);
     }
+    else if (t == MODIFIERS) {
+      r = modifiers(b, 0);
+    }
+    else if (t == QUALIFIED_NAME) {
+      r = qualifiedName(b, 0);
+    }
     else if (t == REFERENCE_EXPRESSION) {
       r = referenceExpression(b, 0);
+    }
+    else if (t == SYMBOL) {
+      r = symbol(b, 0);
+    }
+    else if (t == USING_DECLARATION) {
+      r = usingDeclaration(b, 0);
     }
     else {
       r = parse_root_(t, b, 0);
@@ -63,6 +78,20 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   public static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
     create_token_set_(EXPRESSION, LITERAL_EXPRESSION, REFERENCE_EXPRESSION),
   };
+
+  /* ********************************************************** */
+  // LPAREN symbol RPAREN
+  public static boolean annotation(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "annotation")) return false;
+    if (!nextTokenIs(b, LPAREN)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LPAREN);
+    r = r && symbol(b, l + 1);
+    r = r && consumeToken(b, RPAREN);
+    exit_section_(b, m, ANNOTATION, r);
+    return r;
+  }
 
   /* ********************************************************** */
   // LBRACE classBodyMembers RBRACE
@@ -101,24 +130,49 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // CLASS componentName classBody
+  // modifiers CLASS componentName (EXTENDS qualifiedName)? classBody
   public static boolean classDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classDeclaration")) return false;
-    if (!nextTokenIs(b, CLASS)) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, null);
-    r = consumeToken(b, CLASS);
-    r = r && componentName(b, l + 1);
+    Marker m = enter_section_(b, l, _NONE_, "<class declaration>");
+    r = modifiers(b, l + 1);
+    r = r && consumeToken(b, CLASS);
     p = r; // pin = 2
-    r = r && classBody(b, l + 1);
+    r = r && report_error_(b, componentName(b, l + 1));
+    r = p && report_error_(b, classDeclaration_3(b, l + 1)) && r;
+    r = p && classBody(b, l + 1) && r;
     exit_section_(b, l, m, CLASS_DECLARATION, r, p, null);
     return r || p;
   }
 
+  // (EXTENDS qualifiedName)?
+  private static boolean classDeclaration_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "classDeclaration_3")) return false;
+    classDeclaration_3_0(b, l + 1);
+    return true;
+  }
+
+  // EXTENDS qualifiedName
+  private static boolean classDeclaration_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "classDeclaration_3_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, EXTENDS);
+    r = r && qualifiedName(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
   /* ********************************************************** */
-  // classDeclaration
+  // usingDeclaration | classDeclaration
   static boolean compilationUnit(PsiBuilder b, int l) {
-    return classDeclaration(b, l + 1);
+    if (!recursion_guard_(b, l, "compilationUnit")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = usingDeclaration(b, l + 1);
+    if (!r) r = classDeclaration(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
   }
 
   /* ********************************************************** */
@@ -144,31 +198,31 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // VAR componentName (EQ expression)? SEMI
+  // modifiers VAR componentName (EQ expression)? SEMI
   public static boolean fieldDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "fieldDeclaration")) return false;
-    if (!nextTokenIs(b, VAR)) return false;
     boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, null);
-    r = consumeToken(b, VAR);
-    r = r && componentName(b, l + 1);
+    Marker m = enter_section_(b, l, _NONE_, "<field declaration>");
+    r = modifiers(b, l + 1);
+    r = r && consumeToken(b, VAR);
     p = r; // pin = 2
-    r = r && report_error_(b, fieldDeclaration_2(b, l + 1));
+    r = r && report_error_(b, componentName(b, l + 1));
+    r = p && report_error_(b, fieldDeclaration_3(b, l + 1)) && r;
     r = p && consumeToken(b, SEMI) && r;
     exit_section_(b, l, m, FIELD_DECLARATION, r, p, null);
     return r || p;
   }
 
   // (EQ expression)?
-  private static boolean fieldDeclaration_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fieldDeclaration_2")) return false;
-    fieldDeclaration_2_0(b, l + 1);
+  private static boolean fieldDeclaration_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fieldDeclaration_3")) return false;
+    fieldDeclaration_3_0(b, l + 1);
     return true;
   }
 
   // EQ expression
-  private static boolean fieldDeclaration_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fieldDeclaration_2_0")) return false;
+  private static boolean fieldDeclaration_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fieldDeclaration_3_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, EQ);
@@ -202,6 +256,40 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // annotation? STATIC? HIDDEN?
+  public static boolean modifiers(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "modifiers")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, "<modifiers>");
+    r = modifiers_0(b, l + 1);
+    r = r && modifiers_1(b, l + 1);
+    r = r && modifiers_2(b, l + 1);
+    exit_section_(b, l, m, MODIFIERS, r, false, null);
+    return r;
+  }
+
+  // annotation?
+  private static boolean modifiers_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "modifiers_0")) return false;
+    annotation(b, l + 1);
+    return true;
+  }
+
+  // STATIC?
+  private static boolean modifiers_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "modifiers_1")) return false;
+    consumeToken(b, STATIC);
+    return true;
+  }
+
+  // HIDDEN?
+  private static boolean modifiers_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "modifiers_2")) return false;
+    consumeToken(b, HIDDEN);
+    return true;
+  }
+
+  /* ********************************************************** */
   // compilationUnit*
   static boolean monkeyCFile(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "monkeyCFile")) return false;
@@ -227,6 +315,41 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // componentName (DOT componentName)*
+  public static boolean qualifiedName(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "qualifiedName")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, "<qualified name>");
+    r = componentName(b, l + 1);
+    r = r && qualifiedName_1(b, l + 1);
+    exit_section_(b, l, m, QUALIFIED_NAME, r, false, null);
+    return r;
+  }
+
+  // (DOT componentName)*
+  private static boolean qualifiedName_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "qualifiedName_1")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!qualifiedName_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "qualifiedName_1", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // DOT componentName
+  private static boolean qualifiedName_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "qualifiedName_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, DOT);
+    r = r && componentName(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // << strictID >>
   public static boolean referenceExpression(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "referenceExpression")) return false;
@@ -234,6 +357,54 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _COLLAPSE_, "<reference expression>");
     r = strictID(b, l + 1);
     exit_section_(b, l, m, REFERENCE_EXPRESSION, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // COLON << strictID >>
+  public static boolean symbol(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "symbol")) return false;
+    if (!nextTokenIs(b, COLON)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, null);
+    r = consumeToken(b, COLON);
+    p = r; // pin = 1
+    r = r && strictID(b, l + 1);
+    exit_section_(b, l, m, SYMBOL, r, p, null);
+    return r || p;
+  }
+
+  /* ********************************************************** */
+  // USING qualifiedName (AS componentName)? SEMI
+  public static boolean usingDeclaration(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "usingDeclaration")) return false;
+    if (!nextTokenIs(b, USING)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, null);
+    r = consumeToken(b, USING);
+    r = r && qualifiedName(b, l + 1);
+    p = r; // pin = 2
+    r = r && report_error_(b, usingDeclaration_2(b, l + 1));
+    r = p && consumeToken(b, SEMI) && r;
+    exit_section_(b, l, m, USING_DECLARATION, r, p, null);
+    return r || p;
+  }
+
+  // (AS componentName)?
+  private static boolean usingDeclaration_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "usingDeclaration_2")) return false;
+    usingDeclaration_2_0(b, l + 1);
+    return true;
+  }
+
+  // AS componentName
+  private static boolean usingDeclaration_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "usingDeclaration_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, AS);
+    r = r && componentName(b, l + 1);
+    exit_section_(b, m, null, r);
     return r;
   }
 

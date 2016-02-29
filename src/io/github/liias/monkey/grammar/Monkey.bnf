@@ -131,9 +131,13 @@
 
 monkeyCFile ::= compilationUnit*
 
-private compilationUnit ::= classDeclaration
+private compilationUnit ::= usingDeclaration | classDeclaration
 
-classDeclaration ::= CLASS componentName classBody
+// using
+usingDeclaration ::= USING qualifiedName (AS componentName)? SEMI {pin=2}
+
+// class
+classDeclaration ::= modifiers CLASS componentName (EXTENDS qualifiedName)? classBody
 {pin=2 mixin="io.github.liias.monkey.psi.impl.AbstractMonkeyPsiClass" implements="io.github.liias.monkey.psi.MonkeyClass"}
 
 classBody ::= LBRACE classBodyMembers RBRACE {pin=1}
@@ -141,12 +145,14 @@ classBodyMembers ::= classBodyMember* {implements="io.github.liias.monkey.psi.Mo
 
 private classBodyMember ::= fieldDeclaration
 
-fieldDeclaration ::= VAR componentName (EQ expression)? SEMI {
+// field
+fieldDeclaration ::= modifiers VAR componentName (EQ expression)? SEMI {
 pin=2
 mixin="io.github.liias.monkey.psi.impl.AbstractMonkeyComponentImpl"
 implements="io.github.liias.monkey.psi.MonkeyComponent"
 }
 
+// expressions
 expression ::= primary
 private primary ::= literalExpression | referenceExpression
 
@@ -156,6 +162,14 @@ referenceExpression ::= << strictID >> {
 }
 
 literalExpression ::= INTLITERAL
+
+modifiers ::= annotation? STATIC? HIDDEN?
+
+annotation ::= LPAREN symbol RPAREN
+
+symbol ::= COLON << strictID >> {pin=1}
+
+qualifiedName ::= componentName (DOT componentName)*
 
 componentName ::= << strictID >>
 {mixin="io.github.liias.monkey.psi.impl.MonkeyNamedElementImpl" implements="io.github.liias.monkey.psi.MonkeyNamedElement"}

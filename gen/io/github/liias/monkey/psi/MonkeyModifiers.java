@@ -5,15 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MonkeyFieldDeclaration extends MonkeyComponent {
+public interface MonkeyModifiers extends MonkeyPsiCompositeElement {
 
   @Nullable
-  MonkeyComponentName getComponentName();
-
-  @Nullable
-  MonkeyExpression getExpression();
-
-  @NotNull
-  MonkeyModifiers getModifiers();
+  MonkeyAnnotation getAnnotation();
 
 }

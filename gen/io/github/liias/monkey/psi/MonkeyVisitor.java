@@ -6,6 +6,10 @@ import com.intellij.psi.PsiElementVisitor;
 
 public class MonkeyVisitor extends PsiElementVisitor {
 
+  public void visitAnnotation(@NotNull MonkeyAnnotation o) {
+    visitPsiCompositeElement(o);
+  }
+
   public void visitClassBody(@NotNull MonkeyClassBody o) {
     visitPsiCompositeElement(o);
   }
@@ -38,9 +42,25 @@ public class MonkeyVisitor extends PsiElementVisitor {
     visitExpression(o);
   }
 
+  public void visitModifiers(@NotNull MonkeyModifiers o) {
+    visitPsiCompositeElement(o);
+  }
+
+  public void visitQualifiedName(@NotNull MonkeyQualifiedName o) {
+    visitPsiCompositeElement(o);
+  }
+
   public void visitReferenceExpression(@NotNull MonkeyReferenceExpression o) {
     visitExpression(o);
     // visitReference(o);
+  }
+
+  public void visitSymbol(@NotNull MonkeySymbol o) {
+    visitPsiCompositeElement(o);
+  }
+
+  public void visitUsingDeclaration(@NotNull MonkeyUsingDeclaration o) {
+    visitPsiCompositeElement(o);
   }
 
   public void visitClass(@NotNull MonkeyClass o) {

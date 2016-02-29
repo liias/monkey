@@ -10,7 +10,13 @@ public interface MonkeyClassDeclaration extends MonkeyClass {
   @Nullable
   MonkeyClassBody getClassBody();
 
-  @NotNull
+  @Nullable
   MonkeyComponentName getComponentName();
+
+  @NotNull
+  MonkeyModifiers getModifiers();
+
+  @Nullable
+  MonkeyQualifiedName getQualifiedName();
 
 }
