@@ -27,35 +27,6 @@ public class MonkeySyntaxHighlighter extends SyntaxHighlighterBase {
   public static final TextAttributesKey MC_STRING = createTextAttributesKey("MC.STRING", STRING);
   public static final TextAttributesKey MC_NUMBER = createTextAttributesKey("MC.NUMBER", NUMBER);
 
-  private static final TokenSet KEYWORD_TOKENS = TokenSet.create(
-      MonkeyTypes.AND,
-      MonkeyTypes.AS,
-      MonkeyTypes.CLASS,
-      MonkeyTypes.CONST,
-      MonkeyTypes.DO,
-      MonkeyTypes.ELSE,
-      MonkeyTypes.ENUM,
-      MonkeyTypes.EXTENDS,
-      MonkeyTypes.FALSE,
-      MonkeyTypes.FOR,
-      MonkeyTypes.FUNCTION,
-      MonkeyTypes.HAS,
-      MonkeyTypes.HIDDEN,
-      MonkeyTypes.IF,
-      MonkeyTypes.INSTANCEOF,
-      MonkeyTypes.MODULE,
-      MonkeyTypes.NATIVE,
-      MonkeyTypes.NEW,
-      MonkeyTypes.NULL,
-      MonkeyTypes.OR,
-      MonkeyTypes.RETURN,
-      MonkeyTypes.STATIC,
-      MonkeyTypes.TRUE,
-      MonkeyTypes.USING,
-      MonkeyTypes.VAR,
-      MonkeyTypes.WHILE
-  );
-
   private static final TokenSet OPERATOR_TOKENS = TokenSet.create(
       MonkeyTypes.PLUS,
       MonkeyTypes.SUB,
@@ -75,7 +46,7 @@ public class MonkeySyntaxHighlighter extends SyntaxHighlighterBase {
 
   private static Map<IElementType, TextAttributesKey> createTypeKeyMap() {
     Map<IElementType, TextAttributesKey> aMap = new HashMap<>();
-    fillMap(aMap, KEYWORD_TOKENS, MC_KEYWORD);
+    fillMap(aMap, MonkeyTokenTypesSets.BUILT_IN_IDENTIFIERS, MC_KEYWORD);
     fillMap(aMap, OPERATOR_TOKENS, MC_OPERATOR);
     fillMap(aMap, MonkeyTokenTypesSets.STRINGS, MC_STRING);
     fillMap(aMap, NUMBER_LITERALS, MC_NUMBER);
