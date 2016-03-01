@@ -7,4 +7,10 @@ import com.intellij.psi.PsiElement;
 
 public interface MonkeyExpression extends MonkeyPsiCompositeElement {
 
+  @Nullable
+  MonkeyAssignmentOperator getAssignmentOperator();
+
+  @NotNull
+  List<MonkeyExpression> getExpressionList();
+
 }

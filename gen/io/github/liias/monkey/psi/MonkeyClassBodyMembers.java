@@ -10,4 +10,7 @@ public interface MonkeyClassBodyMembers extends MonkeyExecutionScope {
   @NotNull
   List<MonkeyFieldDeclaration> getFieldDeclarationList();
 
+  @NotNull
+  List<MonkeyFunctionDeclaration> getFunctionDeclarationList();
+
 }

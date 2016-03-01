@@ -115,6 +115,10 @@ CHARLITERAL=('([^'\\]|\\.)*')
   "+"                        { return PLUS; }
   "-"                        { return SUB; }
   "/"                        { return SLASH; }
+  "BAREQ"                    { return BAREQ; }
+  "type"                     { return TYPE; }
+  "VOID"                     { return VOID; }
+  "SUPER"                    { return SUPER; }
 
   {WHITE_SPACE}              { return WHITE_SPACE; }
   {SINGLE_LINE_COMMENT}      { return SINGLE_LINE_COMMENT; }

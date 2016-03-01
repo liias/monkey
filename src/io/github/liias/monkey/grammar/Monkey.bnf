@@ -143,7 +143,7 @@ classDeclaration ::= modifiers CLASS componentName (EXTENDS qualifiedName)? clas
 classBody ::= LBRACE classBodyMembers RBRACE {pin=1}
 classBodyMembers ::= classBodyMember* {implements="io.github.liias.monkey.psi.MonkeyExecutionScope"}
 
-private classBodyMember ::= fieldDeclaration
+private classBodyMember ::= fieldDeclaration | functionDeclaration
 
 // field
 fieldDeclaration ::= modifiers VAR componentName (EQ expression)? SEMI {
@@ -152,30 +152,202 @@ mixin="io.github.liias.monkey.psi.impl.AbstractMonkeyComponentImpl"
 implements="io.github.liias.monkey.psi.MonkeyComponent"
 }
 
-// expressions
-expression ::= primary
-private primary ::= literalExpression | referenceExpression
+// function
+functionDeclaration ::= modifiers FUNCTION componentName
+ LPAREN formalParameterDeclarations? RPAREN block {
+pin=3
+mixin="io.github.liias.monkey.psi.impl.AbstractMonkeyComponentImpl"
+implements="io.github.liias.monkey.psi.MonkeyComponent"
+}
 
-referenceExpression ::= << strictID >> {
+formalParameterDeclarations ::= componentName (COMMA componentName)*
+
+block ::= LBRACE blockStatement* RBRACE
+
+blockStatement ::= localVariableDeclarationStatement
+                 | statement
+
+localVariableDeclarationStatement ::= VAR variableDeclaration (COMMA variableDeclaration)* SEMI
+
+variableDeclaration ::= componentName (LBRACKET RBRACKET)* (EQ variableInitializer)? {
+pin=1
+mixin="io.github.liias.monkey.psi.impl.AbstractMonkeyComponentImpl"
+implements="io.github.liias.monkey.psi.MonkeyComponent"
+}
+
+
+variableInitializer ::= arrayInitializer | expression
+
+arrayInitializer ::= LBRACE (variableInitializer (COMMA variableInitializer)*)? (COMMA)? RBRACE
+
+
+
+statement ::= block
+            | IF parExpression statement (ELSE statement)?
+            | forStatement
+            | WHILE parExpression statement
+            | DO statement WHILE parExpression SEMI
+            | tryStatement
+            | SWITCH parExpression LBRACE switchBlockStatementGroups RBRACE
+            | RETURN expression? SEMI
+            | THROW expression SEMI
+            | BREAK referenceExpression? SEMI
+            | CONTINUE referenceExpression? SEMI
+            | expression SEMI
+            | IDENTIFIER COLON statement
+            | SEMI
+
+switchBlockStatementGroups ::= (switchBlockStatementGroup)*
+
+switchBlockStatementGroup ::= switchLabel (blockStatement)*
+
+switchLabel ::= CASE expression COLON | DEFAULT COLON
+
+tryStatement ::= TRY block (catches FINALLY block | catches | FINALLY block)
+
+catches ::= catchClause (catchClause)*
+
+catchClause ::= CATCH LPAREN catchParameter RPAREN block
+
+catchParameter ::= IDENTIFIER (LBRACKET RBRACKET)*
+
+forStatement ::= FOR LPAREN forInit? SEMI expression? SEMI expressionList? RPAREN statement
+
+forInit ::= variableDeclaration| expressionList
+
+// expressions
+expressionList ::= expression (COMMA expression)*
+
+parExpression ::= LPAREN expression RPAREN
+
+expression ::= conditionalExpression (assignmentOperator expression)?
+
+assignmentOperator ::= EQ
+                     | PLUSEQ
+                     | SUBEQ
+                     | STAREQ
+                     | SLASHEQ
+                     | AMPEQ
+                     | BAREQ
+                     | CARETEQ
+                     | PERCENTEQ
+                     | LT LT EQ
+                     | GT GT GT EQ
+                     | GT GT EQ
+
+conditionalExpression ::= conditionalOrExpression (QUES expression COLON conditionalExpression)?
+
+conditionalOrExpression ::= conditionalAndExpression ((BARBAR | OR) conditionalAndExpression)*
+
+conditionalAndExpression ::= inclusiveOrExpression ((AMPAMP | AND) inclusiveOrExpression)*
+
+inclusiveOrExpression ::= exclusiveOrExpression (BAR exclusiveOrExpression)*
+
+exclusiveOrExpression ::= andExpression (CARET andExpression)*
+
+andExpression ::= equalityExpression (AMP equalityExpression)*
+
+equalityExpression ::= hasExpression ((EQEQ | BANGEQ) hasExpression)*
+
+hasExpression ::= instanceOfExpression (HAS symbol)?
+
+instanceOfExpression ::= relationalExpression (INSTANCEOF type)?
+
+relationalExpression ::= shiftExpression (relationalOp shiftExpression)*
+
+relationalOp ::= LT EQ | GT EQ | LT | GT
+
+shiftExpression ::= additiveExpression (shiftOp additiveExpression)*
+
+shiftOp ::= LT LT | GT GT GT | GT GT
+
+additiveExpression ::= multiplicativeExpression ((PLUS | SUB) multiplicativeExpression)*
+
+multiplicativeExpression ::= bitwiseExpression ((STAR | SLASH | PERCENT) unaryExpression)*
+
+bitwiseExpression ::= unaryExpression (bitwiseOperator unaryExpression)*
+
+bitwiseOperator ::= AMP | CARET| BAR
+
+/**
+ * NOTE: for '+' and '-', if the next token is int or long integral, then it's not a unary expression.
+ *       it's a literal with signed value. INTLITERAL AND LONG LITERAL are added here for this.
+ */
+unaryExpression ::= PLUS unaryExpression
+                  | SUB unaryExpression
+                  | PLUSPLUS unaryExpression
+                  | SUBSUB unaryExpression
+                  | unaryExpressionNotPlusMinus
+
+private unaryExpressionNotPlusMinus ::= TILDE unaryExpression
+                                      | BANG unaryExpression
+                                      | primary selector* (PLUSPLUS | SUBSUB)?
+
+//expression ::= primary
+
+private primary ::= parExpression
+                  | referenceExpression qualifiedReferenceExpression* identifierSuffix?
+                  | literal
+                  | symbol
+                  | creator
+                  | VOID DOT CLASS
+
+//private primary ::= literalExpression | referenceExpression
+qualifiedReferenceExpression ::= DOT referenceExpression {elementType="referenceExpression"}
+
+referenceExpression ::= id {
   mixin="io.github.liias.monkey.psi.impl.MonkeyReferenceImpl"
   implements="io.github.liias.monkey.psi.MonkeyReference"
 }
 
-literalExpression ::= INTLITERAL
+identifierSuffix ::= (LBRACKET RBRACKET) + DOT CLASS
+                   | (LBRACKET expression RBRACKET)+
+                   | arguments
+                   | DOT CLASS
+                   | DOT IDENTIFIER arguments
+                   | DOT SUPER arguments
+
+selector ::= DOT IDENTIFIER (arguments)?
+           | LBRACKET expression RBRACKET
+
+creator ::= objectCreator | arrayCreator
+objectCreator ::= NEW qualifiedName classCreatorRest {pin=2}
+
+arrayCreator ::= NEW LBRACKET expression RBRACKET // new [expression evaluating to integer]
+               | LBRACKET (expression (COMMA expression)* )? RBRACKET // [expression1, expression2, ...]
+               | dictionaryCreator
+
+dictionaryCreator ::= NEW LBRACE RBRACE // new {}
+                    | LBRACE (keyValueInitializer (COMMA keyValueInitializer)* )? RBRACE // {"a"=> exp, :b => exp2, ...}
+
+keyValueInitializer ::= primary EQGT expression
+
+classCreatorRest ::= arguments classBody?
+
+arguments ::= LPAREN (expressionList)? RPAREN
 
 modifiers ::= annotation? STATIC? HIDDEN?
 
 annotation ::= LPAREN symbol RPAREN
 
-symbol ::= COLON << strictID >> {pin=1}
+symbol ::= COLON id {pin=1}
 
 qualifiedName ::= componentName (DOT componentName)*
 
-componentName ::= << strictID >>
+componentName ::= id
 {mixin="io.github.liias.monkey.psi.impl.MonkeyNamedElementImpl" implements="io.github.liias.monkey.psi.MonkeyNamedElement"}
 
 // see strictID
 id ::= IDENTIFIER
 
-
+literal ::= INTLITERAL
+          | LONGLITERAL
+          | FLOATLITERAL
+          | DOUBLELITERAL
+          | HEX_LITERAL
+          | CHARLITERAL
+          | string
+          | TRUE
+          | FALSE
+          | NULL
 

@@ -21,4 +21,16 @@ public class MonkeyExpressionImpl extends MonkeyPsiCompositeElementImpl implemen
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public MonkeyAssignmentOperator getAssignmentOperator() {
+    return findChildByClass(MonkeyAssignmentOperator.class);
+  }
+
+  @Override
+  @NotNull
+  public List<MonkeyExpression> getExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
+  }
+
 }

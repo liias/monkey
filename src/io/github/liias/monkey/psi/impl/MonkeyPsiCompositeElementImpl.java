@@ -7,9 +7,7 @@ import com.intellij.psi.ResolveState;
 import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.psi.tree.IElementType;
 import gnu.trove.THashSet;
-import io.github.liias.monkey.psi.MonkeyComponent;
-import io.github.liias.monkey.psi.MonkeyComponentName;
-import io.github.liias.monkey.psi.MonkeyPsiCompositeElement;
+import io.github.liias.monkey.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,6 +54,13 @@ public class MonkeyPsiCompositeElementImpl extends ASTWrapperPsiElement implemen
   private static Set<MonkeyComponentName> getDeclarationElementToProcess(@NotNull PsiElement context) {
     final Set<MonkeyComponentName> result = new THashSet<>();
     for (PsiElement child : context.getChildren()) {
+      if (child instanceof MonkeyLocalVariableDeclarationStatement) {
+        MonkeyLocalVariableDeclarationStatement localVariableDeclarationStatement = (MonkeyLocalVariableDeclarationStatement) child;
+        //MonkeyVariableDeclaration monkeyVariableDeclaration = localVariableDeclarationStatement.getVariableDeclarationList().get(0);
+        //result.add(monkeyVariableDeclaration.getComponentName());
+
+        System.out.println(localVariableDeclarationStatement.toString());
+      }
       if (child instanceof MonkeyComponent) {
         result.add(((MonkeyComponent) child).getComponentName());
       }

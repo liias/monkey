@@ -7,4 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface MonkeyReferenceExpression extends MonkeyExpression, MonkeyReference {
 
+  @NotNull
+  MonkeyId getId();
+
 }

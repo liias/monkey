@@ -5,9 +5,12 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MonkeyLiteralExpression extends MonkeyExpression {
+public interface MonkeyVariableDeclaration extends MonkeyComponent {
 
   @NotNull
-  PsiElement getIntliteral();
+  MonkeyComponentName getComponentName();
+
+  @Nullable
+  MonkeyVariableInitializer getVariableInitializer();
 
 }

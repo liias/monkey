@@ -10,21 +10,21 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static io.github.liias.monkey.psi.MonkeyTypes.*;
 import io.github.liias.monkey.psi.*;
 
-public class MonkeyLiteralExpressionImpl extends MonkeyExpressionImpl implements MonkeyLiteralExpression {
+public class MonkeyArrayInitializerImpl extends MonkeyPsiCompositeElementImpl implements MonkeyArrayInitializer {
 
-  public MonkeyLiteralExpressionImpl(ASTNode node) {
+  public MonkeyArrayInitializerImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitLiteralExpression(this);
+    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitArrayInitializer(this);
     else super.accept(visitor);
   }
 
   @Override
   @NotNull
-  public PsiElement getIntliteral() {
-    return findNotNullChildByType(INTLITERAL);
+  public List<MonkeyVariableInitializer> getVariableInitializerList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyVariableInitializer.class);
   }
 
 }

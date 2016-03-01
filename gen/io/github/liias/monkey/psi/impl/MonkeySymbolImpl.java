@@ -21,4 +21,10 @@ public class MonkeySymbolImpl extends MonkeyPsiCompositeElementImpl implements M
     else super.accept(visitor);
   }
 
+  @Override
+  @Nullable
+  public MonkeyId getId() {
+    return findChildByClass(MonkeyId.class);
+  }
+
 }

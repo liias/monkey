@@ -21,4 +21,10 @@ public class MonkeyComponentNameImpl extends MonkeyNamedElementImpl implements M
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public MonkeyId getId() {
+    return findNotNullChildByClass(MonkeyId.class);
+  }
+
 }

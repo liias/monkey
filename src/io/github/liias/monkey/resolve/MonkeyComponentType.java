@@ -5,13 +5,15 @@ import com.intellij.psi.PsiElement;
 import io.github.liias.monkey.psi.MonkeyClass;
 import io.github.liias.monkey.psi.MonkeyComponentName;
 import io.github.liias.monkey.psi.MonkeyFieldDeclaration;
+import io.github.liias.monkey.psi.MonkeyVariableDeclaration;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
 public enum MonkeyComponentType {
   CLASS(AllIcons.Nodes.Class),
-  FIELD(AllIcons.Nodes.Field);
+  FIELD(AllIcons.Nodes.Field),
+  VARIABLE(AllIcons.Nodes.Variable);
 
   private final Icon myIcon;
 
@@ -29,6 +31,9 @@ public enum MonkeyComponentType {
     }
     if (element instanceof MonkeyFieldDeclaration) {
       return FIELD;
+    }
+    if (element instanceof MonkeyVariableDeclaration) {
+      return VARIABLE;
     }
     return null;
   }

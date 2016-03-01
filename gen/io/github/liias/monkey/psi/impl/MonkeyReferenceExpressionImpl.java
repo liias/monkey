@@ -21,4 +21,10 @@ public class MonkeyReferenceExpressionImpl extends MonkeyReferenceImpl implement
     else super.accept(visitor);
   }
 
+  @Override
+  @NotNull
+  public MonkeyId getId() {
+    return findNotNullChildByClass(MonkeyId.class);
+  }
+
 }
