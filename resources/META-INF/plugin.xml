@@ -1,15 +1,18 @@
 <idea-plugin version="2">
   <id>io.github.liias.monkey</id>
-  <name>Monkey C</name>
+  <name>Monkey C (Garmin Connect IQ)</name>
   <version>0.2</version>
   <vendor email="madisliias@gmail.com" url="https://liias.github.io">Madis Liias</vendor>
 
   <description><![CDATA[
-      Unofficial support for Monkey C language
+      Unofficial support for Monkey C language and Garmin Connect IQ SDK
     ]]></description>
 
   <change-notes><![CDATA[
-      Separated language plugin from Connect IQ plugin.
+    <p>0.1.3</p>
+    <ul>
+      <li>Reworked language part - references and declarations now somewhat work in same file</li>
+    </ul>
     ]]>
   </change-notes>
 
@@ -41,6 +44,36 @@
                                   implementationClass="io.github.liias.monkey.lang.ide.structure.MonkeyStructureViewFactory"/>
 
     <lang.commenter language="MonkeyC" implementationClass="io.github.liias.monkey.lang.ide.MonkeyCommenter"/>
+
+
+    <!-- Module stuff -->
+    <sdkType implementation="io.github.liias.monkey.project.sdk.MonkeySdkType"/>
+
+    <moduleType id="MONKEY_C_MODULE" implementationClass="io.github.liias.monkey.project.module.MonkeyModuleType"/>
+
+    <moduleConfigurationEditorProvider
+        implementation="io.github.liias.monkey.project.configuration.MonkeyModuleEditorsProvider"
+        order="first"/>
+
+    <projectTemplatesFactory
+        implementation="io.github.liias.monkey.project.ui.module.newProject.MonkeyProjectTemplatesFactory"/>
+
+    <projectStructureDetector implementation="io.github.liias.monkey.project.MonkeyProjectStructureDetector"/>
+
+    <internalFileTemplate name="Monkey C File"/>
+
+    <!-- run application -->
+    <programRunner id="MonkeyCRunner" implementation="io.github.liias.monkey.project.runconfig.MonkeyProgramRunner"/>
+    <runConfigurationProducer
+        implementation="io.github.liias.monkey.project.runconfig.MonkeyModuleConfigurationProducer"/>
+    <configurationType implementation="io.github.liias.monkey.project.runconfig.MonkeyConfigurationType"/>
+    <moduleExtension implementation="io.github.liias.monkey.project.configuration.TargetDeviceModuleExtension"/>
+
+    <!-- xml file parsers -->
+
+    <dom.fileDescription implementation="io.github.liias.monkey.project.dom.manifest.ManifestDomFileDescription"/>
+    <dom.fileDescription
+        implementation="io.github.liias.monkey.project.dom.sdk.projectinfo.ProjectInfoDomFileDescription"/>
 
   </extensions>
 
