@@ -11,6 +11,7 @@ import io.github.liias.monkey.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Set;
 
 public class MonkeyPsiCompositeElementImpl extends ASTWrapperPsiElement implements MonkeyPsiCompositeElement {
@@ -54,18 +55,34 @@ public class MonkeyPsiCompositeElementImpl extends ASTWrapperPsiElement implemen
   private static Set<MonkeyComponentName> getDeclarationElementToProcess(@NotNull PsiElement context) {
     final Set<MonkeyComponentName> result = new THashSet<>();
     for (PsiElement child : context.getChildren()) {
-      if (child instanceof MonkeyLocalVariableDeclarationStatement) {
-        MonkeyLocalVariableDeclarationStatement localVariableDeclarationStatement = (MonkeyLocalVariableDeclarationStatement) child;
-        //MonkeyVariableDeclaration monkeyVariableDeclaration = localVariableDeclarationStatement.getVariableDeclarationList().get(0);
-        //result.add(monkeyVariableDeclaration.getComponentName());
 
-        System.out.println(localVariableDeclarationStatement.toString());
+      if (child instanceof MonkeyFormalParameterDeclarations) {
+        MonkeyFormalParameterDeclarations monkeyFormalParameterDeclarations = (MonkeyFormalParameterDeclarations) child;
+        List<MonkeyComponentName> componentNameList = monkeyFormalParameterDeclarations.getComponentNameList();
+        for (MonkeyComponentName monkeyComponentName : componentNameList) {
+          result.add(monkeyComponentName);
+        }
       }
+
+      // TODO: there must be some other way...
+      if (child instanceof MonkeyBlock) {
+        MonkeyBlock monkeyBlock = (MonkeyBlock) child;
+        List<MonkeyBlockStatement> blockStatementList = monkeyBlock.getBlockStatementList();
+        for (MonkeyBlockStatement monkeyBlockStatement : blockStatementList) {
+          MonkeyLocalVariableDeclarationStatement localVariableDeclarationStatement = monkeyBlockStatement.getLocalVariableDeclarationStatement();
+          if (localVariableDeclarationStatement != null) {
+            List<MonkeyVariableDeclaration> variableDeclarationList = localVariableDeclarationStatement.getVariableDeclarationList();
+            for (MonkeyVariableDeclaration monkeyVariableDeclaration : variableDeclarationList) {
+              result.add((monkeyVariableDeclaration).getComponentName());
+            }
+          }
+        }
+      }
+
       if (child instanceof MonkeyComponent) {
         result.add(((MonkeyComponent) child).getComponentName());
       }
     }
     return result;
   }
-
 }

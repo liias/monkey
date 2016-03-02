@@ -3,8 +3,8 @@ package io.github.liias.monkey.ide.refactoring;
 import com.intellij.lang.refactoring.RefactoringSupportProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.LocalSearchScope;
-import io.github.liias.monkey.resolve.MonkeyComponentType;
 import io.github.liias.monkey.psi.MonkeyNamedElement;
+import io.github.liias.monkey.resolve.MonkeyComponentType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
