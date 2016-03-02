@@ -262,7 +262,7 @@ equalityExpression ::= hasExpression ((EQEQ | BANGEQ) hasExpression)*
 
 hasExpression ::= instanceOfExpression (HAS symbol)?
 
-instanceOfExpression ::= relationalExpression (INSTANCEOF type)?
+instanceOfExpression ::= relationalExpression (INSTANCEOF qualifiedName)?
 
 relationalExpression ::= shiftExpression (relationalOp shiftExpression)*
 
@@ -303,7 +303,6 @@ private primary ::= parExpression
                   | creator
                   | VOID DOT CLASS
 
-//private primary ::= literalExpression | referenceExpression
 qualifiedReferenceExpression ::= DOT referenceExpression {elementType="referenceExpression"}
 
 referenceExpression ::= id {

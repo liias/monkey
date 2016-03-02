@@ -27,4 +27,10 @@ public class MonkeyInstanceOfExpressionImpl extends MonkeyExpressionImpl impleme
     return findNotNullChildByClass(MonkeyExpression.class);
   }
 
+  @Override
+  @Nullable
+  public MonkeyQualifiedName getQualifiedName() {
+    return findChildByClass(MonkeyQualifiedName.class);
+  }
+
 }

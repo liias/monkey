@@ -116,7 +116,6 @@ CHARLITERAL=('([^'\\]|\\.)*')
   "-"                        { return SUB; }
   "/"                        { return SLASH; }
   "BAREQ"                    { return BAREQ; }
-  "type"                     { return TYPE; }
   "VOID"                     { return VOID; }
   "SUPER"                    { return SUPER; }
 

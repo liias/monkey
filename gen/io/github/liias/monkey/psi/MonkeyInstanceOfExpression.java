@@ -10,4 +10,7 @@ public interface MonkeyInstanceOfExpression extends MonkeyExpression {
   @NotNull
   MonkeyExpression getExpression();
 
+  @Nullable
+  MonkeyQualifiedName getQualifiedName();
+
 }

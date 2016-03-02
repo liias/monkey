@@ -1651,7 +1651,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // relationalExpression (INSTANCEOF type)?
+  // relationalExpression (INSTANCEOF qualifiedName)?
   public static boolean instanceOfExpression(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "instanceOfExpression")) return false;
     boolean r;
@@ -1662,19 +1662,20 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (INSTANCEOF type)?
+  // (INSTANCEOF qualifiedName)?
   private static boolean instanceOfExpression_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "instanceOfExpression_1")) return false;
     instanceOfExpression_1_0(b, l + 1);
     return true;
   }
 
-  // INSTANCEOF type
+  // INSTANCEOF qualifiedName
   private static boolean instanceOfExpression_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "instanceOfExpression_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, INSTANCEOF, TYPE);
+    r = consumeToken(b, INSTANCEOF);
+    r = r && qualifiedName(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }

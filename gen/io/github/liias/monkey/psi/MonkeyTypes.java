@@ -161,7 +161,6 @@ public interface MonkeyTypes {
   IElementType TILDE = new MonkeyTokenType("~");
   IElementType TRUE = new MonkeyTokenType("true");
   IElementType TRY = new MonkeyTokenType("try");
-  IElementType TYPE = new MonkeyTokenType("type");
   IElementType USING = new MonkeyTokenType("using");
   IElementType VAR = new MonkeyTokenType("var");
   IElementType VOID = new MonkeyTokenType("VOID");
