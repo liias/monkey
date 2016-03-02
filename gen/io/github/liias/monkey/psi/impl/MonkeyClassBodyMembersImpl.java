@@ -23,6 +23,18 @@ public class MonkeyClassBodyMembersImpl extends MonkeyPsiCompositeElementImpl im
 
   @Override
   @NotNull
+  public List<MonkeyClassDeclaration> getClassDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyClassDeclaration.class);
+  }
+
+  @Override
+  @NotNull
+  public List<MonkeyConstDeclaration> getConstDeclarationList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyConstDeclaration.class);
+  }
+
+  @Override
+  @NotNull
   public List<MonkeyFieldDeclaration> getFieldDeclarationList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyFieldDeclaration.class);
   }

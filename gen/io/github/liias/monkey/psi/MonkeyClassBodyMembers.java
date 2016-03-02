@@ -8,6 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyClassBodyMembers extends MonkeyExecutionScope {
 
   @NotNull
+  List<MonkeyClassDeclaration> getClassDeclarationList();
+
+  @NotNull
+  List<MonkeyConstDeclaration> getConstDeclarationList();
+
+  @NotNull
   List<MonkeyFieldDeclaration> getFieldDeclarationList();
 
   @NotNull

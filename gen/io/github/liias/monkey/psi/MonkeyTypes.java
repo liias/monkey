@@ -30,6 +30,7 @@ public interface MonkeyTypes {
   IElementType CONDITIONAL_AND_EXPRESSION = new MonkeyElementType("CONDITIONAL_AND_EXPRESSION");
   IElementType CONDITIONAL_EXPRESSION = new MonkeyElementType("CONDITIONAL_EXPRESSION");
   IElementType CONDITIONAL_OR_EXPRESSION = new MonkeyElementType("CONDITIONAL_OR_EXPRESSION");
+  IElementType CONST_DECLARATION = new MonkeyElementType("CONST_DECLARATION");
   IElementType CREATOR = new MonkeyElementType("CREATOR");
   IElementType DICTIONARY_CREATOR = new MonkeyElementType("DICTIONARY_CREATOR");
   IElementType EQUALITY_EXPRESSION = new MonkeyElementType("EQUALITY_EXPRESSION");
@@ -231,6 +232,9 @@ public interface MonkeyTypes {
       }
       else if (type == CONDITIONAL_OR_EXPRESSION) {
         return new MonkeyConditionalOrExpressionImpl(node);
+      }
+      else if (type == CONST_DECLARATION) {
+        return new MonkeyConstDeclarationImpl(node);
       }
       else if (type == CREATOR) {
         return new MonkeyCreatorImpl(node);

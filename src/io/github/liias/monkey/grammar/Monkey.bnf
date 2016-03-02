@@ -143,7 +143,13 @@ classDeclaration ::= modifiers CLASS componentName (EXTENDS qualifiedName)? clas
 classBody ::= LBRACE classBodyMembers RBRACE {pin=1}
 classBodyMembers ::= classBodyMember* {implements="io.github.liias.monkey.psi.MonkeyExecutionScope"}
 
-private classBodyMember ::= fieldDeclaration | functionDeclaration
+private classBodyMember ::= constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration
+
+constDeclaration ::= modifiers CONST componentName (EQ expression)? SEMI {
+pin=2
+mixin="io.github.liias.monkey.psi.impl.AbstractMonkeyComponentImpl"
+implements="io.github.liias.monkey.psi.MonkeyComponent"
+}
 
 // field
 fieldDeclaration ::= modifiers VAR componentName (EQ expression)? SEMI {

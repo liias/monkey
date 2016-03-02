@@ -89,6 +89,9 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     else if (t == CONDITIONAL_OR_EXPRESSION) {
       r = conditionalOrExpression(b, 0);
     }
+    else if (t == CONST_DECLARATION) {
+      r = constDeclaration(b, 0);
+    }
     else if (t == CREATOR) {
       r = creator(b, 0);
     }
@@ -717,13 +720,15 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // fieldDeclaration | functionDeclaration
+  // constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration
   static boolean classBodyMember(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classBodyMember")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = fieldDeclaration(b, l + 1);
+    r = constDeclaration(b, l + 1);
+    if (!r) r = fieldDeclaration(b, l + 1);
     if (!r) r = functionDeclaration(b, l + 1);
+    if (!r) r = classDeclaration(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -941,6 +946,40 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, BARBAR);
     if (!r) r = consumeToken(b, OR);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // modifiers CONST componentName (EQ expression)? SEMI
+  public static boolean constDeclaration(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "constDeclaration")) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, "<const declaration>");
+    r = modifiers(b, l + 1);
+    r = r && consumeToken(b, CONST);
+    p = r; // pin = 2
+    r = r && report_error_(b, componentName(b, l + 1));
+    r = p && report_error_(b, constDeclaration_3(b, l + 1)) && r;
+    r = p && consumeToken(b, SEMI) && r;
+    exit_section_(b, l, m, CONST_DECLARATION, r, p, null);
+    return r || p;
+  }
+
+  // (EQ expression)?
+  private static boolean constDeclaration_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "constDeclaration_3")) return false;
+    constDeclaration_3_0(b, l + 1);
+    return true;
+  }
+
+  // EQ expression
+  private static boolean constDeclaration_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "constDeclaration_3_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, EQ);
+    r = r && expression(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }

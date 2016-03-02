@@ -94,6 +94,10 @@ public class MonkeyVisitor extends PsiElementVisitor {
     visitExpression(o);
   }
 
+  public void visitConstDeclaration(@NotNull MonkeyConstDeclaration o) {
+    visitComponent(o);
+  }
+
   public void visitCreator(@NotNull MonkeyCreator o) {
     visitPsiCompositeElement(o);
   }
