@@ -106,6 +106,14 @@ public class MonkeyVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
+  public void visitEnumConstant(@NotNull MonkeyEnumConstant o) {
+    visitComponent(o);
+  }
+
+  public void visitEnumDeclaration(@NotNull MonkeyEnumDeclaration o) {
+    visitPsiCompositeElement(o);
+  }
+
   public void visitEqualityExpression(@NotNull MonkeyEqualityExpression o) {
     visitExpression(o);
   }

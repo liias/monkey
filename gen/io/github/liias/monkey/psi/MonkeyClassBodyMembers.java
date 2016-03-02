@@ -14,6 +14,9 @@ public interface MonkeyClassBodyMembers extends MonkeyExecutionScope {
   List<MonkeyConstDeclaration> getConstDeclarationList();
 
   @NotNull
+  List<MonkeyEnumDeclaration> getEnumDeclarationList();
+
+  @NotNull
   List<MonkeyFieldDeclaration> getFieldDeclarationList();
 
   @NotNull

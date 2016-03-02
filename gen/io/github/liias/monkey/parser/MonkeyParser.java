@@ -98,6 +98,12 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     else if (t == DICTIONARY_CREATOR) {
       r = dictionaryCreator(b, 0);
     }
+    else if (t == ENUM_CONSTANT) {
+      r = enumConstant(b, 0);
+    }
+    else if (t == ENUM_DECLARATION) {
+      r = enumDeclaration(b, 0);
+    }
     else if (t == EQUALITY_EXPRESSION) {
       r = equalityExpression(b, 0);
     }
@@ -720,7 +726,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration
+  // constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration | enumDeclaration
   static boolean classBodyMember(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classBodyMember")) return false;
     boolean r;
@@ -729,6 +735,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     if (!r) r = fieldDeclaration(b, l + 1);
     if (!r) r = functionDeclaration(b, l + 1);
     if (!r) r = classDeclaration(b, l + 1);
+    if (!r) r = enumDeclaration(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -803,13 +810,14 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // usingDeclaration | classDeclaration
+  // usingDeclaration | classDeclaration | enumDeclaration
   static boolean compilationUnit(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "compilationUnit")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = usingDeclaration(b, l + 1);
     if (!r) r = classDeclaration(b, l + 1);
+    if (!r) r = enumDeclaration(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -1059,6 +1067,75 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, COMMA);
     r = r && keyValueInitializer(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // componentName (EQ INTLITERAL)?
+  public static boolean enumConstant(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "enumConstant")) return false;
+    if (!nextTokenIs(b, IDENTIFIER)) return false;
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, null);
+    r = componentName(b, l + 1);
+    p = r; // pin = 1
+    r = r && enumConstant_1(b, l + 1);
+    exit_section_(b, l, m, ENUM_CONSTANT, r, p, null);
+    return r || p;
+  }
+
+  // (EQ INTLITERAL)?
+  private static boolean enumConstant_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "enumConstant_1")) return false;
+    enumConstant_1_0(b, l + 1);
+    return true;
+  }
+
+  // EQ INTLITERAL
+  private static boolean enumConstant_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "enumConstant_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeTokens(b, 0, EQ, INTLITERAL);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // modifiers ENUM LBRACE enumConstant (COMMA enumConstant)* RBRACE
+  public static boolean enumDeclaration(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "enumDeclaration")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, "<enum declaration>");
+    r = modifiers(b, l + 1);
+    r = r && consumeTokens(b, 0, ENUM, LBRACE);
+    r = r && enumConstant(b, l + 1);
+    r = r && enumDeclaration_4(b, l + 1);
+    r = r && consumeToken(b, RBRACE);
+    exit_section_(b, l, m, ENUM_DECLARATION, r, false, null);
+    return r;
+  }
+
+  // (COMMA enumConstant)*
+  private static boolean enumDeclaration_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "enumDeclaration_4")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!enumDeclaration_4_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "enumDeclaration_4", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // COMMA enumConstant
+  private static boolean enumDeclaration_4_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "enumDeclaration_4_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, COMMA);
+    r = r && enumConstant(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }

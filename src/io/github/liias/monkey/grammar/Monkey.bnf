@@ -131,7 +131,7 @@
 
 monkeyCFile ::= compilationUnit*
 
-private compilationUnit ::= usingDeclaration | classDeclaration
+private compilationUnit ::= usingDeclaration | classDeclaration | enumDeclaration
 
 // using
 usingDeclaration ::= USING qualifiedName (AS componentName)? SEMI {pin=2}
@@ -143,7 +143,15 @@ classDeclaration ::= modifiers CLASS componentName (EXTENDS qualifiedName)? clas
 classBody ::= LBRACE classBodyMembers RBRACE {pin=1}
 classBodyMembers ::= classBodyMember* {implements="io.github.liias.monkey.psi.MonkeyExecutionScope"}
 
-private classBodyMember ::= constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration
+private classBodyMember ::= constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration | enumDeclaration
+
+// Enums must be declared at the module or class level; they cannot be declared within a function.
+enumDeclaration ::= modifiers ENUM LBRACE enumConstant (COMMA enumConstant)* RBRACE
+enumConstant ::= componentName (EQ INTLITERAL)? {
+pin=1
+mixin="io.github.liias.monkey.psi.impl.AbstractMonkeyComponentImpl"
+implements="io.github.liias.monkey.psi.MonkeyComponent"
+}
 
 constDeclaration ::= modifiers CONST componentName (EQ expression)? SEMI {
 pin=2

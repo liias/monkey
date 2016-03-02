@@ -56,6 +56,14 @@ public class MonkeyPsiCompositeElementImpl extends ASTWrapperPsiElement implemen
     final Set<MonkeyComponentName> result = new THashSet<>();
     for (PsiElement child : context.getChildren()) {
 
+      if (child instanceof MonkeyEnumDeclaration) {
+        MonkeyEnumDeclaration enumDeclaration = (MonkeyEnumDeclaration) child;
+        List<MonkeyEnumConstant> enumConstantList = enumDeclaration.getEnumConstantList();
+        for (MonkeyEnumConstant monkeyEnumConstant : enumConstantList) {
+          result.add(monkeyEnumConstant.getComponentName());
+        }
+      }
+
       if (child instanceof MonkeyFormalParameterDeclarations) {
         MonkeyFormalParameterDeclarations monkeyFormalParameterDeclarations = (MonkeyFormalParameterDeclarations) child;
         List<MonkeyComponentName> componentNameList = monkeyFormalParameterDeclarations.getComponentNameList();
@@ -80,7 +88,8 @@ public class MonkeyPsiCompositeElementImpl extends ASTWrapperPsiElement implemen
       }
 
       if (child instanceof MonkeyComponent) {
-        result.add(((MonkeyComponent) child).getComponentName());
+        MonkeyComponent monkeyComponent = (MonkeyComponent) child;
+        result.add(monkeyComponent.getComponentName());
       }
     }
     return result;

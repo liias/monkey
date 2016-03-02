@@ -33,6 +33,8 @@ public interface MonkeyTypes {
   IElementType CONST_DECLARATION = new MonkeyElementType("CONST_DECLARATION");
   IElementType CREATOR = new MonkeyElementType("CREATOR");
   IElementType DICTIONARY_CREATOR = new MonkeyElementType("DICTIONARY_CREATOR");
+  IElementType ENUM_CONSTANT = new MonkeyElementType("ENUM_CONSTANT");
+  IElementType ENUM_DECLARATION = new MonkeyElementType("ENUM_DECLARATION");
   IElementType EQUALITY_EXPRESSION = new MonkeyElementType("EQUALITY_EXPRESSION");
   IElementType EXCLUSIVE_OR_EXPRESSION = new MonkeyElementType("EXCLUSIVE_OR_EXPRESSION");
   IElementType EXPRESSION = new MonkeyElementType("EXPRESSION");
@@ -241,6 +243,12 @@ public interface MonkeyTypes {
       }
       else if (type == DICTIONARY_CREATOR) {
         return new MonkeyDictionaryCreatorImpl(node);
+      }
+      else if (type == ENUM_CONSTANT) {
+        return new MonkeyEnumConstantImpl(node);
+      }
+      else if (type == ENUM_DECLARATION) {
+        return new MonkeyEnumDeclarationImpl(node);
       }
       else if (type == EQUALITY_EXPRESSION) {
         return new MonkeyEqualityExpressionImpl(node);
