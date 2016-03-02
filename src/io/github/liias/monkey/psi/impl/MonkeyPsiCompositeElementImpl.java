@@ -63,11 +63,16 @@ public class MonkeyPsiCompositeElementImpl extends ASTWrapperPsiElement implemen
           result.add(monkeyEnumConstant.getComponentName());
         }
       }
+      if (child instanceof MonkeyFieldDeclarationList) {
+        MonkeyFieldDeclarationList monkeyFieldDeclarationList = (MonkeyFieldDeclarationList) child;
+        for (MonkeyFieldDeclaration fieldDeclaration : monkeyFieldDeclarationList.getFieldDeclarationList()) {
+          result.add(fieldDeclaration.getComponentName());
+        }
+      }
 
       if (child instanceof MonkeyFormalParameterDeclarations) {
         MonkeyFormalParameterDeclarations monkeyFormalParameterDeclarations = (MonkeyFormalParameterDeclarations) child;
-        List<MonkeyComponentName> componentNameList = monkeyFormalParameterDeclarations.getComponentNameList();
-        for (MonkeyComponentName monkeyComponentName : componentNameList) {
+        for (MonkeyComponentName monkeyComponentName : monkeyFormalParameterDeclarations.getComponentNameList()) {
           result.add(monkeyComponentName);
         }
       }
@@ -77,10 +82,9 @@ public class MonkeyPsiCompositeElementImpl extends ASTWrapperPsiElement implemen
         MonkeyBlock monkeyBlock = (MonkeyBlock) child;
         List<MonkeyBlockStatement> blockStatementList = monkeyBlock.getBlockStatementList();
         for (MonkeyBlockStatement monkeyBlockStatement : blockStatementList) {
-          MonkeyLocalVariableDeclarationStatement localVariableDeclarationStatement = monkeyBlockStatement.getLocalVariableDeclarationStatement();
-          if (localVariableDeclarationStatement != null) {
-            List<MonkeyVariableDeclaration> variableDeclarationList = localVariableDeclarationStatement.getVariableDeclarationList();
-            for (MonkeyVariableDeclaration monkeyVariableDeclaration : variableDeclarationList) {
+          MonkeyVariableDeclarationList variableDeclarationList = monkeyBlockStatement.getVariableDeclarationList();
+          if (variableDeclarationList != null) {
+            for (MonkeyVariableDeclaration monkeyVariableDeclaration : variableDeclarationList.getVariableDeclarationList()) {
               result.add((monkeyVariableDeclaration).getComponentName());
             }
           }

@@ -8,9 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyBlockStatement extends MonkeyPsiCompositeElement {
 
   @Nullable
-  MonkeyLocalVariableDeclarationStatement getLocalVariableDeclarationStatement();
+  MonkeyStatement getStatement();
 
   @Nullable
-  MonkeyStatement getStatement();
+  MonkeyVariableDeclarationList getVariableDeclarationList();
 
 }

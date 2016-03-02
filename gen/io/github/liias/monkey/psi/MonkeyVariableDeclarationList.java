@@ -5,12 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MonkeyVariableDeclaration extends MonkeyPsiCompositeElement {
+public interface MonkeyVariableDeclarationList extends MonkeyPsiCompositeElement {
 
   @NotNull
-  MonkeyComponentName getComponentName();
-
-  @Nullable
-  MonkeyVariableInitializer getVariableInitializer();
+  List<MonkeyVariableDeclaration> getVariableDeclarationList();
 
 }

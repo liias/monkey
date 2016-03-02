@@ -23,14 +23,14 @@ public class MonkeyBlockStatementImpl extends MonkeyPsiCompositeElementImpl impl
 
   @Override
   @Nullable
-  public MonkeyLocalVariableDeclarationStatement getLocalVariableDeclarationStatement() {
-    return findChildByClass(MonkeyLocalVariableDeclarationStatement.class);
+  public MonkeyStatement getStatement() {
+    return findChildByClass(MonkeyStatement.class);
   }
 
   @Override
   @Nullable
-  public MonkeyStatement getStatement() {
-    return findChildByClass(MonkeyStatement.class);
+  public MonkeyVariableDeclarationList getVariableDeclarationList() {
+    return findChildByClass(MonkeyVariableDeclarationList.class);
   }
 
 }

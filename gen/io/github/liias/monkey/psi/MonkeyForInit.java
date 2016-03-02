@@ -11,6 +11,6 @@ public interface MonkeyForInit extends MonkeyPsiCompositeElement {
   MonkeyExpressionList getExpressionList();
 
   @Nullable
-  MonkeyVariableDeclaration getVariableDeclaration();
+  MonkeyVariableDeclarationList getVariableDeclarationList();
 
 }

@@ -10,21 +10,27 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static io.github.liias.monkey.psi.MonkeyTypes.*;
 import io.github.liias.monkey.psi.*;
 
-public class MonkeyLocalVariableDeclarationStatementImpl extends MonkeyPsiCompositeElementImpl implements MonkeyLocalVariableDeclarationStatement {
+public class MonkeyEnumDeclarationImpl extends MonkeyPsiCompositeElementImpl implements MonkeyEnumDeclaration {
 
-  public MonkeyLocalVariableDeclarationStatementImpl(ASTNode node) {
+  public MonkeyEnumDeclarationImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitLocalVariableDeclarationStatement(this);
+    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitEnumDeclaration(this);
     else super.accept(visitor);
   }
 
   @Override
   @NotNull
-  public List<MonkeyVariableDeclaration> getVariableDeclarationList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyVariableDeclaration.class);
+  public List<MonkeyEnumConstant> getEnumConstantList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyEnumConstant.class);
+  }
+
+  @Override
+  @NotNull
+  public MonkeyModifiers getModifiers() {
+    return findNotNullChildByClass(MonkeyModifiers.class);
   }
 
 }

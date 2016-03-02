@@ -88,6 +88,7 @@
 
     EQEQ = "=="
     BANGEQ = "!="
+
     PLUSEQ = "+="
     SUBEQ = "-="
     STAREQ = "*="
@@ -143,7 +144,7 @@ classDeclaration ::= modifiers CLASS componentName (EXTENDS qualifiedName)? clas
 classBody ::= LBRACE classBodyMembers RBRACE {pin=1}
 classBodyMembers ::= classBodyMember* {implements="io.github.liias.monkey.psi.MonkeyExecutionScope"}
 
-private classBodyMember ::= constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration | enumDeclaration
+private classBodyMember ::= constDeclaration | fieldDeclarationList | functionDeclaration | classDeclaration | enumDeclaration
 
 // Enums must be declared at the module or class level; they cannot be declared within a function.
 enumDeclaration ::= modifiers ENUM LBRACE enumConstant (COMMA enumConstant)* RBRACE
@@ -160,11 +161,8 @@ implements="io.github.liias.monkey.psi.MonkeyComponent"
 }
 
 // field
-fieldDeclaration ::= modifiers VAR componentName (EQ expression)? SEMI {
-pin=2
-mixin="io.github.liias.monkey.psi.impl.AbstractMonkeyComponentImpl"
-implements="io.github.liias.monkey.psi.MonkeyComponent"
-}
+fieldDeclarationList ::= modifiers VAR fieldDeclaration (COMMA fieldDeclaration)* SEMI
+fieldDeclaration ::= varOrFieldDeclaration
 
 // function
 functionDeclaration ::= modifiers FUNCTION componentName
@@ -178,23 +176,21 @@ formalParameterDeclarations ::= componentName (COMMA componentName)*
 
 block ::= LBRACE blockStatement* RBRACE
 
-blockStatement ::= localVariableDeclarationStatement
+blockStatement ::= variableDeclarationList SEMI
                  | statement
 
-localVariableDeclarationStatement ::= VAR variableDeclaration (COMMA variableDeclaration)* SEMI
+variableDeclarationList ::= VAR variableDeclaration (COMMA variableDeclaration)*
+variableDeclaration ::= varOrFieldDeclaration
 
-variableDeclaration ::= componentName (LBRACKET RBRACKET)* (EQ variableInitializer)? {
+private varOrFieldDeclaration ::= componentName (LBRACKET RBRACKET)* (EQ variableInitializer)? {
 pin=1
 mixin="io.github.liias.monkey.psi.impl.AbstractMonkeyComponentImpl"
 implements="io.github.liias.monkey.psi.MonkeyComponent"
 }
 
-
 variableInitializer ::= arrayInitializer | expression
 
 arrayInitializer ::= LBRACE (variableInitializer (COMMA variableInitializer)*)? (COMMA)? RBRACE
-
-
 
 statement ::= block
             | IF parExpression statement (ELSE statement)?
@@ -227,7 +223,8 @@ catchParameter ::= IDENTIFIER (LBRACKET RBRACKET)*
 
 forStatement ::= FOR LPAREN forInit? SEMI expression? SEMI expressionList? RPAREN statement
 
-forInit ::= variableDeclaration| expressionList
+forInit ::= variableDeclarationList
+          | expressionList
 
 // expressions
 expressionList ::= expression (COMMA expression)*

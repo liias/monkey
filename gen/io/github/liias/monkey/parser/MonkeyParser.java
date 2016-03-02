@@ -119,6 +119,9 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     else if (t == FIELD_DECLARATION) {
       r = fieldDeclaration(b, 0);
     }
+    else if (t == FIELD_DECLARATION_LIST) {
+      r = fieldDeclarationList(b, 0);
+    }
     else if (t == FOR_INIT) {
       r = forInit(b, 0);
     }
@@ -151,9 +154,6 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     }
     else if (t == LITERAL) {
       r = literal(b, 0);
-    }
-    else if (t == LOCAL_VARIABLE_DECLARATION_STATEMENT) {
-      r = localVariableDeclarationStatement(b, 0);
     }
     else if (t == MODIFIERS) {
       r = modifiers(b, 0);
@@ -214,6 +214,9 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     }
     else if (t == VARIABLE_DECLARATION) {
       r = variableDeclaration(b, 0);
+    }
+    else if (t == VARIABLE_DECLARATION_LIST) {
+      r = variableDeclarationList(b, 0);
     }
     else if (t == VARIABLE_INITIALIZER) {
       r = variableInitializer(b, 0);
@@ -613,15 +616,26 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // localVariableDeclarationStatement
+  // variableDeclarationList SEMI
   //                  | statement
   public static boolean blockStatement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "blockStatement")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<block statement>");
-    r = localVariableDeclarationStatement(b, l + 1);
+    r = blockStatement_0(b, l + 1);
     if (!r) r = statement(b, l + 1);
     exit_section_(b, l, m, BLOCK_STATEMENT, r, false, null);
+    return r;
+  }
+
+  // variableDeclarationList SEMI
+  private static boolean blockStatement_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "blockStatement_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = variableDeclarationList(b, l + 1);
+    r = r && consumeToken(b, SEMI);
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -726,13 +740,13 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // constDeclaration | fieldDeclaration | functionDeclaration | classDeclaration | enumDeclaration
+  // constDeclaration | fieldDeclarationList | functionDeclaration | classDeclaration | enumDeclaration
   static boolean classBodyMember(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classBodyMember")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = constDeclaration(b, l + 1);
-    if (!r) r = fieldDeclaration(b, l + 1);
+    if (!r) r = fieldDeclarationList(b, l + 1);
     if (!r) r = functionDeclaration(b, l + 1);
     if (!r) r = classDeclaration(b, l + 1);
     if (!r) r = enumDeclaration(b, l + 1);
@@ -1287,46 +1301,63 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // modifiers VAR componentName (EQ expression)? SEMI
+  // varOrFieldDeclaration
   public static boolean fieldDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "fieldDeclaration")) return false;
-    boolean r, p;
-    Marker m = enter_section_(b, l, _NONE_, "<field declaration>");
-    r = modifiers(b, l + 1);
-    r = r && consumeToken(b, VAR);
-    p = r; // pin = 2
-    r = r && report_error_(b, componentName(b, l + 1));
-    r = p && report_error_(b, fieldDeclaration_3(b, l + 1)) && r;
-    r = p && consumeToken(b, SEMI) && r;
-    exit_section_(b, l, m, FIELD_DECLARATION, r, p, null);
-    return r || p;
+    if (!nextTokenIs(b, IDENTIFIER)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = varOrFieldDeclaration(b, l + 1);
+    exit_section_(b, m, FIELD_DECLARATION, r);
+    return r;
   }
 
-  // (EQ expression)?
-  private static boolean fieldDeclaration_3(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fieldDeclaration_3")) return false;
-    fieldDeclaration_3_0(b, l + 1);
+  /* ********************************************************** */
+  // modifiers VAR fieldDeclaration (COMMA fieldDeclaration)* SEMI
+  public static boolean fieldDeclarationList(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fieldDeclarationList")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, "<field declaration list>");
+    r = modifiers(b, l + 1);
+    r = r && consumeToken(b, VAR);
+    r = r && fieldDeclaration(b, l + 1);
+    r = r && fieldDeclarationList_3(b, l + 1);
+    r = r && consumeToken(b, SEMI);
+    exit_section_(b, l, m, FIELD_DECLARATION_LIST, r, false, null);
+    return r;
+  }
+
+  // (COMMA fieldDeclaration)*
+  private static boolean fieldDeclarationList_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fieldDeclarationList_3")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!fieldDeclarationList_3_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "fieldDeclarationList_3", c)) break;
+      c = current_position_(b);
+    }
     return true;
   }
 
-  // EQ expression
-  private static boolean fieldDeclaration_3_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "fieldDeclaration_3_0")) return false;
+  // COMMA fieldDeclaration
+  private static boolean fieldDeclarationList_3_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fieldDeclarationList_3_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, EQ);
-    r = r && expression(b, l + 1);
+    r = consumeToken(b, COMMA);
+    r = r && fieldDeclaration(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   /* ********************************************************** */
-  // variableDeclaration| expressionList
+  // variableDeclarationList
+  //           | expressionList
   public static boolean forInit(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "forInit")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<for init>");
-    r = variableDeclaration(b, l + 1);
+    r = variableDeclarationList(b, l + 1);
     if (!r) r = expressionList(b, l + 1);
     exit_section_(b, l, m, FOR_INIT, r, false, null);
     return r;
@@ -1687,44 +1718,6 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, FALSE);
     if (!r) r = consumeToken(b, NULL);
     exit_section_(b, l, m, LITERAL, r, false, null);
-    return r;
-  }
-
-  /* ********************************************************** */
-  // VAR variableDeclaration (COMMA variableDeclaration)* SEMI
-  public static boolean localVariableDeclarationStatement(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "localVariableDeclarationStatement")) return false;
-    if (!nextTokenIs(b, VAR)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, VAR);
-    r = r && variableDeclaration(b, l + 1);
-    r = r && localVariableDeclarationStatement_2(b, l + 1);
-    r = r && consumeToken(b, SEMI);
-    exit_section_(b, m, LOCAL_VARIABLE_DECLARATION_STATEMENT, r);
-    return r;
-  }
-
-  // (COMMA variableDeclaration)*
-  private static boolean localVariableDeclarationStatement_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "localVariableDeclarationStatement_2")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!localVariableDeclarationStatement_2_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "localVariableDeclarationStatement_2", c)) break;
-      c = current_position_(b);
-    }
-    return true;
-  }
-
-  // COMMA variableDeclaration
-  private static boolean localVariableDeclarationStatement_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "localVariableDeclarationStatement_2_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeToken(b, COMMA);
-    r = r && variableDeclaration(b, l + 1);
-    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -2642,34 +2635,34 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // componentName (LBRACKET RBRACKET)* (EQ variableInitializer)?
-  public static boolean variableDeclaration(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "variableDeclaration")) return false;
+  static boolean varOrFieldDeclaration(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "varOrFieldDeclaration")) return false;
     if (!nextTokenIs(b, IDENTIFIER)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, null);
     r = componentName(b, l + 1);
     p = r; // pin = 1
-    r = r && report_error_(b, variableDeclaration_1(b, l + 1));
-    r = p && variableDeclaration_2(b, l + 1) && r;
-    exit_section_(b, l, m, VARIABLE_DECLARATION, r, p, null);
+    r = r && report_error_(b, varOrFieldDeclaration_1(b, l + 1));
+    r = p && varOrFieldDeclaration_2(b, l + 1) && r;
+    exit_section_(b, l, m, null, r, p, null);
     return r || p;
   }
 
   // (LBRACKET RBRACKET)*
-  private static boolean variableDeclaration_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "variableDeclaration_1")) return false;
+  private static boolean varOrFieldDeclaration_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "varOrFieldDeclaration_1")) return false;
     int c = current_position_(b);
     while (true) {
-      if (!variableDeclaration_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "variableDeclaration_1", c)) break;
+      if (!varOrFieldDeclaration_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "varOrFieldDeclaration_1", c)) break;
       c = current_position_(b);
     }
     return true;
   }
 
   // LBRACKET RBRACKET
-  private static boolean variableDeclaration_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "variableDeclaration_1_0")) return false;
+  private static boolean varOrFieldDeclaration_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "varOrFieldDeclaration_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeTokens(b, 0, LBRACKET, RBRACKET);
@@ -2678,19 +2671,68 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   // (EQ variableInitializer)?
-  private static boolean variableDeclaration_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "variableDeclaration_2")) return false;
-    variableDeclaration_2_0(b, l + 1);
+  private static boolean varOrFieldDeclaration_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "varOrFieldDeclaration_2")) return false;
+    varOrFieldDeclaration_2_0(b, l + 1);
     return true;
   }
 
   // EQ variableInitializer
-  private static boolean variableDeclaration_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "variableDeclaration_2_0")) return false;
+  private static boolean varOrFieldDeclaration_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "varOrFieldDeclaration_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, EQ);
     r = r && variableInitializer(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // varOrFieldDeclaration
+  public static boolean variableDeclaration(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "variableDeclaration")) return false;
+    if (!nextTokenIs(b, IDENTIFIER)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = varOrFieldDeclaration(b, l + 1);
+    exit_section_(b, m, VARIABLE_DECLARATION, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // VAR variableDeclaration (COMMA variableDeclaration)*
+  public static boolean variableDeclarationList(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "variableDeclarationList")) return false;
+    if (!nextTokenIs(b, VAR)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, VAR);
+    r = r && variableDeclaration(b, l + 1);
+    r = r && variableDeclarationList_2(b, l + 1);
+    exit_section_(b, m, VARIABLE_DECLARATION_LIST, r);
+    return r;
+  }
+
+  // (COMMA variableDeclaration)*
+  private static boolean variableDeclarationList_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "variableDeclarationList_2")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!variableDeclarationList_2_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "variableDeclarationList_2", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // COMMA variableDeclaration
+  private static boolean variableDeclarationList_2_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "variableDeclarationList_2_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, COMMA);
+    r = r && variableDeclaration(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }

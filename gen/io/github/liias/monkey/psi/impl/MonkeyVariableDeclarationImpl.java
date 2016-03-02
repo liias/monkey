@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static io.github.liias.monkey.psi.MonkeyTypes.*;
 import io.github.liias.monkey.psi.*;
 
-public class MonkeyVariableDeclarationImpl extends AbstractMonkeyComponentImpl implements MonkeyVariableDeclaration {
+public class MonkeyVariableDeclarationImpl extends MonkeyPsiCompositeElementImpl implements MonkeyVariableDeclaration {
 
   public MonkeyVariableDeclarationImpl(ASTNode node) {
     super(node);

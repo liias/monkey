@@ -40,6 +40,7 @@ public interface MonkeyTypes {
   IElementType EXPRESSION = new MonkeyElementType("EXPRESSION");
   IElementType EXPRESSION_LIST = new MonkeyElementType("EXPRESSION_LIST");
   IElementType FIELD_DECLARATION = new MonkeyElementType("FIELD_DECLARATION");
+  IElementType FIELD_DECLARATION_LIST = new MonkeyElementType("FIELD_DECLARATION_LIST");
   IElementType FORMAL_PARAMETER_DECLARATIONS = new MonkeyElementType("FORMAL_PARAMETER_DECLARATIONS");
   IElementType FOR_INIT = new MonkeyElementType("FOR_INIT");
   IElementType FOR_STATEMENT = new MonkeyElementType("FOR_STATEMENT");
@@ -51,7 +52,6 @@ public interface MonkeyTypes {
   IElementType INSTANCE_OF_EXPRESSION = new MonkeyElementType("INSTANCE_OF_EXPRESSION");
   IElementType KEY_VALUE_INITIALIZER = new MonkeyElementType("KEY_VALUE_INITIALIZER");
   IElementType LITERAL = new MonkeyElementType("LITERAL");
-  IElementType LOCAL_VARIABLE_DECLARATION_STATEMENT = new MonkeyElementType("LOCAL_VARIABLE_DECLARATION_STATEMENT");
   IElementType MODIFIERS = new MonkeyElementType("MODIFIERS");
   IElementType MULTIPLICATIVE_EXPRESSION = new MonkeyElementType("MULTIPLICATIVE_EXPRESSION");
   IElementType OBJECT_CREATOR = new MonkeyElementType("OBJECT_CREATOR");
@@ -72,6 +72,7 @@ public interface MonkeyTypes {
   IElementType UNARY_EXPRESSION = new MonkeyElementType("UNARY_EXPRESSION");
   IElementType USING_DECLARATION = new MonkeyElementType("USING_DECLARATION");
   IElementType VARIABLE_DECLARATION = new MonkeyElementType("VARIABLE_DECLARATION");
+  IElementType VARIABLE_DECLARATION_LIST = new MonkeyElementType("VARIABLE_DECLARATION_LIST");
   IElementType VARIABLE_INITIALIZER = new MonkeyElementType("VARIABLE_INITIALIZER");
 
   IElementType AMP = new MonkeyTokenType("&");
@@ -265,6 +266,9 @@ public interface MonkeyTypes {
       else if (type == FIELD_DECLARATION) {
         return new MonkeyFieldDeclarationImpl(node);
       }
+      else if (type == FIELD_DECLARATION_LIST) {
+        return new MonkeyFieldDeclarationListImpl(node);
+      }
       else if (type == FORMAL_PARAMETER_DECLARATIONS) {
         return new MonkeyFormalParameterDeclarationsImpl(node);
       }
@@ -297,9 +301,6 @@ public interface MonkeyTypes {
       }
       else if (type == LITERAL) {
         return new MonkeyLiteralImpl(node);
-      }
-      else if (type == LOCAL_VARIABLE_DECLARATION_STATEMENT) {
-        return new MonkeyLocalVariableDeclarationStatementImpl(node);
       }
       else if (type == MODIFIERS) {
         return new MonkeyModifiersImpl(node);
@@ -360,6 +361,9 @@ public interface MonkeyTypes {
       }
       else if (type == VARIABLE_DECLARATION) {
         return new MonkeyVariableDeclarationImpl(node);
+      }
+      else if (type == VARIABLE_DECLARATION_LIST) {
+        return new MonkeyVariableDeclarationListImpl(node);
       }
       else if (type == VARIABLE_INITIALIZER) {
         return new MonkeyVariableInitializerImpl(node);

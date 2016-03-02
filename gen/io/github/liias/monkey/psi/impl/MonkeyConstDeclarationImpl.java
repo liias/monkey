@@ -10,27 +10,33 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static io.github.liias.monkey.psi.MonkeyTypes.*;
 import io.github.liias.monkey.psi.*;
 
-public class MonkeyFieldDeclarationImpl extends MonkeyPsiCompositeElementImpl implements MonkeyFieldDeclaration {
+public class MonkeyConstDeclarationImpl extends AbstractMonkeyComponentImpl implements MonkeyConstDeclaration {
 
-  public MonkeyFieldDeclarationImpl(ASTNode node) {
+  public MonkeyConstDeclarationImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitFieldDeclaration(this);
+    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitConstDeclaration(this);
     else super.accept(visitor);
   }
 
   @Override
-  @NotNull
+  @Nullable
   public MonkeyComponentName getComponentName() {
-    return findNotNullChildByClass(MonkeyComponentName.class);
+    return findChildByClass(MonkeyComponentName.class);
   }
 
   @Override
   @Nullable
-  public MonkeyVariableInitializer getVariableInitializer() {
-    return findChildByClass(MonkeyVariableInitializer.class);
+  public MonkeyExpression getExpression() {
+    return findChildByClass(MonkeyExpression.class);
+  }
+
+  @Override
+  @NotNull
+  public MonkeyModifiers getModifiers() {
+    return findNotNullChildByClass(MonkeyModifiers.class);
   }
 
 }

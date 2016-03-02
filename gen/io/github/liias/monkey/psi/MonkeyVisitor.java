@@ -131,7 +131,11 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitFieldDeclaration(@NotNull MonkeyFieldDeclaration o) {
-    visitComponent(o);
+    visitPsiCompositeElement(o);
+  }
+
+  public void visitFieldDeclarationList(@NotNull MonkeyFieldDeclarationList o) {
+    visitPsiCompositeElement(o);
   }
 
   public void visitForInit(@NotNull MonkeyForInit o) {
@@ -175,10 +179,6 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitLiteral(@NotNull MonkeyLiteral o) {
-    visitPsiCompositeElement(o);
-  }
-
-  public void visitLocalVariableDeclarationStatement(@NotNull MonkeyLocalVariableDeclarationStatement o) {
     visitPsiCompositeElement(o);
   }
 
@@ -260,7 +260,11 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitVariableDeclaration(@NotNull MonkeyVariableDeclaration o) {
-    visitComponent(o);
+    visitPsiCompositeElement(o);
+  }
+
+  public void visitVariableDeclarationList(@NotNull MonkeyVariableDeclarationList o) {
+    visitPsiCompositeElement(o);
   }
 
   public void visitVariableInitializer(@NotNull MonkeyVariableInitializer o) {
