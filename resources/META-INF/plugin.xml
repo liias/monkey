@@ -22,25 +22,25 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Important stuff -->
-    <fileTypeFactory implementation="io.github.liias.monkey.file.MonkeyFileTypeFactory"/>
+    <fileTypeFactory implementation="io.github.liias.monkey.lang.file.MonkeyFileTypeFactory"/>
     <lang.parserDefinition language="MonkeyC"
-                           implementationClass="io.github.liias.monkey.parser.MonkeyParserDefinition"/>
+                           implementationClass="io.github.liias.monkey.lang.parser.MonkeyParserDefinition"/>
 
     <lang.findUsagesProvider language="MonkeyC"
-                             implementationClass="io.github.liias.monkey.ide.findUsages.MonkeyFindUsagesProvider"/>
+                             implementationClass="io.github.liias.monkey.lang.ide.findUsages.MonkeyFindUsagesProvider"/>
 
     <lang.refactoringSupport language="MonkeyC"
-                             implementationClass="io.github.liias.monkey.ide.refactoring.MonkeyRefactoringSupportProvider"/>
+                             implementationClass="io.github.liias.monkey.lang.ide.refactoring.MonkeyRefactoringSupportProvider"/>
 
 
     <!-- Nice to have stuff -->
     <lang.syntaxHighlighterFactory language="MonkeyC"
-                                   implementationClass="io.github.liias.monkey.highlighting.MonkeySyntaxHighlighterFactory"/>
+                                   implementationClass="io.github.liias.monkey.lang.highlighting.MonkeySyntaxHighlighterFactory"/>
 
     <lang.psiStructureViewFactory language="MonkeyC"
-                                  implementationClass="io.github.liias.monkey.ide.structure.MonkeyStructureViewFactory"/>
+                                  implementationClass="io.github.liias.monkey.lang.ide.structure.MonkeyStructureViewFactory"/>
 
-    <lang.commenter language="MonkeyC" implementationClass="io.github.liias.monkey.ide.MonkeyCommenter"/>
+    <lang.commenter language="MonkeyC" implementationClass="io.github.liias.monkey.lang.ide.MonkeyCommenter"/>
 
   </extensions>
 
