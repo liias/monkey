@@ -4,10 +4,7 @@ import com.intellij.compiler.CompilerWorkspaceConfiguration;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.ConfigurationFactory;
-import com.intellij.ide.util.projectWizard.ModuleBuilderListener;
-import com.intellij.ide.util.projectWizard.ModuleWizardStep;
-import com.intellij.ide.util.projectWizard.SettingsStep;
-import com.intellij.ide.util.projectWizard.WizardContext;
+import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.diagnostic.Logger;
@@ -19,13 +16,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkTypeId;
 import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
-import com.intellij.openapi.roots.ContentEntry;
-import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.roots.ProjectRootManager;
+import com.intellij.openapi.roots.*;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.startup.StartupManager;
-import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.ReadonlyStatusHandler;
@@ -54,7 +47,6 @@ import org.apache.commons.lang.WordUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jps.model.java.JavaResourceRootType;
@@ -62,9 +54,12 @@ import org.jetbrains.jps.model.java.JavaResourceRootType;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class MonkeyModuleBuilder extends CopiedJavaModuleBuilder implements ModuleBuilderListener {
+public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderListener {
   private static final Logger LOG = Logger.getInstance("#io.github.liias.monkey.project.module.MonkeyModuleBuilder");
   public static final String MANIFEST_XML = "manifest.xml";
   public static final String PROJECT_INFO_XML = "projectInfo.xml";
@@ -82,24 +77,28 @@ public class MonkeyModuleBuilder extends CopiedJavaModuleBuilder implements Modu
 
     final Module module = rootModel.getModule();
     final MonkeySdkType sdkType = MonkeySdkType.getInstance();
-    // this code from here....
+
     Sdk sdk = findAndSetSdk(module, sdkType);
-    final List<Pair<String, String>> sourcePaths = constructSourcePaths();
-    setSourcePaths(sourcePaths);
-    super.setupRootModel(rootModel);
-    final String contentEntryPath = getContentEntryPath();
-    final VirtualFile moduleContentRoot = LocalFileSystem.getInstance().refreshAndFindFileByPath(contentEntryPath.replace('\\', '/'));
-    final ContentEntry[] contentEntries = rootModel.getContentEntries();
-    if (contentEntries.length == 1) {
-      final ContentEntry contentEntry = contentEntries[0];
-      final String path = getContentEntryPath() + File.separator + "resources";
-      new File(path).mkdirs();
-      final VirtualFile sourceRoot = LocalFileSystem.getInstance()
-          .refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
-      // TODO: there can be many resource folders, e.g based on language or device that come from SDK's example project definitions
-      contentEntry.addSourceFolder(sourceRoot, JavaResourceRootType.RESOURCE, JavaResourceRootType.RESOURCE.createDefaultProperties());
+
+    CompilerModuleExtension compilerModuleExtension = rootModel.getModuleExtension(CompilerModuleExtension.class);
+    compilerModuleExtension.setExcludeOutput(true);
+    compilerModuleExtension.inheritCompilerOutputPath(true);
+
+    if (myJdk != null) {
+      rootModel.setSdk(myJdk);
+    } else {
+      rootModel.inheritSdk();
     }
-    // ... to here is just awful. TODO: Get rid of extending JavaModuleBuilder
+
+    ContentEntry contentEntry = doAddContentEntry(rootModel);
+    if (contentEntry != null) {
+      VirtualFile sourceRoot = createSourcePath("source");
+      contentEntry.addSourceFolder(sourceRoot, false, "");
+
+      VirtualFile resourcesRoot = createSourcePath("resources");
+      // TODO: there can be many resource folders, e.g based on language or device that come from SDK's example project definitions
+      contentEntry.addSourceFolder(resourcesRoot, JavaResourceRootType.RESOURCE, JavaResourceRootType.RESOURCE.createDefaultProperties());
+    }
 
     final TargetDeviceModuleExtension targetDeviceModuleExtension = rootModel.getModuleExtension(TargetDeviceModuleExtension.class);
     targetDeviceModuleExtension.setTargetDevice(DEFAULT_TARGET_DEVICE);
@@ -120,12 +119,15 @@ public class MonkeyModuleBuilder extends CopiedJavaModuleBuilder implements Modu
     }
   }
 
-  private List<Pair<String, String>> constructSourcePaths() {
-    final List<Pair<String, String>> paths = new ArrayList<>();
-    @NonNls final String path = getContentEntryPath() + File.separator + "source";
+  @Override
+  public int getWeight() {
+    return 100;
+  }
+
+  private VirtualFile createSourcePath(String dirname) {
+    String path = getContentEntryPath() + File.separator + dirname;
     new File(path).mkdirs();
-    paths.add(Pair.create(path, ""));
-    return paths;
+    return LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemIndependentName(path));
   }
 
   @Override
@@ -337,7 +339,7 @@ public class MonkeyModuleBuilder extends CopiedJavaModuleBuilder implements Modu
   @Override
   public ModuleWizardStep modifySettingsStep(@NotNull SettingsStep settingsStep) {
     if (appType == null) {
-      return super.modifyProjectTypeStep(settingsStep);
+      return null;
     }
     return new MonkeyApplicationModifiedSettingsStep(this, settingsStep);
   }
