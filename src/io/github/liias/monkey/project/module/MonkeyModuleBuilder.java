@@ -171,8 +171,11 @@ public class MonkeyModuleBuilder extends CopiedJavaModuleBuilder implements Modu
     final Project project = module.getProject();
     ProjectInfo sdkProjectInfo = getSdkProjectInfo(project, sdkBinDir);
     List<NewProjectFileMap> newProjectFileMaps = sdkProjectInfo.getNewProjectFilesMaps().getNewProjectFileMaps();
+
+    // TODO: allow user to choose apptype's app (i.e Simple or Complex), instead of selecting random first
     final NewProjectFileMap newProjectFileMap = newProjectFileMaps.stream()
-        .filter(newProjectFileMap1 -> newProjectFileMap1 != null && appType.equals(newProjectFileMap1.getAppType().getStringValue()))
+        .filter(fileMap -> fileMap != null && appType.equals(fileMap.getAppType().getStringValue())
+        )
         .findFirst().get();
     final GenericAttributeValue<String> baseDir = newProjectFileMap.getBaseDir(); // e.g templates/watch-app/simple
 

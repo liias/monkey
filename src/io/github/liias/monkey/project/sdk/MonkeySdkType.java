@@ -1,15 +1,26 @@
 package io.github.liias.monkey.project.sdk;
 
 import com.intellij.openapi.projectRoots.*;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.containers.HashMap;
 import io.github.liias.monkey.icons.MonkeyIcons;
 import io.github.liias.monkey.project.module.MonkeyConstants;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 
 public class MonkeySdkType extends SdkType {
   public MonkeySdkType() {
@@ -51,11 +62,48 @@ public class MonkeySdkType extends SdkType {
     return getVersionString(sdkHome);
   }
 
+  private final Map<String, String> myCachedVersionStrings = Collections.synchronizedMap(new HashMap<>());
+
   @Nullable
   @Override
   public String getVersionString(String sdkHome) {
-    return "1.1.3";
+    String versionString = myCachedVersionStrings.get(sdkHome);
+    if (versionString == null) {
+      versionString = detectCompilerVersion(sdkHome);
+      if (!StringUtil.isEmpty(versionString)) {
+        myCachedVersionStrings.put(sdkHome, versionString);
+      }
+    }
+
+    if (versionString == null) {
+      return "Unknown version";
+    }
+    return versionString;
   }
+
+  private String detectCompilerVersion(@NotNull String homePath) {
+    final File compilerInfoXml = new File(homePath, "bin/compilerInfo.xml");
+
+    String version = null;
+    try {
+      DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+      Document doc = dBuilder.parse(compilerInfoXml);
+      //optional, but recommended
+      //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+      doc.getDocumentElement().normalize();
+
+      System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+
+      Node versionNode = doc.getElementsByTagName("version").item(0);
+      version = versionNode.getTextContent();
+    } catch (SAXException | ParserConfigurationException | IOException e) {
+      e.printStackTrace();
+    }
+
+    return version;
+  }
+
 
   @Nullable
   @Override
