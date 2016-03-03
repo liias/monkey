@@ -65,7 +65,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class MonkeyModuleBuilder extends CopiedJavaModuleBuilder implements ModuleBuilderListener {
-  private static final Logger LOG = Logger.getInstance("#ee.edio.garmin.MonkeyModuleBuilder");
+  private static final Logger LOG = Logger.getInstance("#io.github.liias.monkey.project.module.MonkeyModuleBuilder");
   public static final String MANIFEST_XML = "manifest.xml";
   public static final String PROJECT_INFO_XML = "projectInfo.xml";
   public static final String FILE_TYPE_SOURCE = "source";

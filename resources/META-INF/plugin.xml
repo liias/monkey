@@ -75,6 +75,10 @@
     <dom.fileDescription
         implementation="io.github.liias.monkey.project.dom.sdk.projectinfo.ProjectInfoDomFileDescription"/>
 
+
+    <!-- External builder support -->
+    <!-- Note that the classpath is needed for plugin deployment to export a zip archive. -->
+    <compileServer.plugin classpath="monkey-jps-plugin.jar"/>
   </extensions>
 
   <actions>
