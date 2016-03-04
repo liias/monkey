@@ -1,0 +1,2 @@
+rootProject.name = 'monkey'
+include ':jps-plugin'

@@ -1,0 +1,54 @@
+plugins {
+  id "org.jetbrains.intellij" version "0.0.43"
+}
+
+allprojects {
+  apply plugin: 'java'
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+  tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+
+  sourceSets {
+    main {
+      java.srcDirs = files('src')
+      resources.srcDirs = files('resources')
+    }
+    test {
+      java.srcDirs = files('tests')
+      resources.srcDirs = []
+    }
+  }
+
+  apply plugin: 'org.jetbrains.intellij'
+
+  intellij {
+    version '15.0.4'
+    //pluginName 'monkey'
+    downloadSources true
+  }
+}
+
+sourceSets.main.java.srcDirs += 'gen'
+
+dependencies {
+  compile project(':jps-plugin')
+}
+
+apply plugin: 'idea'
+idea {
+  project {
+    jdkName = javaVersion
+    languageLevel = javaVersion
+  }
+  module {
+    generatedSourceDirs += file('gen')
+  }
+}
+
+
+group 'io.github.liias'
+version '0.0.1-SNAPSHOT'
+
+repositories {
+  mavenCentral()
+}
