@@ -78,11 +78,22 @@
 
     <!-- External builder support -->
     <!-- Note that the classpath is needed for plugin deployment to export a zip archive. -->
-    <compileServer.plugin classpath="monkey-jps-plugin.jar"/>
+
+    <!--
+        * <p>Specifies semicolon-separated list of paths which should be added to the classpath of the compile server.
+        * The paths are relative to the plugin 'lib' directory.</p>
+        *
+        * <p>In the development mode the name of each file without extension is treated as a module name and the output directory of the module
+        * is added to the classpath. If such file doesn't exists the jar is searched under 'lib' directory of the plugin sources home directory.</p>
+-->
+    <compileServer.plugin classpath="jps-plugin.jar"/>
   </extensions>
 
   <actions>
-    <!-- Add your actions here -->
+    <action id="Monkey.NewMonkeyFile" class="io.github.liias.monkey.ide.actions.CreateMonkeyFileAction"
+            text="Monkey C File" description="Create new Monkey C source file">
+      <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
+    </action>
   </actions>
 
 </idea-plugin>
