@@ -35,6 +35,8 @@
     <lang.refactoringSupport language="MonkeyC"
                              implementationClass="io.github.liias.monkey.lang.ide.refactoring.MonkeyRefactoringSupportProvider"/>
 
+    <completion.contributor language="MonkeyC"
+                            implementationClass="io.github.liias.monkey.lang.ide.completion.MonkeyCompletionContributor"/>
 
     <!-- Nice to have stuff -->
     <lang.syntaxHighlighterFactory language="MonkeyC"
@@ -78,17 +80,13 @@
     <dom.fileDescription
         implementation="io.github.liias.monkey.project.dom.sdk.projectinfo.ProjectInfoDomFileDescription"/>
 
-
-    <!-- External builder support -->
-    <!-- Note that the classpath is needed for plugin deployment to export a zip archive. -->
-
-    <!--
-        * <p>Specifies semicolon-separated list of paths which should be added to the classpath of the compile server.
-        * The paths are relative to the plugin 'lib' directory.</p>
-        *
-        * <p>In the development mode the name of each file without extension is treated as a module name and the output directory of the module
-        * is added to the classpath. If such file doesn't exists the jar is searched under 'lib' directory of the plugin sources home directory.</p>
--->
+    <!-- classpath: needed for plugin deployment to export a zip archive
+        * semicolon-separated list of paths which should be added to the classpath of the compile server.
+        * The paths are relative to the plugin 'lib' directory.
+        * In the development mode the name of each file without extension is treated as a module name and the output
+         directory of the module is added to the classpath.
+         If such file doesn't exists the jar is searched under 'lib'  directory of the plugin sources home directory.
+         -->
     <compileServer.plugin classpath="jps-plugin.jar"/>
   </extensions>
 
