@@ -2,6 +2,7 @@ package io.github.liias.monkey.project.dom.manifest;
 
 import com.intellij.util.xml.Attribute;
 import com.intellij.util.xml.GenericAttributeValue;
+import com.intellij.util.xml.NameValue;
 import com.intellij.util.xml.Required;
 
 public interface Application extends ManifestDomElement {
@@ -13,6 +14,7 @@ public interface Application extends ManifestDomElement {
   @Attribute("launcherIcon")
   GenericAttributeValue<String> getLauncherIcon();
 
+  @NameValue
   GenericAttributeValue<String> getName();
 
   GenericAttributeValue<String> getType();
