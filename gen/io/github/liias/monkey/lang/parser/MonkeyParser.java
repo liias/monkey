@@ -824,15 +824,17 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // usingDeclaration | classDeclaration | enumDeclaration
+  // usingDeclaration
+  //                           | classDeclaration
+  //                           | enumDeclaration
   static boolean compilationUnit(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "compilationUnit")) return false;
     boolean r;
-    Marker m = enter_section_(b);
+    Marker m = enter_section_(b, l, _NONE_, null);
     r = usingDeclaration(b, l + 1);
     if (!r) r = classDeclaration(b, l + 1);
     if (!r) r = enumDeclaration(b, l + 1);
-    exit_section_(b, m, null, r);
+    exit_section_(b, l, m, null, r, false, compilationUnit_auto_recover_);
     return r;
   }
 
@@ -2750,4 +2752,10 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     return r;
   }
 
+  final static Parser compilationUnit_auto_recover_ = new Parser() {
+    public boolean parse(PsiBuilder b, int l) {
+      return !nextTokenIsFast(b, CLASS, ENUM,
+        HIDDEN, LPAREN, STATIC, USING);
+    }
+  };
 }

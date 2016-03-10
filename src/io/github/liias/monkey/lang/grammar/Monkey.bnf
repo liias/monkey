@@ -132,7 +132,16 @@
 
 monkeyCFile ::= compilationUnit*
 
-private compilationUnit ::= usingDeclaration | classDeclaration | enumDeclaration
+
+
+
+private compilationUnit ::= usingDeclaration
+                          | classDeclaration
+                          | enumDeclaration
+{recoverWhile="#auto"}
+
+// {recoverWhile="compilationUnitRecover"}
+// private compilationUnitRecover ::= !(CLASS | ENUM | HIDDEN | LPAREN | STATIC | USING)
 
 // using
 usingDeclaration ::= USING qualifiedName (AS componentName)? SEMI {pin=2}
