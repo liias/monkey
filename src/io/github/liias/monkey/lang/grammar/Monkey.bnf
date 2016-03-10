@@ -138,6 +138,9 @@ monkeyCFile ::= compilationUnit*
 private compilationUnit ::= usingDeclaration
                           | classDeclaration
                           | enumDeclaration
+                          | constDeclaration
+                          | fieldDeclarationList
+                          | functionDeclaration
 {recoverWhile="#auto"}
 
 // {recoverWhile="compilationUnitRecover"}

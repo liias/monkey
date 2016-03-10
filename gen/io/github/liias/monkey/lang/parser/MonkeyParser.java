@@ -827,6 +827,9 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   // usingDeclaration
   //                           | classDeclaration
   //                           | enumDeclaration
+  //                           | constDeclaration
+  //                           | fieldDeclarationList
+  //                           | functionDeclaration
   static boolean compilationUnit(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "compilationUnit")) return false;
     boolean r;
@@ -834,6 +837,9 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     r = usingDeclaration(b, l + 1);
     if (!r) r = classDeclaration(b, l + 1);
     if (!r) r = enumDeclaration(b, l + 1);
+    if (!r) r = constDeclaration(b, l + 1);
+    if (!r) r = fieldDeclarationList(b, l + 1);
+    if (!r) r = functionDeclaration(b, l + 1);
     exit_section_(b, l, m, null, r, false, compilationUnit_auto_recover_);
     return r;
   }
@@ -2754,8 +2760,8 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
 
   final static Parser compilationUnit_auto_recover_ = new Parser() {
     public boolean parse(PsiBuilder b, int l) {
-      return !nextTokenIsFast(b, CLASS, ENUM,
-        HIDDEN, LPAREN, STATIC, USING);
+      return !nextTokenIsFast(b, CLASS, CONST,
+        ENUM, FUNCTION, HIDDEN, LPAREN, STATIC, USING, VAR);
     }
   };
 }
