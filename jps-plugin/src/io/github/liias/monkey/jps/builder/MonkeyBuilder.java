@@ -128,6 +128,10 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
 //        .add("-w") // Show compilation warnings in the Console
 //        .add("-g") // Print debug output (-g)
 
+    // TODO: check what -e means
+/*    if(outputPath.endsWith(".iq")) {
+      cmdLine.addArgument("-e");
+    }*/
 
     if (!resourceFilePaths.isEmpty()) {
       // in format: -z C:\xyz\resources\layouts\layout.xml;C:\xyz\resources\menus\menu.xml;C:\xyz\resources\resources.xml
@@ -161,15 +165,19 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     //String javaPath = javaHome + File.separator + "bin" + File.separator + "java";
     final String jdkHome = findRealJdkHome() + File.separator;
     String javaPath = jdkHome + "bin" + File.separator + "java";
-    String toolsJarPath = jdkHome + "lib" + File.separator + "tools.jar";
     String monkeybrainsJarPath = sdkBinPath + MONKEYBRAINS_JAR_FILENAME;
     GeneralCommandLine commandLine = new GeneralCommandLine();
     commandLine.setExePath(javaPath);
     commandLine.addParameters("-Dfile.encoding=UTF-8", "-Dapple.awt.UIElement=true");
-    String classPathSeparator = File.pathSeparator;
-    String classPath = toolsJarPath + classPathSeparator + monkeybrainsJarPath + classPathSeparator;
-    commandLine.addParameters("-classpath", classPath);
-    commandLine.addParameters(MONKEYBRAINS_FQN);
+    boolean old = false;
+    if (old) {
+      String toolsJarPath = jdkHome + "lib" + File.separator + "tools.jar";
+      String classPath = toolsJarPath + File.pathSeparator + monkeybrainsJarPath + File.pathSeparator;
+      commandLine.addParameters("-classpath", classPath);
+      commandLine.addParameters(MONKEYBRAINS_FQN);
+    } else {
+      commandLine.addParameters("-jar", monkeybrainsJarPath);
+    }
     commandLine.addParameters(parameters.build());
 
     return commandLine;
