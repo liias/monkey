@@ -18,7 +18,6 @@ public class MonkeySourceRootDescriptor extends BuildRootDescriptor {
   }
 
   @NotNull
-
   @Override
   public String getRootId() {
     return root.getAbsolutePath();
@@ -37,11 +36,6 @@ public class MonkeySourceRootDescriptor extends BuildRootDescriptor {
   @NotNull
   @Override
   public FileFilter createFileFilter() {
-    return new FileFilter() {
-      @Override
-      public boolean accept(@NotNull File file) {
-        return FileUtilRt.extensionEquals(file.getName(), "mc");
-      }
-    };
+    return file -> FileUtilRt.extensionEquals(file.getName(), "mc");
   }
 }
