@@ -132,10 +132,8 @@
 
 monkeyCFile ::= compilationUnit*
 
-
-
-
 private compilationUnit ::= usingDeclaration
+                          | moduleDeclaration
                           | classDeclaration
                           | enumDeclaration
                           | constDeclaration
@@ -146,8 +144,18 @@ private compilationUnit ::= usingDeclaration
 // {recoverWhile="compilationUnitRecover"}
 // private compilationUnitRecover ::= !(CLASS | ENUM | HIDDEN | LPAREN | STATIC | USING)
 
-// using
+// You can bring a module into your scoping level with the using keyword.
+// using allows a module to be imported into another class or module by a symbol.
+// using statements are scoped to the class or module in which they are defined.
 usingDeclaration ::= USING qualifiedName (AS componentName)? SEMI {pin=2}
+
+// module
+// TODO: can a module have static/hidden modifiers?
+moduleDeclaration ::= modifiers MODULE componentName moduleBody
+
+moduleBody ::= LBRACE moduleBodyMembers RBRACE {pin=1}
+moduleBodyMembers ::= moduleBodyMember* {implements="io.github.liias.monkey.lang.psi.MonkeyExecutionScope"}
+private moduleBodyMember ::= constDeclaration | fieldDeclarationList | functionDeclaration | classDeclaration | enumDeclaration | moduleDeclaration
 
 // class
 classDeclaration ::= modifiers CLASS componentName (EXTENDS qualifiedName)? classBody
@@ -348,9 +356,10 @@ classCreatorRest ::= arguments classBody?
 
 arguments ::= LPAREN (expressionList)? RPAREN
 
+// hidden is the same as "protected" in Java -  it says that a variable or function is only accessible to a class or its subclasses:
 modifiers ::= annotation? STATIC? HIDDEN?
 
-annotation ::= LPAREN symbol RPAREN
+annotation ::= LPAREN symbol RPAREN {pin=2}
 
 symbol ::= COLON id {pin=1}
 

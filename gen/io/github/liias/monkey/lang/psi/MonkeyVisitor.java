@@ -186,6 +186,18 @@ public class MonkeyVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
+  public void visitModuleBody(@NotNull MonkeyModuleBody o) {
+    visitPsiCompositeElement(o);
+  }
+
+  public void visitModuleBodyMembers(@NotNull MonkeyModuleBodyMembers o) {
+    visitExecutionScope(o);
+  }
+
+  public void visitModuleDeclaration(@NotNull MonkeyModuleDeclaration o) {
+    visitPsiCompositeElement(o);
+  }
+
   public void visitMultiplicativeExpression(@NotNull MonkeyMultiplicativeExpression o) {
     visitExpression(o);
   }

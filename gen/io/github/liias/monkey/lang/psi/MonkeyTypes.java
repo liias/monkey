@@ -53,6 +53,9 @@ public interface MonkeyTypes {
   IElementType KEY_VALUE_INITIALIZER = new MonkeyElementType("KEY_VALUE_INITIALIZER");
   IElementType LITERAL = new MonkeyElementType("LITERAL");
   IElementType MODIFIERS = new MonkeyElementType("MODIFIERS");
+  IElementType MODULE_BODY = new MonkeyElementType("MODULE_BODY");
+  IElementType MODULE_BODY_MEMBERS = new MonkeyElementType("MODULE_BODY_MEMBERS");
+  IElementType MODULE_DECLARATION = new MonkeyElementType("MODULE_DECLARATION");
   IElementType MULTIPLICATIVE_EXPRESSION = new MonkeyElementType("MULTIPLICATIVE_EXPRESSION");
   IElementType OBJECT_CREATOR = new MonkeyElementType("OBJECT_CREATOR");
   IElementType PAR_EXPRESSION = new MonkeyElementType("PAR_EXPRESSION");
@@ -303,6 +306,15 @@ public interface MonkeyTypes {
       }
       else if (type == MODIFIERS) {
         return new MonkeyModifiersImpl(node);
+      }
+      else if (type == MODULE_BODY) {
+        return new MonkeyModuleBodyImpl(node);
+      }
+      else if (type == MODULE_BODY_MEMBERS) {
+        return new MonkeyModuleBodyMembersImpl(node);
+      }
+      else if (type == MODULE_DECLARATION) {
+        return new MonkeyModuleDeclarationImpl(node);
       }
       else if (type == MULTIPLICATIVE_EXPRESSION) {
         return new MonkeyMultiplicativeExpressionImpl(node);
