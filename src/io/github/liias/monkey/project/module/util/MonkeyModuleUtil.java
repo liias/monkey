@@ -1,5 +1,7 @@
 package io.github.liias.monkey.project.module.util;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Computable;
@@ -14,14 +16,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Set;
 import java.util.UUID;
 
 public class MonkeyModuleUtil {
 
+  public static final Set<String> FAKE_DEVICES = ImmutableSet.of("round_watch", "square_watch", "semi_round_watch", "tall_watch");
+
   public static boolean isRealDevice(String deviceId) {
-    return !deviceId.equalsIgnoreCase("round_watch") &&
-        !deviceId.equalsIgnoreCase("square_watch") &&
-        !deviceId.equalsIgnoreCase("semi_round_watch");
+    return !FAKE_DEVICES.contains(Strings.nullToEmpty(deviceId).toLowerCase());
   }
 
   public static String generateProjectId() {
