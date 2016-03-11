@@ -158,7 +158,7 @@ moduleBodyMembers ::= moduleBodyMember* {implements="io.github.liias.monkey.lang
 private moduleBodyMember ::= constDeclaration | fieldDeclarationList | functionDeclaration | classDeclaration | enumDeclaration | moduleDeclaration
 
 // class
-classDeclaration ::= modifiers CLASS componentName (EXTENDS qualifiedName)? classBody
+classDeclaration ::= modifiers CLASS componentName (EXTENDS referenceExpression qualifiedReferenceExpression*)? classBody
 {pin=2 mixin="io.github.liias.monkey.lang.psi.impl.AbstractMonkeyPsiClass" implements="io.github.liias.monkey.lang.psi.MonkeyClass"}
 
 classBody ::= LBRACE classBodyMembers RBRACE {pin=1}
@@ -341,7 +341,7 @@ selector ::= DOT IDENTIFIER (arguments)?
            | LBRACKET expression RBRACKET
 
 creator ::= objectCreator | arrayCreator
-objectCreator ::= NEW qualifiedName classCreatorRest {pin=2}
+objectCreator ::= NEW referenceExpression qualifiedReferenceExpression* arguments classBody? {pin=2}
 
 arrayCreator ::= NEW LBRACKET expression RBRACKET // new [expression evaluating to integer]
                | LBRACKET (expression (COMMA expression)* )? RBRACKET // [expression1, expression2, ...]
@@ -351,8 +351,6 @@ dictionaryCreator ::= NEW LBRACE RBRACE // new {}
                     | LBRACE (keyValueInitializer (COMMA keyValueInitializer)* )? RBRACE // {"a"=> exp, :b => exp2, ...}
 
 keyValueInitializer ::= primary EQGT expression
-
-classCreatorRest ::= arguments classBody?
 
 arguments ::= LPAREN (expressionList)? RPAREN
 

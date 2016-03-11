@@ -24,7 +24,6 @@ public interface MonkeyTypes {
   IElementType CATCH_PARAMETER = new MonkeyElementType("CATCH_PARAMETER");
   IElementType CLASS_BODY = new MonkeyElementType("CLASS_BODY");
   IElementType CLASS_BODY_MEMBERS = new MonkeyElementType("CLASS_BODY_MEMBERS");
-  IElementType CLASS_CREATOR_REST = new MonkeyElementType("CLASS_CREATOR_REST");
   IElementType CLASS_DECLARATION = new MonkeyElementType("CLASS_DECLARATION");
   IElementType COMPONENT_NAME = new MonkeyElementType("COMPONENT_NAME");
   IElementType CONDITIONAL_AND_EXPRESSION = new MonkeyElementType("CONDITIONAL_AND_EXPRESSION");
@@ -219,9 +218,6 @@ public interface MonkeyTypes {
       }
       else if (type == CLASS_BODY_MEMBERS) {
         return new MonkeyClassBodyMembersImpl(node);
-      }
-      else if (type == CLASS_CREATOR_REST) {
-        return new MonkeyClassCreatorRestImpl(node);
       }
       else if (type == CLASS_DECLARATION) {
         return new MonkeyClassDeclarationImpl(node);

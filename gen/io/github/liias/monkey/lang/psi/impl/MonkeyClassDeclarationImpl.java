@@ -40,9 +40,9 @@ public class MonkeyClassDeclarationImpl extends AbstractMonkeyPsiClass implement
   }
 
   @Override
-  @Nullable
-  public MonkeyQualifiedName getQualifiedName() {
-    return findChildByClass(MonkeyQualifiedName.class);
+  @NotNull
+  public List<MonkeyReferenceExpression> getReferenceExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyReferenceExpression.class);
   }
 
 }

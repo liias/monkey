@@ -56,6 +56,11 @@ public class MonkeyPsiCompositeElementImpl extends ASTWrapperPsiElement implemen
     final Set<MonkeyComponentName> result = new THashSet<>();
     for (PsiElement child : context.getChildren()) {
 
+      if (child instanceof MonkeyUsingDeclaration) {
+        MonkeyUsingDeclaration usingDeclaration = (MonkeyUsingDeclaration) child;
+        result.add(usingDeclaration.getComponentName());
+      }
+
       if (child instanceof MonkeyEnumDeclaration) {
         MonkeyEnumDeclaration enumDeclaration = (MonkeyEnumDeclaration) child;
         List<MonkeyEnumConstant> enumConstantList = enumDeclaration.getEnumConstantList();

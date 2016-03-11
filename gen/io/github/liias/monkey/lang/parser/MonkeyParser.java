@@ -71,9 +71,6 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     else if (t == CLASS_BODY_MEMBERS) {
       r = classBodyMembers(b, 0);
     }
-    else if (t == CLASS_CREATOR_REST) {
-      r = classCreatorRest(b, 0);
-    }
     else if (t == CLASS_DECLARATION) {
       r = classDeclaration(b, 0);
     }
@@ -780,27 +777,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // arguments classBody?
-  public static boolean classCreatorRest(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "classCreatorRest")) return false;
-    if (!nextTokenIs(b, LPAREN)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = arguments(b, l + 1);
-    r = r && classCreatorRest_1(b, l + 1);
-    exit_section_(b, m, CLASS_CREATOR_REST, r);
-    return r;
-  }
-
-  // classBody?
-  private static boolean classCreatorRest_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "classCreatorRest_1")) return false;
-    classBody(b, l + 1);
-    return true;
-  }
-
-  /* ********************************************************** */
-  // modifiers CLASS componentName (EXTENDS qualifiedName)? classBody
+  // modifiers CLASS componentName (EXTENDS referenceExpression qualifiedReferenceExpression*)? classBody
   public static boolean classDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classDeclaration")) return false;
     boolean r, p;
@@ -815,22 +792,35 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // (EXTENDS qualifiedName)?
+  // (EXTENDS referenceExpression qualifiedReferenceExpression*)?
   private static boolean classDeclaration_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classDeclaration_3")) return false;
     classDeclaration_3_0(b, l + 1);
     return true;
   }
 
-  // EXTENDS qualifiedName
+  // EXTENDS referenceExpression qualifiedReferenceExpression*
   private static boolean classDeclaration_3_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classDeclaration_3_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, EXTENDS);
-    r = r && qualifiedName(b, l + 1);
+    r = r && referenceExpression(b, l + 1);
+    r = r && classDeclaration_3_0_2(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
+  }
+
+  // qualifiedReferenceExpression*
+  private static boolean classDeclaration_3_0_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "classDeclaration_3_0_2")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!qualifiedReferenceExpression(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "classDeclaration_3_0_2", c)) break;
+      c = current_position_(b);
+    }
+    return true;
   }
 
   /* ********************************************************** */
@@ -1897,18 +1887,39 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // NEW qualifiedName classCreatorRest
+  // NEW referenceExpression qualifiedReferenceExpression* arguments classBody?
   public static boolean objectCreator(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "objectCreator")) return false;
     if (!nextTokenIs(b, NEW)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, null);
     r = consumeToken(b, NEW);
-    r = r && qualifiedName(b, l + 1);
+    r = r && referenceExpression(b, l + 1);
     p = r; // pin = 2
-    r = r && classCreatorRest(b, l + 1);
+    r = r && report_error_(b, objectCreator_2(b, l + 1));
+    r = p && report_error_(b, arguments(b, l + 1)) && r;
+    r = p && objectCreator_4(b, l + 1) && r;
     exit_section_(b, l, m, OBJECT_CREATOR, r, p, null);
     return r || p;
+  }
+
+  // qualifiedReferenceExpression*
+  private static boolean objectCreator_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "objectCreator_2")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!qualifiedReferenceExpression(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "objectCreator_2", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // classBody?
+  private static boolean objectCreator_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "objectCreator_4")) return false;
+    classBody(b, l + 1);
+    return true;
   }
 
   /* ********************************************************** */

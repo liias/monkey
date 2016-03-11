@@ -23,14 +23,20 @@ public class MonkeyObjectCreatorImpl extends MonkeyPsiCompositeElementImpl imple
 
   @Override
   @Nullable
-  public MonkeyClassCreatorRest getClassCreatorRest() {
-    return findChildByClass(MonkeyClassCreatorRest.class);
+  public MonkeyArguments getArguments() {
+    return findChildByClass(MonkeyArguments.class);
+  }
+
+  @Override
+  @Nullable
+  public MonkeyClassBody getClassBody() {
+    return findChildByClass(MonkeyClassBody.class);
   }
 
   @Override
   @NotNull
-  public MonkeyQualifiedName getQualifiedName() {
-    return findNotNullChildByClass(MonkeyQualifiedName.class);
+  public List<MonkeyReferenceExpression> getReferenceExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyReferenceExpression.class);
   }
 
 }

@@ -70,10 +70,6 @@ public class MonkeyVisitor extends PsiElementVisitor {
     visitExecutionScope(o);
   }
 
-  public void visitClassCreatorRest(@NotNull MonkeyClassCreatorRest o) {
-    visitPsiCompositeElement(o);
-  }
-
   public void visitClassDeclaration(@NotNull MonkeyClassDeclaration o) {
     visitClass(o);
   }

@@ -1,15 +1,24 @@
 package io.github.liias.monkey.lang.resolve;
 
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.ResolveState;
 import com.intellij.psi.impl.source.resolve.ResolveCache;
+import com.intellij.psi.search.FileTypeIndex;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.indexing.FileBasedIndex;
+import io.github.liias.monkey.lang.file.MonkeyFileType;
 import io.github.liias.monkey.lang.psi.MonkeyComponentName;
+import io.github.liias.monkey.lang.psi.MonkeyFile;
 import io.github.liias.monkey.lang.psi.MonkeyReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class MonkeyResolver implements ResolveCache.AbstractResolver<MonkeyReference, List<? extends PsiElement>> {
@@ -31,6 +40,25 @@ public class MonkeyResolver implements ResolveCache.AbstractResolver<MonkeyRefer
     // local
     final MonkeyResolveProcessor resolveProcessor = new MonkeyResolveProcessor(result, name);
     PsiTreeUtil.treeWalkUp(resolveProcessor, scopeElement, null, ResolveState.initial());
+
+    // global
+    if (result.isEmpty()) {
+      //GlobalSearchScope resolveScope = scopeElement.getResolveScope();
+
+      Project project = scopeElement.getProject();
+      GlobalSearchScope filter1 = GlobalSearchScope.allScope(project);
+      Collection<VirtualFile> sourceFiles = FileBasedIndex.getInstance().getContainingFiles(FileTypeIndex.NAME, MonkeyFileType.INSTANCE, filter1);
+
+      for (VirtualFile sourceFile : sourceFiles) {
+        MonkeyFile monkeyFile = (MonkeyFile) PsiManager.getInstance(project).findFile(sourceFile);
+        if (monkeyFile != null) {
+          final MonkeyResolveProcessor resolveProcessor2 = new MonkeyResolveProcessor(result, name);
+          PsiTreeUtil.treeWalkUp(resolveProcessor2, monkeyFile, null, ResolveState.initial());
+        }
+      }
+
+
+    }
 
     // todo: add super, global, etc (check monkey c docs for order)
 

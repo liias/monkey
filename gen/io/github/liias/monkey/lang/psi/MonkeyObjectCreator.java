@@ -8,9 +8,12 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyObjectCreator extends MonkeyPsiCompositeElement {
 
   @Nullable
-  MonkeyClassCreatorRest getClassCreatorRest();
+  MonkeyArguments getArguments();
+
+  @Nullable
+  MonkeyClassBody getClassBody();
 
   @NotNull
-  MonkeyQualifiedName getQualifiedName();
+  List<MonkeyReferenceExpression> getReferenceExpressionList();
 
 }
