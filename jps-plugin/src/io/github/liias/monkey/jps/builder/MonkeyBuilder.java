@@ -171,8 +171,8 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
         .add("-a", sdkBinPath + "api.db")
         .add("-i", sdkBinPath + "api.debug.xml")
-        .add("-o", outputDir + outputName);
-//        .add("-w") // Show compilation warnings in the Console
+        .add("-o", outputDir + outputName)
+        .add("-w"); // Show compilation warnings in the Console
 //        .add("-g") // Print debug output (-g)
 
     // TODO: check what -e means
