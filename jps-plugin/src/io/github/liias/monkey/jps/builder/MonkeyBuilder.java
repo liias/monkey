@@ -5,9 +5,13 @@ import com.google.common.collect.ImmutableList;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.BaseOSProcessHandler;
+import com.intellij.execution.process.ProcessAdapter;
+import com.intellij.execution.process.ProcessEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.projectRoots.JdkUtil;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.SystemProperties;
 import com.intellij.util.containers.ContainerUtil;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleProperties;
@@ -36,6 +40,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, MonkeyBuildTarget> {
@@ -44,6 +49,11 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
   private final static Logger LOG = Logger.getInstance(MonkeyBuilder.class);
   public static final String MONKEYBRAINS_FQN = "com.garmin.monkeybrains.Monkeybrains";
   public static final String MONKEYBRAINS_JAR_FILENAME = "monkeybrains.jar";
+
+
+  private static final Pattern COMPILE_OUTPUT_LINE_WITH_FILE_AND_LINE_INFO = Pattern.compile("(?<type>(ERROR|WARNING)):(?<file>.*):(?<lineNo>[0-9]*):(?<message>.*)");
+  private static final String COMPILER_OUTPUT_TYPE_ERROR = "ERROR";
+  private static final String COMPILER_OUTPUT_TYPE_WARNING = "WARNING";
 
   public MonkeyBuilder() {
     super(Arrays.asList(MonkeyBuildTargetType.PRODUCTION, MonkeyBuildTargetType.TESTS));
@@ -84,17 +94,54 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     }
   }
 
+
   private static void runBuildProcess(@NotNull CompileContext context, @NotNull GeneralCommandLine commandLine, @NotNull String path)
       throws ProjectBuildException {
     try {
       LOG.debug(commandLine.getCommandLineString());
       final Process process = commandLine.createProcess();
       BaseOSProcessHandler handler = new BaseOSProcessHandler(process, commandLine.getCommandLineString(), Charset.defaultCharset());
+
+      handler.addProcessListener(new ProcessAdapter() {
+        @Override
+        public void onTextAvailable(ProcessEvent event, Key outputType) {
+          final String text = event.getText();
+          if (!StringUtil.isEmptyOrSpaces(text)) {
+            CompilerMessage compilerMessage = compilerMessageFromOutputLine(text.trim());
+            context.processMessage(compilerMessage);
+          }
+        }
+      });
+
       handler.startNotify();
       handler.waitFor();
     } catch (ExecutionException e) {
       throw new ProjectBuildException(e.getMessage());
     }
+  }
+
+  @NotNull
+  private static CompilerMessage compilerMessageFromOutputLine(String lineText) {
+    Matcher matcher = COMPILE_OUTPUT_LINE_WITH_FILE_AND_LINE_INFO.matcher(lineText);
+    if (matcher.matches()) {
+      String type = matcher.group("type").trim();
+      String filePath = matcher.group("file").trim();
+      int lineNumber = Integer.parseInt(matcher.group("lineNo"));
+      String errorMessage = matcher.group("message").trim();
+      boolean error = type.equals(COMPILER_OUTPUT_TYPE_ERROR);
+      BuildMessage.Kind kind = error ? BuildMessage.Kind.ERROR : BuildMessage.Kind.WARNING;
+      return new CompilerMessage("", kind, errorMessage, filePath, -1, -1, -1, lineNumber, -1);
+    } else if (lineText.startsWith(COMPILER_OUTPUT_TYPE_WARNING + ":")) {
+      String prefix = COMPILER_OUTPUT_TYPE_WARNING + ":";
+      String msg = lineText.substring(prefix.length()).trim();
+      return new CompilerMessage("", BuildMessage.Kind.WARNING, msg);
+    } else if (lineText.startsWith(COMPILER_OUTPUT_TYPE_ERROR + ":")) {
+      String prefix = COMPILER_OUTPUT_TYPE_ERROR + ":";
+      String msg = lineText.substring(prefix.length()).trim();
+      return new CompilerMessage("", BuildMessage.Kind.ERROR, msg);
+    }
+
+    return new CompilerMessage("", BuildMessage.Kind.INFO, lineText);
   }
 
   // TODO: paths that contain spaces should be quoted?
@@ -165,19 +212,13 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     //String javaPath = javaHome + File.separator + "bin" + File.separator + "java";
     final String jdkHome = findRealJdkHome() + File.separator;
     String javaPath = jdkHome + "bin" + File.separator + "java";
-    String monkeybrainsJarPath = sdkBinPath + MONKEYBRAINS_JAR_FILENAME;
     GeneralCommandLine commandLine = new GeneralCommandLine();
     commandLine.setExePath(javaPath);
     commandLine.addParameters("-Dfile.encoding=UTF-8", "-Dapple.awt.UIElement=true");
-    boolean old = false;
-    if (old) {
-      String toolsJarPath = jdkHome + "lib" + File.separator + "tools.jar";
-      String classPath = toolsJarPath + File.pathSeparator + monkeybrainsJarPath + File.pathSeparator;
-      commandLine.addParameters("-classpath", classPath);
-      commandLine.addParameters(MONKEYBRAINS_FQN);
-    } else {
-      commandLine.addParameters("-jar", monkeybrainsJarPath);
-    }
+
+    String monkeybrainsJarPath = sdkBinPath + MONKEYBRAINS_JAR_FILENAME;
+    commandLine.addParameters("-jar", monkeybrainsJarPath);
+
     commandLine.addParameters(parameters.build());
 
     return commandLine;

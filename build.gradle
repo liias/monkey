@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.RunIdeaTask
+
 plugins {
   id "org.jetbrains.intellij" version "0.0.43"
 }
@@ -42,6 +44,14 @@ idea {
   }
   module {
     generatedSourceDirs += file('gen')
+  }
+}
+
+// Allows to debug compiler (jps-plugin) by running a
+// Remote run configuration on the same port after starting build in monkey plugin
+afterEvaluate {
+  task("debugIdea", type: RunIdeaTask, group: 'intellij', dependsOn: 'prepareSandbox') {
+    jvmArgs += ["-Dcompiler.process.debug.port=9128"]
   }
 }
 
