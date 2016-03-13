@@ -6,6 +6,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.HashMap;
 import io.github.liias.monkey.icons.MonkeyIcons;
 import io.github.liias.monkey.project.module.MonkeyConstants;
+import io.github.liias.monkey.project.sdk.skeleton.SdkSkeleton;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,6 +33,11 @@ public class MonkeySdkType extends SdkType {
     final MonkeySdkType instance = SdkType.findInstance(MonkeySdkType.class);
     assert instance != null;
     return instance;
+  }
+
+  @Override
+  public void setupSdkPaths(@NotNull Sdk sdk) {
+    SdkSkeleton.updateSdk(sdk);
   }
 
   @Nullable
