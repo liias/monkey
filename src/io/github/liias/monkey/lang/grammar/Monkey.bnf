@@ -316,8 +316,6 @@ private unaryExpressionNotPlusMinus ::= TILDE unaryExpression
                                       | BANG unaryExpression
                                       | primary selector* (PLUSPLUS | SUBSUB)?
 
-//expression ::= primary
-
 private primary ::= parExpression
                   | referenceExpression qualifiedReferenceExpression* identifierSuffix?
                   | literal
@@ -332,8 +330,7 @@ referenceExpression ::= id {
   implements="io.github.liias.monkey.lang.psi.MonkeyReference"
 }
 
-identifierSuffix ::= (LBRACKET RBRACKET) + DOT CLASS
-                   | (LBRACKET expression RBRACKET)+
+identifierSuffix ::= (LBRACKET expression RBRACKET)+
                    | arguments
                    | DOT CLASS
                    | DOT IDENTIFIER arguments
@@ -354,7 +351,16 @@ dictionaryCreator ::= NEW LBRACE RBRACE // new {}
 
 keyValueInitializer ::= primary EQGT expression
 
-arguments ::= LPAREN expressionList? RPAREN
+// When invoking parameter info (Ctrl+P) the children are counted here
+// by ParameterInfoUtils.getCurrentParameterIndex(ASTNode, int, IElementType)
+arguments ::= LPAREN argumentsList? RPAREN {
+pin=1
+}
+
+private argumentsList ::= expression (COMMA expression)* {
+recoverWhile="argumentsList_recover"
+}
+private argumentsList_recover ::= !(RPAREN)
 
 // hidden is the same as "protected" in Java -  it says that a variable or function is only accessible to a class or its subclasses:
 modifiers ::= annotation? STATIC? HIDDEN?

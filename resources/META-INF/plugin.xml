@@ -39,6 +39,9 @@
                             implementationClass="io.github.liias.monkey.lang.ide.completion.MonkeyCompletionContributor"/>
 
     <!-- Nice to have stuff -->
+    <codeInsight.parameterInfo language="MonkeyC"
+                               implementationClass="io.github.liias.monkey.lang.ide.parameterInfo.MonkeyParameterInfoHandler"/>
+
     <lang.documentationProvider language="MonkeyC"
                                 implementationClass="io.github.liias.monkey.lang.documentation.MonkeyDocumentationProvider"/>
 

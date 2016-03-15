@@ -342,33 +342,70 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LPAREN (expressionList)? RPAREN
+  // LPAREN argumentsList? RPAREN
   public static boolean arguments(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "arguments")) return false;
     if (!nextTokenIs(b, LPAREN)) return false;
-    boolean r;
-    Marker m = enter_section_(b);
+    boolean r, p;
+    Marker m = enter_section_(b, l, _NONE_, null);
     r = consumeToken(b, LPAREN);
-    r = r && arguments_1(b, l + 1);
-    r = r && consumeToken(b, RPAREN);
-    exit_section_(b, m, ARGUMENTS, r);
-    return r;
+    p = r; // pin = 1
+    r = r && report_error_(b, arguments_1(b, l + 1));
+    r = p && consumeToken(b, RPAREN) && r;
+    exit_section_(b, l, m, ARGUMENTS, r, p, null);
+    return r || p;
   }
 
-  // (expressionList)?
+  // argumentsList?
   private static boolean arguments_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "arguments_1")) return false;
-    arguments_1_0(b, l + 1);
+    argumentsList(b, l + 1);
     return true;
   }
 
-  // (expressionList)
-  private static boolean arguments_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "arguments_1_0")) return false;
+  /* ********************************************************** */
+  // expression (COMMA expression)*
+  static boolean argumentsList(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "argumentsList")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, null);
+    r = expression(b, l + 1);
+    r = r && argumentsList_1(b, l + 1);
+    exit_section_(b, l, m, null, r, false, argumentsList_recover_parser_);
+    return r;
+  }
+
+  // (COMMA expression)*
+  private static boolean argumentsList_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "argumentsList_1")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!argumentsList_1_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "argumentsList_1", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  // COMMA expression
+  private static boolean argumentsList_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "argumentsList_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = expressionList(b, l + 1);
+    r = consumeToken(b, COMMA);
+    r = r && expression(b, l + 1);
     exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // !(RPAREN)
+  static boolean argumentsList_recover(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "argumentsList_recover")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NOT_, null);
+    r = !consumeToken(b, RPAREN);
+    exit_section_(b, l, m, null, r, false, null);
     return r;
   }
 
@@ -453,7 +490,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // LBRACE (variableInitializer (COMMA variableInitializer)*)? (COMMA)? RBRACE
+  // LBRACE (variableInitializer (COMMA variableInitializer)*)? COMMA? RBRACE
   public static boolean arrayInitializer(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "arrayInitializer")) return false;
     if (!nextTokenIs(b, LBRACE)) return false;
@@ -508,7 +545,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (COMMA)?
+  // COMMA?
   private static boolean arrayInitializer_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "arrayInitializer_2")) return false;
     consumeToken(b, COMMA);
@@ -1518,8 +1555,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (LBRACKET RBRACKET) + DOT CLASS
-  //                    | (LBRACKET expression RBRACKET)+
+  // (LBRACKET expression RBRACKET)+
   //                    | arguments
   //                    | DOT CLASS
   //                    | DOT IDENTIFIER arguments
@@ -1529,62 +1565,24 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, "<identifier suffix>");
     r = identifierSuffix_0(b, l + 1);
-    if (!r) r = identifierSuffix_1(b, l + 1);
     if (!r) r = arguments(b, l + 1);
     if (!r) r = parseTokens(b, 0, DOT, CLASS);
+    if (!r) r = identifierSuffix_3(b, l + 1);
     if (!r) r = identifierSuffix_4(b, l + 1);
-    if (!r) r = identifierSuffix_5(b, l + 1);
     exit_section_(b, l, m, IDENTIFIER_SUFFIX, r, false, null);
     return r;
   }
 
-  // (LBRACKET RBRACKET) + DOT CLASS
+  // (LBRACKET expression RBRACKET)+
   private static boolean identifierSuffix_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "identifierSuffix_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = identifierSuffix_0_0(b, l + 1);
-    r = r && consumeTokens(b, 0, DOT, CLASS);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (LBRACKET RBRACKET) +
-  private static boolean identifierSuffix_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "identifierSuffix_0_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = identifierSuffix_0_0_0(b, l + 1);
     int c = current_position_(b);
     while (r) {
-      if (!identifierSuffix_0_0_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "identifierSuffix_0_0", c)) break;
-      c = current_position_(b);
-    }
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // LBRACKET RBRACKET
-  private static boolean identifierSuffix_0_0_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "identifierSuffix_0_0_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, LBRACKET, RBRACKET);
-    exit_section_(b, m, null, r);
-    return r;
-  }
-
-  // (LBRACKET expression RBRACKET)+
-  private static boolean identifierSuffix_1(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "identifierSuffix_1")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = identifierSuffix_1_0(b, l + 1);
-    int c = current_position_(b);
-    while (r) {
-      if (!identifierSuffix_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "identifierSuffix_1", c)) break;
+      if (!identifierSuffix_0_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "identifierSuffix_0", c)) break;
       c = current_position_(b);
     }
     exit_section_(b, m, null, r);
@@ -1592,8 +1590,8 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   // LBRACKET expression RBRACKET
-  private static boolean identifierSuffix_1_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "identifierSuffix_1_0")) return false;
+  private static boolean identifierSuffix_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "identifierSuffix_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, LBRACKET);
@@ -1604,8 +1602,8 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   // DOT IDENTIFIER arguments
-  private static boolean identifierSuffix_4(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "identifierSuffix_4")) return false;
+  private static boolean identifierSuffix_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "identifierSuffix_3")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeTokens(b, 0, DOT, IDENTIFIER);
@@ -1615,8 +1613,8 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   // DOT SUPER arguments
-  private static boolean identifierSuffix_5(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "identifierSuffix_5")) return false;
+  private static boolean identifierSuffix_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "identifierSuffix_4")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeTokens(b, 0, DOT, SUPER);
@@ -2100,7 +2098,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // DOT IDENTIFIER (arguments)?
+  // DOT IDENTIFIER arguments?
   //            | LBRACKET expression RBRACKET
   public static boolean selector(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "selector")) return false;
@@ -2113,7 +2111,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // DOT IDENTIFIER (arguments)?
+  // DOT IDENTIFIER arguments?
   private static boolean selector_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "selector_0")) return false;
     boolean r;
@@ -2124,21 +2122,11 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (arguments)?
+  // arguments?
   private static boolean selector_0_2(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "selector_0_2")) return false;
-    selector_0_2_0(b, l + 1);
+    arguments(b, l + 1);
     return true;
-  }
-
-  // (arguments)
-  private static boolean selector_0_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "selector_0_2_0")) return false;
-    boolean r;
-    Marker m = enter_section_(b);
-    r = arguments(b, l + 1);
-    exit_section_(b, m, null, r);
-    return r;
   }
 
   // LBRACKET expression RBRACKET
@@ -2841,6 +2829,11 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     return r;
   }
 
+  final static Parser argumentsList_recover_parser_ = new Parser() {
+    public boolean parse(PsiBuilder b, int l) {
+      return argumentsList_recover(b, l + 1);
+    }
+  };
   final static Parser compilationUnit_auto_recover_ = new Parser() {
     public boolean parse(PsiBuilder b, int l) {
       return !nextTokenIsFast(b, CLASS, CONST,

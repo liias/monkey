@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement;
 
 public interface MonkeyArguments extends MonkeyPsiCompositeElement {
 
-  @Nullable
-  MonkeyExpressionList getExpressionList();
+  @NotNull
+  List<MonkeyExpression> getExpressionList();
 
 }

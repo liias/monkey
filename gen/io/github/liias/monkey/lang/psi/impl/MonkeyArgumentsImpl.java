@@ -22,9 +22,9 @@ public class MonkeyArgumentsImpl extends MonkeyPsiCompositeElementImpl implement
   }
 
   @Override
-  @Nullable
-  public MonkeyExpressionList getExpressionList() {
-    return findChildByClass(MonkeyExpressionList.class);
+  @NotNull
+  public List<MonkeyExpression> getExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
   }
 
 }

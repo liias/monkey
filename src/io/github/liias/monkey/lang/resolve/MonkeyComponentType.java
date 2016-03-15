@@ -2,16 +2,14 @@ package io.github.liias.monkey.lang.resolve;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.psi.PsiElement;
-import io.github.liias.monkey.lang.psi.MonkeyClass;
-import io.github.liias.monkey.lang.psi.MonkeyComponentName;
-import io.github.liias.monkey.lang.psi.MonkeyFieldDeclaration;
-import io.github.liias.monkey.lang.psi.MonkeyVariableDeclaration;
+import io.github.liias.monkey.lang.psi.*;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
 public enum MonkeyComponentType {
   CLASS(AllIcons.Nodes.Class),
+  FUNCTION(AllIcons.Nodes.Function),
   FIELD(AllIcons.Nodes.Field),
   VARIABLE(AllIcons.Nodes.Variable);
 
@@ -28,6 +26,9 @@ public enum MonkeyComponentType {
     }
     if (element instanceof MonkeyClass) {
       return CLASS;
+    }
+    if (element instanceof MonkeyFunctionDeclaration) {
+      return FUNCTION;
     }
     if (element instanceof MonkeyFieldDeclaration) {
       return FIELD;
