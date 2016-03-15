@@ -146,6 +146,7 @@ public interface MonkeyTypes {
   IElementType RPAREN = new MonkeyTokenType(")");
   IElementType SEMI = new MonkeyTokenType(";");
   IElementType SINGLE_LINE_COMMENT = new MonkeyTokenType("SINGLE_LINE_COMMENT");
+  IElementType SINGLE_LINE_DOC_COMMENT = new MonkeyTokenType("SINGLE_LINE_DOC_COMMENT");
   IElementType SLASH = new MonkeyTokenType("/");
   IElementType SLASHEQ = new MonkeyTokenType("/=");
   IElementType STAR = new MonkeyTokenType("*");

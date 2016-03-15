@@ -19,6 +19,7 @@ import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAtt
 
 public class MonkeySyntaxHighlighter extends SyntaxHighlighterBase {
   public static final TextAttributesKey MC_LINE_COMMENT = TextAttributesKey.createTextAttributesKey("MC.LINE_COMMENT", LINE_COMMENT);
+  public static final TextAttributesKey MC_LINE_DOC_COMMENT = TextAttributesKey.createTextAttributesKey("MC.LINE_DOC_COMMENT", DOC_COMMENT);
   public static final TextAttributesKey MC_BLOCK_COMMENT = TextAttributesKey.createTextAttributesKey("MC.BLOCK_COMMENT", BLOCK_COMMENT);
   public static final TextAttributesKey MC_CLASS_NAME = createTextAttributesKey("MC.CLASS_NAME", CLASS_NAME);
   public static final TextAttributesKey MC_FUNCTION_DECLARATION = createTextAttributesKey("MC.FUNCTION_DECLARATION", FUNCTION_DECLARATION);
@@ -51,6 +52,7 @@ public class MonkeySyntaxHighlighter extends SyntaxHighlighterBase {
     fillMap(aMap, MonkeyTokenTypesSets.STRINGS, MC_STRING);
     fillMap(aMap, NUMBER_LITERALS, MC_NUMBER);
     aMap.put(MonkeyTypes.SINGLE_LINE_COMMENT, MC_LINE_COMMENT);
+    aMap.put(MonkeyTypes.SINGLE_LINE_DOC_COMMENT, MC_LINE_DOC_COMMENT);
     aMap.put(MonkeyTypes.BLOCK_COMMENT, MC_BLOCK_COMMENT);
 
     return Collections.unmodifiableMap(aMap);

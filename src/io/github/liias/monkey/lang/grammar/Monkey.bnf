@@ -109,7 +109,9 @@
 
     // WHITE_SPACE is overwritten by JFlex, this here is only for Live Preview
     WHITE_SPACE='regexp:\s+'
-    SINGLE_LINE_COMMENT='regexp://.*'
+    SINGLE_LINE_COMMENT='regexp://[^!].*'
+    SINGLE_LINE_DOC_COMMENT='regexp://\!(.*)'
+
     BLOCK_COMMENT='regexp:/\*([^*]|\*+[^*/])*(\*+/)?'
 
     IDENTIFIER = 'regexp:[a-zA-Z$_][a-zA-Z0-9$_]*'

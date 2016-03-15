@@ -15,6 +15,7 @@ import io.github.liias.monkey.lang.MonkeyLanguage;
 import io.github.liias.monkey.lang.lexer.MonkeyLexer;
 import io.github.liias.monkey.lang.psi.MonkeyFile;
 import io.github.liias.monkey.lang.psi.MonkeyTypes;
+import io.github.liias.monkey.lang.psi.impl.MonkeyDocCommentImpl;
 import org.jetbrains.annotations.NotNull;
 
 public class MonkeyParserDefinition implements ParserDefinition {
@@ -57,6 +58,9 @@ public class MonkeyParserDefinition implements ParserDefinition {
   @NotNull
   @Override
   public PsiElement createElement(ASTNode node) {
+    if (node.getElementType() == MonkeyTypes.SINGLE_LINE_DOC_COMMENT) {
+      return new MonkeyDocCommentImpl(node);
+    }
     return MonkeyTypes.Factory.createElement(node);
   }
 

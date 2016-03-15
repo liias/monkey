@@ -6,7 +6,7 @@ import io.github.liias.monkey.lang.psi.MonkeyTypes;
 
 public interface MonkeyTokenTypesSets {
   TokenSet STRINGS = TokenSet.create(MonkeyTypes.STRING);
-  TokenSet COMMENTS = TokenSet.create(MonkeyTypes.SINGLE_LINE_COMMENT);
+  TokenSet COMMENTS = TokenSet.create(MonkeyTypes.SINGLE_LINE_COMMENT, MonkeyTypes.SINGLE_LINE_DOC_COMMENT);
   TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
 
   TokenSet BUILT_IN_IDENTIFIERS = TokenSet.create(

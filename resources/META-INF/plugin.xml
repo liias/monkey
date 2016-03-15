@@ -39,6 +39,9 @@
                             implementationClass="io.github.liias.monkey.lang.ide.completion.MonkeyCompletionContributor"/>
 
     <!-- Nice to have stuff -->
+    <lang.documentationProvider language="MonkeyC"
+                                implementationClass="io.github.liias.monkey.lang.documentation.MonkeyDocumentationProvider"/>
+
     <lang.syntaxHighlighterFactory language="MonkeyC"
                                    implementationClass="io.github.liias.monkey.lang.highlighting.MonkeySyntaxHighlighterFactory"/>
 
