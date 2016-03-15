@@ -212,7 +212,7 @@ implements="io.github.liias.monkey.lang.psi.MonkeyComponent"
 
 variableInitializer ::= arrayInitializer | expression
 
-arrayInitializer ::= LBRACE (variableInitializer (COMMA variableInitializer)*)? (COMMA)? RBRACE
+arrayInitializer ::= LBRACE (variableInitializer (COMMA variableInitializer)*)? COMMA? RBRACE
 
 statement ::= block
             | IF parExpression statement (ELSE statement)?
@@ -339,7 +339,7 @@ identifierSuffix ::= (LBRACKET RBRACKET) + DOT CLASS
                    | DOT IDENTIFIER arguments
                    | DOT SUPER arguments
 
-selector ::= DOT IDENTIFIER (arguments)?
+selector ::= DOT IDENTIFIER arguments?
            | LBRACKET expression RBRACKET
 
 creator ::= objectCreator | arrayCreator
@@ -354,7 +354,7 @@ dictionaryCreator ::= NEW LBRACE RBRACE // new {}
 
 keyValueInitializer ::= primary EQGT expression
 
-arguments ::= LPAREN (expressionList)? RPAREN
+arguments ::= LPAREN expressionList? RPAREN
 
 // hidden is the same as "protected" in Java -  it says that a variable or function is only accessible to a class or its subclasses:
 modifiers ::= annotation? STATIC? HIDDEN?
