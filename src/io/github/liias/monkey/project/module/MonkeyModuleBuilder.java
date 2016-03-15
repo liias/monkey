@@ -50,6 +50,7 @@ import org.apache.velocity.context.Context;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jps.model.java.JavaResourceRootType;
+import org.jetbrains.jps.model.java.JavaSourceRootType;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -93,11 +94,11 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     ContentEntry contentEntry = doAddContentEntry(rootModel);
     if (contentEntry != null) {
       VirtualFile sourceRoot = createSourcePath("source");
-      contentEntry.addSourceFolder(sourceRoot, false, "");
+      contentEntry.addSourceFolder(sourceRoot, JavaSourceRootType.SOURCE);
 
-      VirtualFile resourcesRoot = createSourcePath("resources");
       // TODO: there can be many resource folders, e.g based on language or device that come from SDK's example project definitions
-      contentEntry.addSourceFolder(resourcesRoot, JavaResourceRootType.RESOURCE, JavaResourceRootType.RESOURCE.createDefaultProperties());
+      VirtualFile resourcesRoot = createSourcePath("resources");
+      contentEntry.addSourceFolder(resourcesRoot, JavaResourceRootType.RESOURCE);
     }
 
     final TargetDeviceModuleExtension targetDeviceModuleExtension = rootModel.getModuleExtension(TargetDeviceModuleExtension.class);
