@@ -82,6 +82,8 @@
     <!-- App's manifest.xml -->
     <dom.fileDescription implementation="io.github.liias.monkey.project.dom.manifest.ManifestDomFileDescription"/>
 
+    <standardResourceProvider implementation="io.github.liias.monkey.project.dom.ManifestResourceProvider"/>
+
     <!-- SDK's projectInfo.xml -->
     <dom.fileDescription
         implementation="io.github.liias.monkey.project.dom.sdk.projectinfo.ProjectInfoDomFileDescription"/>
