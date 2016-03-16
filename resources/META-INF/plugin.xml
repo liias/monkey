@@ -55,6 +55,8 @@
     <lang.psiStructureViewFactory language="MonkeyC"
                                   implementationClass="io.github.liias.monkey.lang.ide.structure.MonkeyStructureViewFactory"/>
 
+    <lang.braceMatcher language="MonkeyC" implementationClass="io.github.liias.monkey.lang.ide.MonkeyBraceMatcher"/>
+
     <lang.commenter language="MonkeyC" implementationClass="io.github.liias.monkey.lang.ide.MonkeyCommenter"/>
 
 
