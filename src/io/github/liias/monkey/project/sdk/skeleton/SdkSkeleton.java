@@ -1,5 +1,6 @@
 package io.github.liias.monkey.project.sdk.skeleton;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.projectRoots.SdkModificator;
@@ -23,26 +24,26 @@ public class SdkSkeleton {
   public static final String SKELETON_DIR_NAME = "monkey_stubs";
 
   public static void updateSdk(final Sdk sdk) {
-    String skeletonsPath = getSkeletonsPath(PathManager.getSystemPath(), sdk.getHomePath());
-
-    File skeletonsDir = new File(skeletonsPath);
-    if (!skeletonsDir.exists()) {
-      //noinspection ResultOfMethodCallIgnored
-      skeletonsDir.mkdirs();
-    }
-
-    final VirtualFile root = LocalFileSystem.getInstance().refreshAndFindFileByPath(skeletonsPath);
     SdkModificator sdkModificator = sdk.getSdkModificator();
-    sdkModificator.addRoot(root, OrderRootType.CLASSES);
+    sdkModificator.removeRoots(OrderRootType.CLASSES);
+    sdkModificator.commitChanges();
 
-    //sdkModificator.addRoot(MonkeySdkType.getInstance().getBinDir(sdk), OrderRootType.CLASSES);
-    //sdkModificator.addRoot(root, OrderRootType.SOURCES);
-    //sdkModificator.addRoot(root, OrderRootType.SOURCES);
 
-    String whatevaMbPath = skeletonsPath + File.separator + "whateva.mc";
-    //File file = new File(whatevaMbPath);
+    String skeletonsPath = getSkeletonsPath(PathManager.getSystemPath(), sdk.getHomePath());
+    File skeletonsDir = new File(skeletonsPath);
+    if (skeletonsDir.exists()) {
+      ApplicationManager.getApplication().runWriteAction(() -> {
+        try {
+          LocalFileSystem.getInstance().refreshAndFindFileByPath(skeletonsPath).delete(sdk);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      });
+    }
+    skeletonsDir.mkdirs();
 
-    Path path = Paths.get(whatevaMbPath);
+    String skeletonFilePath = skeletonsPath + File.separator + "connectiq.mc";
+    Path path = Paths.get(skeletonFilePath);
 
     String sdkBinPath = MonkeySdkType.getBinPath(sdk);
     ApiReader apiReader = new ApiReader(sdkBinPath);
@@ -54,9 +55,10 @@ public class SdkSkeleton {
       e.printStackTrace();
     }
 
-
+    final VirtualFile root = LocalFileSystem.getInstance().refreshAndFindFileByPath(skeletonsPath);
+    sdkModificator = sdk.getSdkModificator();
+    sdkModificator.addRoot(root, OrderRootType.CLASSES);
     sdkModificator.commitChanges();
-
   }
 
   public static String getSkeletonsPath(String basePath, String sdkHome) {

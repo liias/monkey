@@ -68,6 +68,7 @@ public class ApiReader {
     String moduleTemplateStart = "module %s {\n";
     String classTemplateStart = "class %s {\n";
     StringBuilder builder = new StringBuilder();
+    builder.append("// This is generated Connect IQ API stub, do not edit this!\n\n");
 
     for (SdkModule sdkModule : sdkModules) {
       StringBuilder moduleSkeletonBuilder = new StringBuilder()
