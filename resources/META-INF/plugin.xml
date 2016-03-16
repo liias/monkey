@@ -9,9 +9,13 @@
     ]]></description>
 
   <change-notes><![CDATA[
-    <p>0.1.3</p>
+    <p>0.2</p>
     <ul>
-      <li>Reworked language part - references and declarations now somewhat work in same file</li>
+      <li>Reworked language part - references and declarations now work in limited conditions</li>
+      <li>Added very limited completion support</li>
+      <li>Show compilation warnings and errors with source file and line</li>
+      <li>Create SDK skeleton</li>
+      <li>Show parameter info</li>
     </ul>
     ]]>
   </change-notes>
