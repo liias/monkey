@@ -9,7 +9,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.NotNullFunction;
 import com.intellij.util.PathsList;
 import org.intellij.lang.annotations.MagicConstant;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class MonkeyParameters extends SimpleProgramParameters {
@@ -19,6 +18,9 @@ public class MonkeyParameters extends SimpleProgramParameters {
   public static final int SDK_AND_CLASSES = SDK_ONLY | CLASSES_ONLY;
 
   private Sdk sdk;
+
+  private VirtualFile outputPath;
+
   private final PathsList classPath = new PathsList();
 
   public Sdk getSdk() {
@@ -29,8 +31,8 @@ public class MonkeyParameters extends SimpleProgramParameters {
     this.sdk = sdk;
   }
 
-  public PathsList getClassPath() {
-    return classPath;
+  public VirtualFile getOutputPath() {
+    return outputPath;
   }
 
   public static Sdk getModuleSdk(final Module module) throws CantRunException {
@@ -47,6 +49,12 @@ public class MonkeyParameters extends SimpleProgramParameters {
 
   public void configureByModule(final Module module,
                                 @MagicConstant(valuesFromClass = MonkeyParameters.class) final int classPathType) throws CantRunException {
+
+    CompilerModuleExtension extension = CompilerModuleExtension.getInstance(module);
+    if (extension != null) {
+      outputPath = extension.getCompilerOutputPath();
+    }
+
     final Sdk moduleSdk = getModuleSdk(module);
 
     if ((classPathType & SDK_ONLY) != 0) {
@@ -55,14 +63,6 @@ public class MonkeyParameters extends SimpleProgramParameters {
       }
       setSdk(moduleSdk);
     }
-
-    if ((classPathType & CLASSES_ONLY) == 0) {
-      return;
-    }
-
-    //setDefaultCharset(module.getProject());
-    configureEnumerator(OrderEnumerator.orderEntries(module).runtimeOnly().recursively(), classPathType, getSdk()).collectPaths(getClassPath());
-    //configureJavaLibraryPath(OrderEnumerator.orderEntries(module).recursively());
   }
 
   private static OrderRootsEnumerator configureEnumerator(OrderEnumerator enumerator, @MagicConstant(valuesFromClass = MonkeyParameters.class) int classPathType, Sdk jdk) {

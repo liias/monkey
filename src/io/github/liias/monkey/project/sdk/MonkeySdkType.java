@@ -1,6 +1,7 @@
 package io.github.liias.monkey.project.sdk;
 
 import com.intellij.openapi.projectRoots.*;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.HashMap;
@@ -126,8 +127,9 @@ public class MonkeySdkType extends SdkType {
   public void saveAdditionalData(@NotNull SdkAdditionalData additionalData, @NotNull Element additional) {
   }
 
-  public String getMonkeydoBatPath(@NotNull Sdk sdk) {
-    return getBinPath(sdk) + "monkeydo.bat";
+  public static String getMonkeydoBatPath(@NotNull Sdk sdk) {
+    String monkeydo = SystemInfo.isWindows ? "monkeydo.bat" : "monkeydo";
+    return getBinPath(sdk) + monkeydo;
   }
 
   public String getMonkeybrainsJarPath(@NotNull Sdk sdk) {
