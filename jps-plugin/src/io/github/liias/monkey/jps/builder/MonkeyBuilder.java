@@ -12,6 +12,7 @@ import com.intellij.openapi.projectRoots.JdkUtil;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.util.SystemProperties;
 import com.intellij.util.containers.ContainerUtil;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleProperties;
@@ -36,7 +37,6 @@ import org.jetbrains.jps.model.module.JpsTypedModule;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
@@ -87,13 +87,12 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     File outputDirectory = getBuildOutputDirectory(jpsModule, target.isTests(), context);
 
     for (String contentRootUrl : jpsModule.getContentRootsList().getUrls()) {
-      String contentRootPath = new URL(contentRootUrl).getPath();
+      String contentRootPath = VfsUtilCore.urlToPath(contentRootUrl);
       final String projectName = context.getProjectDescriptor().getProject().getName();
       final GeneralCommandLine buildCmd = createBuildCmd(projectName, contentRootPath, outputDirectory, sdk.getHomePath(), targetDeviceId);
       runBuildProcess(context, buildCmd, contentRootPath);
     }
   }
-
 
   private static void runBuildProcess(@NotNull CompileContext context, @NotNull GeneralCommandLine commandLine, @NotNull String path)
       throws ProjectBuildException {
