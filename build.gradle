@@ -24,7 +24,7 @@ allprojects {
   apply plugin: 'org.jetbrains.intellij'
 
   intellij {
-    version '15.0.4'
+    version '2016.1'
     //pluginName 'monkey'
     downloadSources true
   }
