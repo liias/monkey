@@ -258,10 +258,10 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
 
     manifest.getApplication().getId().setValue(applicationId);
     manifest.getApplication().getType().setValue(appType);
-    manifest.getApplication().getName().setValue("AppName");
+    manifest.getApplication().getName().setValue("@Strings.AppName");
     // entry is a class which extends Toybox.Application.AppBase
     manifest.getApplication().getEntry().setValue(entryClassName);
-    manifest.getApplication().getLauncherIcon().setValue("LauncherIcon");
+    manifest.getApplication().getLauncherIcon().setValue("@Drawables.LauncherIcon");
 
     Products products = manifest.getApplication().getProducts();
     XmlTag productsRootTag = products.getXmlTag();
