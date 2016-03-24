@@ -24,9 +24,15 @@ allprojects {
   apply plugin: 'org.jetbrains.intellij'
 
   intellij {
-    version '2016.1'
-    //pluginName 'monkey'
+    version ideaVersion
+    pluginName 'monkey'
     downloadSources true
+    publish {
+      username publishUsername
+      password publishPassword
+      pluginId '8253'
+      channel publishChannel
+    }
   }
 }
 
