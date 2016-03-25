@@ -15,7 +15,7 @@ allprojects {
   intellij {
     version ideaVersion
     pluginName 'monkey'
-    downloadSources true
+    downloadSources Boolean.valueOf(downloadIdeaSources)
     publish {
       username publishUsername
       password publishPassword
