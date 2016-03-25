@@ -25,11 +25,12 @@ allprojects {
   }
 }
 
-sourceSets.main.java.srcDirs += 'gen'
 
 dependencies {
   compile project(':jps-plugin')
 }
+
+sourceSets.main.java.srcDirs += 'src/main/gen'
 
 apply plugin: 'idea'
 idea {
@@ -38,7 +39,7 @@ idea {
     languageLevel = javaVersion
   }
   module {
-    generatedSourceDirs += file('gen')
+    generatedSourceDirs += file('src/main/gen')
   }
 }
 
