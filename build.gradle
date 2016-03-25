@@ -9,18 +9,7 @@ allprojects {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
   tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
-
-  sourceSets {
-    main {
-      java.srcDirs = files('src')
-      resources.srcDirs = files('resources')
-    }
-    test {
-      java.srcDirs = files('tests')
-      resources.srcDirs = []
-    }
-  }
-
+  
   apply plugin: 'org.jetbrains.intellij'
 
   intellij {
