@@ -16,8 +16,12 @@ public class MonkeyStatementImpl extends MonkeyPsiCompositeElementImpl implement
     super(node);
   }
 
+  public void accept(@NotNull MonkeyVisitor visitor) {
+    visitor.visitStatement(this);
+  }
+
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitStatement(this);
+    if (visitor instanceof MonkeyVisitor) accept((MonkeyVisitor)visitor);
     else super.accept(visitor);
   }
 

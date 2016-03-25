@@ -16,8 +16,12 @@ public class MonkeyCatchClauseImpl extends MonkeyPsiCompositeElementImpl impleme
     super(node);
   }
 
+  public void accept(@NotNull MonkeyVisitor visitor) {
+    visitor.visitCatchClause(this);
+  }
+
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitCatchClause(this);
+    if (visitor instanceof MonkeyVisitor) accept((MonkeyVisitor)visitor);
     else super.accept(visitor);
   }
 

@@ -16,8 +16,12 @@ public class MonkeyVariableInitializerImpl extends MonkeyPsiCompositeElementImpl
     super(node);
   }
 
+  public void accept(@NotNull MonkeyVisitor visitor) {
+    visitor.visitVariableInitializer(this);
+  }
+
   public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof MonkeyVisitor) ((MonkeyVisitor)visitor).visitVariableInitializer(this);
+    if (visitor instanceof MonkeyVisitor) accept((MonkeyVisitor)visitor);
     else super.accept(visitor);
   }
 
