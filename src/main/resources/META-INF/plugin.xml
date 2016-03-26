@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>io.github.liias.monkey</id>
   <name>Monkey C (Garmin Connect IQ)</name>
-  <version>0.2</version>
+  <version>0.2.1</version>
   <vendor email="madisliias@gmail.com" url="https://liias.github.io">Madis Liias</vendor>
 
   <description><![CDATA[
@@ -9,6 +9,11 @@
     ]]></description>
 
   <change-notes><![CDATA[
+    <p>0.2.1</p>
+    <ul>
+      <li>Built for IDEA 2016.1</li>
+      <li>Fixed building when IDEA runs form different drive than project</li>
+    </ul>
     <p>0.2</p>
     <ul>
       <li>Reworked language part - references and declarations now work in limited conditions</li>
