@@ -8,41 +8,51 @@ import com.intellij.ide.util.projectWizard.importSources.DetectedProjectRoot;
 import com.intellij.ide.util.projectWizard.importSources.DetectedSourceRoot;
 import com.intellij.ide.util.projectWizard.importSources.ProjectFromSourcesBuilder;
 import com.intellij.ide.util.projectWizard.importSources.ProjectStructureDetector;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.util.containers.ContainerUtil;
+import com.intellij.openapi.util.io.FileUtilRt;
+import io.github.liias.monkey.lang.file.MonkeyFileType;
 import io.github.liias.monkey.project.module.MonkeyModuleType;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+/**
+ * Handles New project from existing sources
+ */
 public class MonkeyProjectStructureDetector extends ProjectStructureDetector {
+
+  /*
+  Detects source roots instead of module content root.
+  see com.intellij.ide.util.importProject.RootDetectionProcessor.mergeContentRoots(), content root is ignored if there are source roots
+   */
   @NotNull
   @Override
   public DirectoryProcessingResult detectRoots(@NotNull File dir,
                                                @NotNull File[] children,
                                                @NotNull File base,
                                                @NotNull List<DetectedProjectRoot> result) {
-    Pattern pattern = Pattern.compile(".*\\.mc");
-    List<File> filesByMask = FileUtil.findFilesByMask(pattern, base);
-    if (!filesByMask.isEmpty()) {
-      result.add(new DetectedProjectRoot(dir) {
-        @NotNull
-        @Override
-        public String getRootTypeName() {
-          return "MonkeyC";
-        }
-      });
+
+    String fileExtension = MonkeyFileType.INSTANCE.getDefaultExtension();
+    for (File child : children) {
+      if (child.isFile() && FileUtilRt.extensionEquals(child.getName(), fileExtension)) {
+        result.add(new MonkeyDetectedSourceRoot(dir));
+        // alternatively could add one module root instead of many source roots:
+        //result.add(new DetectedContentRoot(dir, "MonkeyC", MonkeyModuleType.getInstance(), WebModuleType.getInstance()));
+        return DirectoryProcessingResult.SKIP_CHILDREN;
+      }
     }
-    return DirectoryProcessingResult.SKIP_CHILDREN;
+
+    return DirectoryProcessingResult.PROCESS_CHILDREN;
   }
 
+  /*
+  Collect all source roots and add a new module with them
+   */
   @Override
   public void setupProjectStructure(@NotNull Collection<DetectedProjectRoot> roots,
                                     @NotNull ProjectDescriptor projectDescriptor,
@@ -50,16 +60,21 @@ public class MonkeyProjectStructureDetector extends ProjectStructureDetector {
 
     if (!builder.hasRootsFromOtherDetectors(this)) {
       builder.setupModulesByContentRoots(projectDescriptor, roots);
-    }
 
-    if (!roots.isEmpty() && !builder.hasRootsFromOtherDetectors(this)) {
-      List<ModuleDescriptor> modules = projectDescriptor.getModules();
-      if (modules.isEmpty()) {
-        modules = new ArrayList<>();
-        for (DetectedProjectRoot root : roots) {
-          modules.add(new ModuleDescriptor(root.getDirectory(), MonkeyModuleType.getInstance(), ContainerUtil.<DetectedSourceRoot>emptyList()));
+      if (!roots.isEmpty()) {
+        List<ModuleDescriptor> modules = projectDescriptor.getModules();
+        if (modules.isEmpty()) {
+          List<MonkeyDetectedSourceRoot> sourceRoots = roots.stream()
+              .filter(r -> r instanceof MonkeyDetectedSourceRoot)
+              .map(r -> (MonkeyDetectedSourceRoot) r)
+              .collect(Collectors.toList());
+
+          if (!sourceRoots.isEmpty()) {
+            // TODO: this is not the way we should find module content root...
+            File moduleContentRoot = sourceRoots.iterator().next().getDirectory().getParentFile();
+            modules.add(new ModuleDescriptor(moduleContentRoot, MonkeyModuleType.getInstance(), sourceRoots));
+          }
         }
-        projectDescriptor.setModules(modules);
       }
     }
   }
@@ -68,6 +83,18 @@ public class MonkeyProjectStructureDetector extends ProjectStructureDetector {
   @Override
   public List<ModuleWizardStep> createWizardSteps(@NotNull ProjectFromSourcesBuilder builder, ProjectDescriptor projectDescriptor, Icon stepIcon) {
     ProjectJdkForModuleStep projectJdkForModuleStep = new ProjectJdkForModuleStep(builder.getContext(), MonkeySdkType.getInstance());
-    return Collections.<ModuleWizardStep>singletonList(projectJdkForModuleStep);
+    return Collections.singletonList(projectJdkForModuleStep);
+  }
+
+  private static class MonkeyDetectedSourceRoot extends DetectedSourceRoot {
+    public MonkeyDetectedSourceRoot(File directory) {
+      super(directory, null);
+    }
+
+    @NotNull
+    @Override
+    public String getRootTypeName() {
+      return "MonkeyC";
+    }
   }
 }

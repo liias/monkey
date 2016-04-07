@@ -1,14 +1,13 @@
 package io.github.liias.monkey.project.module;
 
-import com.intellij.ide.util.projectWizard.ModuleWizardStep;
-import com.intellij.ide.util.projectWizard.ProjectJdkForModuleStep;
-import com.intellij.ide.util.projectWizard.WizardContext;
+import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.ModuleTypeManager;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import io.github.liias.monkey.icons.MonkeyIcons;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
@@ -37,7 +36,7 @@ public class MonkeyModuleType extends ModuleType<MonkeyModuleBuilder> {
   @NotNull
   @Override
   public String getDescription() {
-    return "Monkey C modules are used for developing <b>Monkey Co</b> applications.";
+    return "Monkey C modules are used for developing <b>Monkey C</b> applications.";
   }
 
   @Override
@@ -59,5 +58,17 @@ public class MonkeyModuleType extends ModuleType<MonkeyModuleBuilder> {
     final ProjectJdkForModuleStep projectJdkForModuleStep = new ProjectJdkForModuleStep(wizardContext, MonkeySdkType.getInstance());
     return new ModuleWizardStep[]{projectJdkForModuleStep};
 
+  }
+
+  @Nullable
+  @Override
+  public ModuleWizardStep modifyProjectTypeStep(@NotNull SettingsStep settingsStep, @NotNull ModuleBuilder moduleBuilder) {
+    return super.modifyProjectTypeStep(settingsStep, moduleBuilder);
+  }
+
+  @Nullable
+  @Override
+  public ModuleWizardStep modifySettingsStep(@NotNull SettingsStep settingsStep, @NotNull ModuleBuilder moduleBuilder) {
+    return super.modifySettingsStep(settingsStep, moduleBuilder);
   }
 }

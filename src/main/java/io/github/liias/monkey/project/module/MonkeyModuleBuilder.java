@@ -66,6 +66,9 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
   public static final String PROJECT_INFO_XML = "projectInfo.xml";
   public static final String FILE_TYPE_SOURCE = "source";
   public static final TargetDevice DEFAULT_TARGET_DEVICE = TargetDevice.SQUARE_WATCH;
+
+  // Not null only if new project where we need to generate content based on this type
+  @Nullable
   private final String appType;
 
   public MonkeyModuleBuilder(String appType) {
