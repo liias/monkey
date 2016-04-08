@@ -19,7 +19,9 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * Handles New project from existing sources
@@ -64,16 +66,13 @@ public class MonkeyProjectStructureDetector extends ProjectStructureDetector {
       if (!roots.isEmpty()) {
         List<ModuleDescriptor> modules = projectDescriptor.getModules();
         if (modules.isEmpty()) {
-          List<MonkeyDetectedSourceRoot> sourceRoots = roots.stream()
+          roots.stream()
               .filter(r -> r instanceof MonkeyDetectedSourceRoot)
               .map(r -> (MonkeyDetectedSourceRoot) r)
-              .collect(Collectors.toList());
-
-          if (!sourceRoots.isEmpty()) {
-            // TODO: this is not the way we should find module content root...
-            File moduleContentRoot = sourceRoots.iterator().next().getDirectory().getParentFile();
-            modules.add(new ModuleDescriptor(moduleContentRoot, MonkeyModuleType.getInstance(), sourceRoots));
-          }
+              .collect(groupingBy(sr -> sr.getDirectory().getParentFile(), mapping(Function.identity(), toSet())))
+              .forEach((moduleContentRoot, moduleSourceRoots) ->
+                  modules.add(new ModuleDescriptor(moduleContentRoot, MonkeyModuleType.getInstance(), moduleSourceRoots))
+              );
         }
       }
     }
