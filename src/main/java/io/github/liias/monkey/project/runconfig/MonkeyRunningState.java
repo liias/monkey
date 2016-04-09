@@ -186,10 +186,6 @@ public class MonkeyRunningState extends CommandLineState {
     throw new UnsupportedOperationException("OS is unsupported: " + SystemInfoRt.OS_NAME);
   }
 
-  private static String getSimulatorExecutableName() {
-    return getForWinLinOrMac("simulator.exe", "ConnectIQ.app");
-  }
-
   private GeneralCommandLine createRunInSimulatorCmd() throws ExecutionException {
     MonkeyParameters monkeyParameters = getMonkeyParameters();
     String outputDir = monkeyParameters.getOutputPath().getPath() + File.separator;
