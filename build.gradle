@@ -45,6 +45,7 @@ idea {
 
 // Allows to debug compiler (jps-plugin) by running a
 // Remote run configuration on the same port after starting build in monkey plugin
+// Additionally you have to, in running IDEA, go to Find Action (Ctrl+Shift+A) and enable "Debug Build Process".
 afterEvaluate {
   task("debugIdea", type: RunIdeaTask, group: 'intellij', dependsOn: 'prepareSandbox') {
     jvmArgs += ["-Dcompiler.process.debug.port=9128"]
