@@ -20,6 +20,10 @@ public class JpsMonkeyModelSerializerExtension extends JpsModelSerializerExtensi
 
   @Override
   public void loadRootModel(@NotNull JpsModule module, @NotNull Element rootModel) {
+    if (module.getModuleType() != JpsMonkeyModuleType.INSTANCE) {
+      return;
+    }
+
     final JpsSimpleElement modulePropertiesElement = (JpsSimpleElement) module.getProperties();
     final JpsMonkeyModuleProperties moduleProperties = (JpsMonkeyModuleProperties) modulePropertiesElement.getData();
     moduleProperties.TARGET_DEVICE_ID = rootModel.getAttributeValue(MODULE_TARGET_DEVICE_ID_ATTRIBUTE);
