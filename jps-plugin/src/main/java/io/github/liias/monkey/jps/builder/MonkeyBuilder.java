@@ -14,7 +14,6 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.util.SystemProperties;
-import com.intellij.util.containers.ContainerUtil;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleProperties;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleType;
 import io.github.liias.monkey.jps.model.JpsMonkeySdkType;
@@ -40,8 +39,11 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, MonkeyBuildTarget> {
   public static final String NAME = "Monkey C";
@@ -209,8 +211,8 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
 
     //final String javaHome = SystemProperties.getJavaHome();
     //String javaPath = javaHome + File.separator + "bin" + File.separator + "java";
-    final String jdkHome = findRealJdkHome() + File.separator;
-    String javaPath = jdkHome + "bin" + File.separator + "java";
+    final String jreHome = findJreHome() + File.separator;
+    String javaPath = jreHome + "bin" + File.separator + "java";
     GeneralCommandLine commandLine = new GeneralCommandLine();
     commandLine.setExePath(javaPath);
     commandLine.addParameters("-Dfile.encoding=UTF-8", "-Dapple.awt.UIElement=true");
@@ -224,15 +226,18 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
   }
 
   // searches some common directories and misconfigurations
-  public static String findRealJdkHome() {
+  public static String findJreHome() {
     String javaHome = SystemProperties.getJavaHome();
-    List<String> paths = ContainerUtil.packNullables(javaHome, new File(javaHome).getParent(), System.getenv("JDK_16_x64"), System.getenv("JDK_16"));
-    for (String path : paths) {
-      if (JdkUtil.checkForJdk(new File(path))) {
-        return path;
-      }
+    Optional<String> jreHome = Stream.of(javaHome, new File(javaHome).getParent(), System.getenv("JDK_16_x64"), System.getenv("JDK_16"))
+        .filter(Objects::nonNull)
+        .filter(JdkUtil::checkForJre)
+        .findFirst();
+
+    if (jreHome.isPresent()) {
+      return jreHome.get();
     }
-    throw new RuntimeException("could not find JDK");
+
+    throw new RuntimeException("could not find JRE. java.home=" + javaHome);
   }
 
   @NotNull
