@@ -1,7 +1,9 @@
 <idea-plugin version="2">
   <id>io.github.liias.monkey</id>
   <name>Monkey C (Garmin Connect IQ)</name>
-  <version>0.2.1</version>
+  <!-- this version is overridden on gradle building and is
+  specified in gradle.properties as  pluginVersion -->
+  <version>0.2.2</version>
   <vendor email="madisliias@gmail.com" url="https://liias.github.io">Madis Liias</vendor>
 
   <description><![CDATA[
@@ -9,6 +11,13 @@
     ]]></description>
 
   <change-notes><![CDATA[
+    <p>0.2.2</p>
+    <ul>
+      <li>Improved creating project/module from existing sources</li>
+      <li>Improved running app to wait if simulator is not yet running</li>
+      <li>Fix issue#1 - ignore modules which are not of Connect IQ type</li>
+      <li>Require JRE instead of JDK for Monkey compiler</li>
+    </ul>
     <p>0.2.1</p>
     <ul>
       <li>Built for IDEA 2016.1</li>
