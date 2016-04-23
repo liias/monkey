@@ -125,9 +125,16 @@
 
   <actions>
     <action id="Monkey.NewMonkeyFile" class="io.github.liias.monkey.ide.actions.CreateMonkeyFileAction"
-            text="Monkey C File" description="Create new Monkey C source file">
-      <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
-    </action>
+            text="Monkey C File" description="Create new Monkey C source file"/>
+
+    <group id="ConnectIqActionGroup" text="Connect I_Q" description="Garmin Connect IQ specific actions" popup="true">
+      <action id="Monkey.ObjectStore"
+              class="io.github.liias.monkey.ide.actions.appsettings.AppSettingsAction"
+              description="App Settings Editor aka Object Store"/>
+
+      <add-to-group group-id="MainMenu" relative-to-action="HelpMenu" anchor="before"/>
+    </group>
+
   </actions>
 
 </idea-plugin>
