@@ -49,7 +49,7 @@ public class AppSettingsForm {
         String settingsFilename = projectName + "-settings.json";
 
         VirtualFile settingsFile = moduleOutputDir.findChild(settingsFilename);
-        AppSettingsManager appSettingsManager = new AppSettingsManager(settingsFile);
+        AppSettingsManager appSettingsManager = new AppSettingsManager(selectedModule, settingsFile);
         AppSettingsManager.SettingsAndLanguages settingsAndLanguages = appSettingsManager.getSettingsAndLanguages();
         fillSettings(settingsAndLanguages);
       }
@@ -59,10 +59,6 @@ public class AppSettingsForm {
   private void fillSettings(AppSettingsManager.SettingsAndLanguages settingsAndLanguages) {
 
     List<Setting> settings = settingsAndLanguages.getSettings();
-
-    //final GridBagConstraints gb =
-    //    new GridBagConstraints(0, 0, 2, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0);
-
 
     GridLayoutManager layout = new GridLayoutManager(settings.size() + 1, 2);
     settingsPanel.setLayout(layout);

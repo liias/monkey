@@ -60,9 +60,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.liias.monkey.project.module.util.MonkeyModuleUtil.MANIFEST_XML;
+
 public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderListener {
   private static final Logger LOG = Logger.getInstance("#io.github.liias.monkey.project.module.MonkeyModuleBuilder");
-  public static final String MANIFEST_XML = "manifest.xml";
   public static final String PROJECT_INFO_XML = "projectInfo.xml";
   public static final String FILE_TYPE_SOURCE = "source";
   public static final TargetDevice DEFAULT_TARGET_DEVICE = TargetDevice.SQUARE_WATCH;
@@ -235,7 +236,7 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     final Project project = module.getProject();
     CommandProcessor.getInstance().executeCommand(project, () -> {
       Runnable action = () -> {
-        final Manifest manifest = getManifest(project, contentRoot);
+        final Manifest manifest = MonkeyModuleUtil.getManifest(project, contentRoot);
         if (manifest != null) {
           StartupManager.getInstance(project).runWhenProjectIsInitialized(() -> FileDocumentManager.getInstance().saveAllDocuments());
           configureManifest(manifest, module, appType);
@@ -299,11 +300,6 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
   private static ProjectInfo getSdkProjectInfo(Project project, VirtualFile sdkBinDir) {
     final VirtualFile projectInfoFile = sdkBinDir.findChild(PROJECT_INFO_XML);
     return projectInfoFile != null ? MonkeyModuleUtil.loadDomElement(project, projectInfoFile, ProjectInfo.class) : null;
-  }
-
-  private static Manifest getManifest(Project project, VirtualFile contentRoot) {
-    VirtualFile manifestFile = contentRoot.findChild(MANIFEST_XML);
-    return manifestFile != null ? MonkeyModuleUtil.loadDomElement(project, manifestFile, Manifest.class) : null;
   }
 
   private void setupRunConfiguration(Module module) {

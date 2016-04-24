@@ -2,6 +2,8 @@ package io.github.liias.monkey.ide.actions.appsettings;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.intellij.execution.ExecutionException;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
 
 import java.io.IOException;
@@ -12,7 +14,7 @@ import java.util.Map;
 public class AppSettingsManager {
   SettingsAndLanguages settingsAndLanguages;
 
-  public AppSettingsManager(VirtualFile settingsFile) {
+  public AppSettingsManager(Module module, VirtualFile settingsFile) {
     try {
       InputStreamReader reader = new InputStreamReader(settingsFile.getInputStream(), settingsFile.getCharset());
 
@@ -20,7 +22,10 @@ public class AppSettingsManager {
       this.settingsAndLanguages = gson.fromJson(reader, SettingsAndLanguages.class);
       System.out.println("ok");
 
-    } catch (IOException e) {
+      SimulatorCommunication simulatorCommunication = new SimulatorCommunication(module);
+      SettingsAndLanguages settingsAndLanguages = simulatorCommunication.parseFromSim();
+
+    } catch (IOException | ExecutionException e) {
       e.printStackTrace();
     }
   }

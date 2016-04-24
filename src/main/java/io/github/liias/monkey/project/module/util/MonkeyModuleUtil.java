@@ -12,6 +12,7 @@ import com.intellij.psi.xml.XmlFile;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.DomFileElement;
 import com.intellij.util.xml.DomManager;
+import io.github.liias.monkey.project.dom.manifest.Manifest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class MonkeyModuleUtil {
+  public static final String MANIFEST_XML = "manifest.xml";
 
   public static final Set<String> FAKE_DEVICES = ImmutableSet.of("round_watch", "square_watch", "semi_round_watch", "tall_watch");
 
@@ -37,6 +39,11 @@ public class MonkeyModuleUtil {
     return child == null ? parent.createChildDirectory(project, name) : child;
   }
 
+
+  public static Manifest getManifest(Project project, VirtualFile moduleRootDir) {
+    VirtualFile manifestFile = moduleRootDir.findChild(MANIFEST_XML);
+    return manifestFile != null ? MonkeyModuleUtil.loadDomElement(project, manifestFile, Manifest.class) : null;
+  }
 
   @Nullable
   public static <T extends DomElement> T loadDomElement(@NotNull final Project project,
