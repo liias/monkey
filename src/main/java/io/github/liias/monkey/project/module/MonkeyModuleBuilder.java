@@ -1,5 +1,6 @@
 package io.github.liias.monkey.project.module;
 
+import com.google.common.collect.Lists;
 import com.intellij.compiler.CompilerWorkspaceConfiguration;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
@@ -55,10 +56,7 @@ import org.jetbrains.jps.model.java.JavaSourceRootType;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.github.liias.monkey.project.module.util.MonkeyModuleUtil.MANIFEST_XML;
 
@@ -95,14 +93,25 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
       rootModel.inheritSdk();
     }
 
-    ContentEntry contentEntry = doAddContentEntry(rootModel);
-    if (contentEntry != null) {
-      VirtualFile sourceRoot = createSourcePath("source");
-      contentEntry.addSourceFolder(sourceRoot, JavaSourceRootType.SOURCE);
+    // Existing if importing project/module from existing sources
+    Optional<ContentEntry> existingContentEntry = Arrays.stream(rootModel.getContentEntries()).findFirst();
+    if (existingContentEntry.isPresent()) {
+      // assume sources are already set
+      ContentEntry contentEntry = existingContentEntry.get();
+      List<VirtualFile> resourceDirs = findResourceDirs(contentEntry.getFile());
+      for (VirtualFile resourceDir : resourceDirs) {
+        contentEntry.addSourceFolder(resourceDir, JavaResourceRootType.RESOURCE);
+      }
+    } else {
+      ContentEntry contentEntry = doAddContentEntry(rootModel);
+      if (contentEntry != null) {
+        VirtualFile sourceRoot = createSourcePath("source");
+        contentEntry.addSourceFolder(sourceRoot, JavaSourceRootType.SOURCE);
 
-      // TODO: there can be many resource folders, e.g based on language or device that come from SDK's example project definitions
-      VirtualFile resourcesRoot = createSourcePath("resources");
-      contentEntry.addSourceFolder(resourcesRoot, JavaResourceRootType.RESOURCE);
+        // TODO: there can be many resource folders, e.g based on language or device that come from SDK's example project definitions
+        VirtualFile resourcesRoot = createSourcePath("resources");
+        contentEntry.addSourceFolder(resourcesRoot, JavaResourceRootType.RESOURCE);
+      }
     }
 
     final TargetDeviceModuleExtension targetDeviceModuleExtension = rootModel.getModuleExtension(TargetDeviceModuleExtension.class);
@@ -117,11 +126,29 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
       StartupManager.getInstance(project).runWhenProjectIsInitialized(() ->
           ApplicationManager.getApplication().invokeLater(() ->
               DocumentUtil.writeInRunUndoTransparentAction(() ->
-                  createProject(project, contentRoot, module)
+                  createModule(module, contentRoot)
               )
           )
       );
     }
+  }
+
+  private static List<VirtualFile> findResourceDirs(VirtualFile contentRoot) {
+    ArrayList<VirtualFile> resourceDirs = Lists.newArrayList();
+
+    VirtualFile[] children = contentRoot.getChildren();
+    if (children == null) {
+      return resourceDirs;
+    }
+    for (VirtualFile child : children) {
+      if (!child.isDirectory()) {
+        continue;
+      }
+      if (child.getName().startsWith("resources")) {
+        resourceDirs.add(child);
+      }
+    }
+    return resourceDirs;
   }
 
   @Override
@@ -140,7 +167,7 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     return false;
   }
 
-  private void createProject(Project project, VirtualFile contentRoot, Module module) {
+  private void createModule(Module module, VirtualFile contentRoot) {
     final MonkeySdkType sdkType = MonkeySdkType.getInstance();
     Sdk sdk = findAndSetSdk(module, sdkType);
     if (sdk != null) {

@@ -1,15 +1,21 @@
 package io.github.liias.monkey.project;
 
+import com.google.common.base.Throwables;
 import com.intellij.ide.util.importProject.ModuleDescriptor;
 import com.intellij.ide.util.importProject.ProjectDescriptor;
+import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.ide.util.projectWizard.ProjectJdkForModuleStep;
 import com.intellij.ide.util.projectWizard.importSources.DetectedProjectRoot;
 import com.intellij.ide.util.projectWizard.importSources.DetectedSourceRoot;
 import com.intellij.ide.util.projectWizard.importSources.ProjectFromSourcesBuilder;
 import com.intellij.ide.util.projectWizard.importSources.ProjectStructureDetector;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.util.io.FileUtilRt;
 import io.github.liias.monkey.lang.file.MonkeyFileType;
+import io.github.liias.monkey.project.module.MonkeyModuleBuilder;
 import io.github.liias.monkey.project.module.MonkeyModuleType;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import org.jetbrains.annotations.NotNull;
@@ -70,10 +76,26 @@ public class MonkeyProjectStructureDetector extends ProjectStructureDetector {
               .filter(r -> r instanceof MonkeyDetectedSourceRoot)
               .map(r -> (MonkeyDetectedSourceRoot) r)
               .collect(groupingBy(sr -> sr.getDirectory().getParentFile(), mapping(Function.identity(), toSet())))
-              .forEach((moduleContentRoot, moduleSourceRoots) ->
-                  modules.add(new ModuleDescriptor(moduleContentRoot, MonkeyModuleType.getInstance(), moduleSourceRoots))
+              .forEach((moduleContentRoot, moduleSourceRoots) -> {
+                    ModuleDescriptor moduleDescriptor = new ModuleDescriptor(moduleContentRoot, MonkeyModuleType.getInstance(), moduleSourceRoots);
+                    moduleDescriptor.addConfigurationUpdater(new MonkeyModuleConfigurationUpdater());
+                    modules.add(moduleDescriptor);
+                  }
               );
         }
+      }
+    }
+  }
+
+  public static class MonkeyModuleConfigurationUpdater extends ModuleBuilder.ModuleConfigurationUpdater {
+    @Override
+    public void update(@NotNull Module module, @NotNull ModifiableRootModel rootModel) {
+      MonkeyModuleType monkeyModuleType = MonkeyModuleType.getInstance();
+      MonkeyModuleBuilder moduleBuilder = monkeyModuleType.createModuleBuilder();
+      try {
+        moduleBuilder.setupRootModel(rootModel);
+      } catch (ConfigurationException e) {
+        Throwables.propagate(e);
       }
     }
   }
