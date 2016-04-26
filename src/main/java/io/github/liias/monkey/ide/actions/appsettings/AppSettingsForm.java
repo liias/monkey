@@ -51,24 +51,19 @@ public class AppSettingsForm {
         VirtualFile settingsFile = moduleOutputDir.findChild(settingsFilename);
         AppSettingsManager appSettingsManager = new AppSettingsManager(selectedModule, settingsFile);
         AppSettingsManager.SettingsAndLanguages settingsAndLanguages = appSettingsManager.getSettingsAndLanguages();
-        fillSettings(settingsAndLanguages);
+        fillSettings(settingsAndLanguages.getSettings(), settingsAndLanguages.getLanguages());
       }
     });
   }
 
-  private void fillSettings(AppSettingsManager.SettingsAndLanguages settingsAndLanguages) {
-
-    List<Setting> settings = settingsAndLanguages.getSettings();
-
+  private void fillSettings(List<Setting> settings, Map<String, Map<String, String>> languages) {
     GridLayoutManager layout = new GridLayoutManager(settings.size() + 1, 2);
     settingsPanel.setLayout(layout);
     GridConstraints gc = new GridConstraints();
     gc.setAnchor(GridConstraints.ANCHOR_WEST);
     gc.setVSizePolicy(GridConstraints.SIZEPOLICY_FIXED);
 
-
-    Map languages = settingsAndLanguages.getLanguages();
-    Map<String, String> translations = (Map<String, String>) languages.get("valyrian");
+    Map<String, String> translations = languages.get("valyrian");
 
     for (Setting setting : settings) {
       gc.setColumn(0);
@@ -97,7 +92,8 @@ public class AppSettingsForm {
   }
 
   private JComponent getSettingComponent(Setting setting) {
-    String value = setting.defaultValue;
+    Object defaultValue = setting.defaultValue;
+    String value = defaultValue != null ? defaultValue.toString() : "";
     switch (setting.configType) {
       case ALPHA_NUMERIC:
         return new JBTextField(value);
@@ -133,8 +129,12 @@ public class AppSettingsForm {
     }
   }
 
-
   public JPanel getPanel() {
     return panel;
+  }
+
+  public void sendSettingsToSimulator() {
+
+    System.out.println("tehtud");
   }
 }

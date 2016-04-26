@@ -38,7 +38,7 @@ public class AppSettingsDialog extends DialogWrapper {
 
       @Override
       protected void doAction(ActionEvent e) {
-        System.out.println("tehtud");
+        appSettingsForm.sendSettingsToSimulator();
       }
     };
 

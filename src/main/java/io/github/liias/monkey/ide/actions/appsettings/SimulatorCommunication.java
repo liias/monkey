@@ -9,14 +9,20 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.vfs.VirtualFile;
+import io.github.liias.monkey.deserializer.Deserializer;
+import io.github.liias.monkey.deserializer.type.MonkeyType;
+import io.github.liias.monkey.deserializer.type.MonkeyTypeHash;
 import io.github.liias.monkey.project.dom.manifest.Manifest;
 import io.github.liias.monkey.project.module.util.MonkeyModuleUtil;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import io.github.liias.monkey.project.sdk.tools.SimulatorHelper;
+import org.apache.sanselan.util.IOUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -54,11 +60,12 @@ public class SimulatorCommunication {
     this.manifestApplicationId = manifest.getApplication().getId().getStringValue();
   }
 
-  public AppSettingsManager.SettingsAndLanguages parseFromSim() throws IOException, ExecutionException {
+  @NotNull
+  public Map<MonkeyType, MonkeyType> parseFromSim() throws IOException, ExecutionException {
     Optional<String> remoteSettingsPath = getRemoteSettingsPath(manifestApplicationId);
 
     if (!remoteSettingsPath.isPresent() || remoteSettingsPath.get().isEmpty()) {
-      return null;
+      return new HashMap<>();
     }
 
     File tempSettings = File.createTempFile("temp_appsettings", ".tmp");
@@ -66,14 +73,27 @@ public class SimulatorCommunication {
 
     boolean b = pullSettingsFileFromDevice(remoteSettingsPath.get(), tempSettings);
     if (!b) {
-      return null;
+      return new HashMap<>();
     }
 
-    System.out.println(tempSettings.getAbsolutePath());
-    // TODO: read temp settings
+    Map<MonkeyType, MonkeyType> settings = readSettingsFile(tempSettings);
+    tempSettings.delete();
 
-    //tempSettings.delete();
-    return null;
+    return settings;
+  }
+
+  @NotNull
+  private Map<MonkeyType, MonkeyType> readSettingsFile(File settingsFile) throws IOException {
+    byte[] fileBytes = IOUtils.getFileBytes(settingsFile);
+    Deserializer deserializer = new Deserializer(fileBytes);
+
+    Optional<MonkeyTypeHash> settings = deserializer.getTypes()
+        .stream()
+        .filter(monkeyType -> monkeyType instanceof MonkeyTypeHash)
+        .map(monkeyType -> (MonkeyTypeHash) monkeyType)
+        .findFirst();
+
+    return settings.map(MonkeyTypeHash::getItems).orElse(new HashMap<>());
   }
 
   private boolean pullSettingsFileFromDevice(String remotePath, File localFile) throws IOException, ExecutionException {

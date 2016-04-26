@@ -9,7 +9,7 @@ allprojects {
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
   tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
-  
+
   apply plugin: 'org.jetbrains.intellij'
 
   intellij {
@@ -25,9 +25,19 @@ allprojects {
   }
 }
 
+group 'io.github.liias'
+version pluginVersion
+
+repositories {
+  mavenCentral()
+  flatDir {
+    dirs 'lib'
+  }
+}
 
 dependencies {
   compile project(':jps-plugin')
+  compile project(':deserializer')
 }
 
 sourceSets.main.java.srcDirs += 'src/main/gen'
@@ -50,11 +60,4 @@ afterEvaluate {
   task("debugIdea", type: RunIdeaTask, group: 'intellij', dependsOn: 'prepareSandbox') {
     jvmArgs += ["-Dcompiler.process.debug.port=9128"]
   }
-}
-
-group 'io.github.liias'
-version pluginVersion
-
-repositories {
-  mavenCentral()
 }
