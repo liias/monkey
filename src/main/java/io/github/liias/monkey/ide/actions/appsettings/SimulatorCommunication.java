@@ -1,5 +1,6 @@
 package io.github.liias.monkey.ide.actions.appsettings;
 
+import com.google.common.base.Throwables;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.compiler.CompilerPaths;
@@ -21,10 +22,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.github.liias.monkey.Utils.createGeneralCommandLine;
@@ -39,8 +42,13 @@ public class SimulatorCommunication {
   public static final String SIMULATOR_PING = "MARCO";
   public static final String SIMULATOR_PONG = "POLO";
 
+
   public static final String SIMULATOR_SETTINGS_QUERY_PREFIX = "SETTINGS_WHERE_ARE_YOU ";
   public static final String SIMULATOR_SETTINGS_RESPONSE_NEGATIVE = "YOUR SETTINGS ARE IN ANOTHER CASTLE";
+
+  public static final String SIMULATOR_TRIGGER_NEW_SETTINGS_PREFIX = "INPUT_NEW_SETTINGS ";
+  public static final String SIMULATOR_TRIGGER_NEW_SETTINGS_RESPONSE = "OK";
+
 
   @NotNull
   private final Module module;
@@ -62,7 +70,7 @@ public class SimulatorCommunication {
 
   @NotNull
   public Map<MonkeyType, MonkeyType> parseFromSim() throws IOException, ExecutionException {
-    Optional<String> remoteSettingsPath = getRemoteSettingsPath(manifestApplicationId);
+    Optional<String> remoteSettingsPath = doWithSocket(socket -> getDeviceFilePath(socket, manifestApplicationId));
 
     if (!remoteSettingsPath.isPresent() || remoteSettingsPath.get().isEmpty()) {
       return new HashMap<>();
@@ -71,7 +79,7 @@ public class SimulatorCommunication {
     File tempSettings = File.createTempFile("temp_appsettings", ".tmp");
     tempSettings.mkdirs();
 
-    boolean b = pullSettingsFileFromDevice(remoteSettingsPath.get(), tempSettings);
+    boolean b = pullSettingsFileFromSimulator(remoteSettingsPath.get(), tempSettings);
     if (!b) {
       return new HashMap<>();
     }
@@ -87,6 +95,7 @@ public class SimulatorCommunication {
     byte[] fileBytes = IOUtils.getFileBytes(settingsFile);
     Deserializer deserializer = new Deserializer(fileBytes);
 
+
     Optional<MonkeyTypeHash> settings = deserializer.getTypes()
         .stream()
         .filter(monkeyType -> monkeyType instanceof MonkeyTypeHash)
@@ -96,22 +105,32 @@ public class SimulatorCommunication {
     return settings.map(MonkeyTypeHash::getItems).orElse(new HashMap<>());
   }
 
-  private boolean pullSettingsFileFromDevice(String remotePath, File localFile) throws IOException, ExecutionException {
+  private boolean pullSettingsFileFromSimulator(String remotePath, File localFile) throws IOException, ExecutionException {
+    remotePath = sanitizePath(remotePath);
+    String filePath = sanitizePath(localFile.getAbsolutePath());
+    int exitValue = callShellCommand("pull", remotePath, filePath);
+    return exitValue == 0;
+  }
+
+  // moduleName should actually be .prg filename, without extension
+  private boolean sendSettingsFileToSimulator(File tempSettings, String prgNameWithoutExtension) throws ExecutionException, IOException {
+    String tempSettingsPath = sanitizePath(tempSettings.getAbsolutePath());
+    String remotePath = "0:/GARMIN/APPS/SETTINGS/" + prgNameWithoutExtension + ".set";
+    int exitValue = callShellCommand("push", tempSettingsPath, remotePath);
+    return exitValue == 0;
+  }
+
+  private int callShellCommand(String command, String fromPath, String toPath) throws ExecutionException, IOException {
     VirtualFile moduleOutputDir = CompilerPaths.getModuleOutputDirectory(module, false);
     String outputDir = moduleOutputDir.getPath() + File.separator;
+
     SimulatorHelper simulatorHelper = new SimulatorHelper(null, sdk, outputDir);
-
-
     Optional<Integer> simulatorPortNTimes = simulatorHelper.findSimulatorPortNTimes();
     if (!simulatorPortNTimes.isPresent()) {
       throw new IOException("simulator not found");
     }
     int simulatorPort = simulatorPortNTimes.get();
-
-    remotePath = sanitizePath(remotePath);
-    String filePath = sanitizePath(localFile.getAbsolutePath());
-
-    Process process = createShellCmd(simulatorPort, outputDir, remotePath, filePath).createProcess();
+    Process process = createShellCmd(simulatorPort, outputDir, command, fromPath, toPath).createProcess();
     try {
       process.waitFor(10, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
@@ -120,19 +139,22 @@ public class SimulatorCommunication {
     int i = process.exitValue();
     System.out.println("exit value: " + i);
 
-    return true;
+    return i;
   }
 
   // with shell we can poll if simulator is running and ready
-  private GeneralCommandLine createShellCmd(int port, String outputDir, String remotePath, String localPath) {
+  private GeneralCommandLine createShellCmd(int port, String outputDir, String command, String fromPath, String toPath) {
     String shellExecutableName = getForWinLinOrMac("shell.exe", "shell");
     String sdkBinPath = MonkeySdkType.getBinPath(sdk);
     String exePath = sdkBinPath + shellExecutableName;
 
+    //command is "pull" or "push"
     return createGeneralCommandLine(outputDir, exePath)
-        .withParameters("--transport=tcp", "--transport_args=127.0.0.1:" + port, "pull", remotePath, localPath);
+        .withParameters("--transport=tcp", "--transport_args=127.0.0.1:" + port, command, fromPath, toPath);
   }
 
+//     String cmd =
+// shellPath + " --transport=tcp --transport_args=127.0.0.1:" + port + " push " + filePath + " 0:/GARMIN/APPS/SETTINGS/" + name + ".set";
 
   private static String sanitizePath(String path) {
     String sanitizedPath = path;
@@ -142,38 +164,91 @@ public class SimulatorCommunication {
     return sanitizedPath;
   }
 
-  public static String getDeviceFilePath(Socket clientSocket, String manifestId) throws IOException {
-    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-    out.println(SIMULATOR_SETTINGS_QUERY_PREFIX + manifestId);
+  public static String getDeviceFilePath(Socket clientSocket, String manifestId) {
+    try {
+      PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+      out.println(SIMULATOR_SETTINGS_QUERY_PREFIX + manifestId);
 
-    try (InputStream inputStream = clientSocket.getInputStream();
-         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))
-    ) {
-      String inputLine = br.readLine();
-      if ((inputLine == null) || (inputLine.equals(SIMULATOR_SETTINGS_RESPONSE_NEGATIVE))) {
-        throw new IOException("Bad response from get settings path command");
+      try (InputStream inputStream = clientSocket.getInputStream();
+           BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))
+      ) {
+        String inputLine = br.readLine();
+        if ((inputLine == null) || (inputLine.equals(SIMULATOR_SETTINGS_RESPONSE_NEGATIVE))) {
+          throw new IOException("Bad response from get settings path command");
+        }
+        return inputLine;
       }
-      return inputLine;
+    } catch (IOException e) {
+      Throwables.propagate(e);
     }
+    return null;
   }
 
-  // Sends "MARCO" and waits for "POLO" to find correct socket
-  public static Optional<String> getRemoteSettingsPath(String manifestApplicationId) {
+  public static <T> Optional<T> doWithSocket(Function<Socket, T> callback) {
     for (int port = SIMULATOR_PORT_MIN; port <= SIMULATOR_PORT_MAX; port++) {
       try (
           Socket socket = new Socket("localhost", port);
           BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
           PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)
       ) {
+        // Sends "MARCO" and waits for "POLO" to find correct socket
         writer.println(SIMULATOR_PING);
         if (reader.lines().anyMatch(l -> l.equals(SIMULATOR_PONG))) {
           LOG.info("Simulator found on port " + port);
-          String remoteSettingsPath = getDeviceFilePath(socket, manifestApplicationId);
-          return Optional.of(remoteSettingsPath);
+          T val = callback.apply(socket);
+          return Optional.of(val);
         }
       } catch (IOException ignored) {
       }
     }
     return Optional.empty();
+  }
+
+
+  public boolean sendToSimulator(byte[] serialize) {
+    try {
+      File tempSettings = File.createTempFile("temp_appsettings", ".tmp");
+      tempSettings.mkdirs();
+
+      Files.write(tempSettings.toPath(), serialize);
+
+      String prgNameWithoutExtension = module.getName();
+
+      sendSettingsFileToSimulator(tempSettings, prgNameWithoutExtension);
+      tempSettings.delete();
+
+      String destPrgPath = "0:/GARMIN/APPS/SETTINGS/" + prgNameWithoutExtension + ".set";
+      return notifySimulator(destPrgPath);
+    } catch (IOException | ExecutionException e) {
+      e.printStackTrace();
+    }
+    return false;
+  }
+
+  private boolean notifySimulator(String destPrgPath) {
+    Optional<Boolean> refreshed = doWithSocket(socket -> refreshSettingsFile(socket, manifestApplicationId, destPrgPath));
+    return refreshed.isPresent();
+  }
+
+  public static Boolean refreshSettingsFile(Socket clientSocket, String manifestId, String destPrgPath) {
+    String command = SIMULATOR_TRIGGER_NEW_SETTINGS_PREFIX + manifestId + " " + destPrgPath;
+
+    try {
+      PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+      out.println(command);
+
+      try (InputStream inputStream = clientSocket.getInputStream();
+           BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))
+      ) {
+        String inputLine = br.readLine();
+        if (inputLine == null || !inputLine.equals(SIMULATOR_TRIGGER_NEW_SETTINGS_RESPONSE)) {
+          throw new IOException("Bad response from notifying simulator about new settings path");
+        }
+        return true;
+      }
+    } catch (IOException e) {
+      Throwables.propagate(e);
+    }
+    return false;
   }
 }

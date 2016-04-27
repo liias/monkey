@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MonkeyTypeArray extends MonkeyType<List<MonkeyType>> implements MonkeyTypeCollection {
+
+  private byte type = Type.ARRAY;
 
   private final int childCount;
 
@@ -18,6 +21,13 @@ public class MonkeyTypeArray extends MonkeyType<List<MonkeyType>> implements Mon
   public MonkeyTypeArray(ByteBuffer bb) {
     childCount = bb.getInt();
     items = new ArrayList<>();
+  }
+
+  public MonkeyTypeArray(List<Object> values) {
+    childCount = values.size();
+    items = values.stream()
+        .map(MonkeyType::ofJavaObject)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -33,6 +43,24 @@ public class MonkeyTypeArray extends MonkeyType<List<MonkeyType>> implements Mon
   @Override
   public int getSize() {
     return 4;
+  }
+
+  // bytes
+  public int getNumberOfBytes() {
+    int numberOfBytes = 1 + getSize();
+
+    for (MonkeyType child : getChildren()) {
+      numberOfBytes += child.getNumberOfBytes();
+    }
+    return numberOfBytes;
+  }
+
+  @Override
+  public byte[] serialize() {
+    ByteBuffer bb = ByteBuffer.allocate(1 + getSize());
+    bb.put(type);
+    bb.putInt(childCount);
+    return bb.array();
   }
 
   public void add(MonkeyType monkeyType) {

@@ -5,8 +5,11 @@ import com.google.gson.annotations.SerializedName;
 import com.intellij.execution.ExecutionException;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
+import io.github.liias.monkey.deserializer.Serializer;
 import io.github.liias.monkey.deserializer.type.MonkeyType;
+import io.github.liias.monkey.deserializer.type.MonkeyTypeHash;
 import io.github.liias.monkey.deserializer.type.MonkeyTypeString;
+import io.github.liias.monkey.ide.actions.appsettings.AppSettingsManager.SettingsAndLanguages.Setting;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,6 +19,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class AppSettingsManager {
+  private SimulatorCommunication simulatorCommunication;
   SettingsAndLanguages settingsAndLanguages;
 
   public AppSettingsManager(Module module, VirtualFile settingsFile) {
@@ -26,9 +30,9 @@ public class AppSettingsManager {
       this.settingsAndLanguages = gson.fromJson(reader, SettingsAndLanguages.class);
       System.out.println("ok");
 
-      SimulatorCommunication simulatorCommunication = new SimulatorCommunication(module);
+      this.simulatorCommunication = new SimulatorCommunication(module);
 
-      Map<String, SettingsAndLanguages.Setting> settingsByKey = this.settingsAndLanguages.getSettings().stream()
+      Map<String, Setting> settingsByKey = this.settingsAndLanguages.getSettings().stream()
           .collect(Collectors.toMap(setting -> setting.key, Function.identity()));
 
       Map<MonkeyType, MonkeyType> remoteSettings = simulatorCommunication.parseFromSim();
@@ -38,7 +42,7 @@ public class AppSettingsManager {
           .collect(Collectors.toMap(e -> ((MonkeyTypeString) e.getKey()).getValue(), Map.Entry::getValue));
 
       remoteSettingsByKey.forEach((key, value) -> {
-        SettingsAndLanguages.Setting setting = settingsByKey.get(key);
+        Setting setting = settingsByKey.get(key);
         if (setting != null) {
           setting.defaultValue = value.getValue();
         }
@@ -79,6 +83,14 @@ public class AppSettingsManager {
       Number configMin;           //        ": null,
       Number configMax;           //        ": null,
       Integer configMaxLength;     //              ": null
+
+      public String getKey() {
+        return key;
+      }
+
+      public Object getValue() {
+        return defaultValue;
+      }
 
       public enum ValueType {
         @SerializedName("string")
@@ -124,5 +136,21 @@ public class AppSettingsManager {
 
   }
 
+  public List<Setting> getSettings() {
+    return getSettingsAndLanguages().getSettings();
+  }
 
+  private MonkeyTypeHash convertSettingsToMonkeyTypeHash() {
+    Map<Object, Object> settingValuesByKey = getSettings().stream()
+        .collect(Collectors.toMap(Setting::getKey, Setting::getValue));
+    return new MonkeyTypeHash(settingValuesByKey);
+  }
+
+  public void sendToSim() {
+    MonkeyTypeHash monkeyTypeHash = convertSettingsToMonkeyTypeHash();
+    Serializer serializer = new Serializer(monkeyTypeHash);
+    byte[] serialize = serializer.serialize();
+
+    boolean ok = simulatorCommunication.sendToSimulator(serialize);
+  }
 }

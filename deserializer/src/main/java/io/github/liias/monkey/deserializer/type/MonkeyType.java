@@ -3,13 +3,21 @@ package io.github.liias.monkey.deserializer.type;
 import com.google.common.collect.ImmutableMap;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Map;
 
 public abstract class MonkeyType<T> {
 
   public abstract T getValue();
 
+  // number of bytes
   public abstract int getSize();
+
+  public abstract byte[] serialize();
+
+  public int getNumberOfBytes() {
+    return 1 + getSize();
+  }
 
   public interface Type {
     byte NULL = 0;
@@ -54,5 +62,32 @@ public abstract class MonkeyType<T> {
     }
 
     throw new IllegalArgumentException("unknown type");
+  }
+
+  public static <T> MonkeyType ofJavaObject(T javaObject) {
+    if (javaObject == null) {
+      return new MonkeyTypeNull();
+    } else if (javaObject instanceof MonkeyType) {
+      return (MonkeyType) javaObject;
+    } else if (javaObject instanceof Integer) {
+      return new MonkeyTypeInt((Integer) javaObject);
+    } else if (javaObject instanceof Long) {
+      return new MonkeyTypeInt(((Long) javaObject).intValue());
+    } else if (javaObject instanceof Float) {
+      return new MonkeyTypeFloat((Float) javaObject);
+    } else if (javaObject instanceof Double) {
+      return new MonkeyTypeFloat(new Float((Double) javaObject));
+    } else if (javaObject instanceof String) {
+      return new MonkeyTypeString((String) javaObject);
+    } else if (javaObject instanceof List) {
+      //noinspection unchecked
+      return new MonkeyTypeArray((List<Object>) javaObject);
+    } else if (javaObject instanceof Boolean) {
+      return new MonkeyTypeBool((Boolean) javaObject);
+    } else if (javaObject instanceof Map) {
+      //noinspection unchecked
+      return new MonkeyTypeHash((Map<Object, Object>) javaObject);
+    }
+    return new MonkeyTypeNull();
   }
 }

@@ -29,6 +29,7 @@ public class AppSettingsForm {
 
   @Nullable
   private final Project project;
+  private AppSettingsManager appSettingsManager;
 
   protected AppSettingsForm(@Nullable Project project) {
     this.project = project;
@@ -49,7 +50,7 @@ public class AppSettingsForm {
         String settingsFilename = projectName + "-settings.json";
 
         VirtualFile settingsFile = moduleOutputDir.findChild(settingsFilename);
-        AppSettingsManager appSettingsManager = new AppSettingsManager(selectedModule, settingsFile);
+        this.appSettingsManager = new AppSettingsManager(selectedModule, settingsFile);
         AppSettingsManager.SettingsAndLanguages settingsAndLanguages = appSettingsManager.getSettingsAndLanguages();
         fillSettings(settingsAndLanguages.getSettings(), settingsAndLanguages.getLanguages());
       }
@@ -134,7 +135,9 @@ public class AppSettingsForm {
   }
 
   public void sendSettingsToSimulator() {
-
+    if (appSettingsManager != null) {
+      appSettingsManager.sendToSim();
+    }
     System.out.println("tehtud");
   }
 }

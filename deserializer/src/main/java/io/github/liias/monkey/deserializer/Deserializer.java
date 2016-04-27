@@ -11,8 +11,8 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class Deserializer {
-  private static final int STRING_BLOCK_MARKER = 0xABCDABCD;
-  private static final int DATA_BLOCK_MARKER = 0xDA7ADA7A;
+  public static final int STRING_BLOCK_MARKER = 0xABCDABCD;
+  public static final int DATA_BLOCK_MARKER = 0xDA7ADA7A;
 
   @NotNull
   private final List<MonkeyType> monkeyTypes;

@@ -4,12 +4,11 @@ import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MonkeyTypeHash extends MonkeyType<Map<MonkeyType, MonkeyType>> implements MonkeyTypeCollection {
+  private byte type = Type.HASH;
 
   private final int childCount;
 
@@ -19,6 +18,15 @@ public class MonkeyTypeHash extends MonkeyType<Map<MonkeyType, MonkeyType>> impl
   public MonkeyTypeHash(ByteBuffer bb) {
     childCount = bb.getInt();
     items = new HashMap<>();
+  }
+
+  public MonkeyTypeHash(Map<Object, Object> javaMap) {
+    childCount = javaMap.size();
+    items = javaMap.entrySet().stream()
+        .collect(Collectors.toMap(
+            e -> MonkeyType.ofJavaObject(e.getKey()),
+            e -> MonkeyType.ofJavaObject(e.getValue())
+        ));
   }
 
   @Override
@@ -34,6 +42,23 @@ public class MonkeyTypeHash extends MonkeyType<Map<MonkeyType, MonkeyType>> impl
   @Override
   public int getSize() {
     return 4;
+  }
+
+  public int getNumberOfBytes() {
+    int numberOfBytes = 1 + getSize();
+
+    for (MonkeyType child : getChildren()) {
+      numberOfBytes += child.getNumberOfBytes();
+    }
+    return numberOfBytes;
+  }
+
+  @Override
+  public byte[] serialize() {
+    ByteBuffer bb = ByteBuffer.allocate(1 + getSize());
+    bb.put(type);
+    bb.putInt(childCount);
+    return bb.array();
   }
 
   public void add(MonkeyType key, MonkeyType value) {
