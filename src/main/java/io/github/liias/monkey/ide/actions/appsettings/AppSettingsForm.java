@@ -17,6 +17,7 @@ import io.github.liias.monkey.project.module.MonkeyModuleType;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +32,11 @@ public class AppSettingsForm {
   private final Project project;
   private AppSettingsManager appSettingsManager;
 
+  private Map<String, JComponent> fieldsBySettingKey;
+
   protected AppSettingsForm(@Nullable Project project) {
     this.project = project;
+    this.fieldsBySettingKey = new HashMap<>();
   }
 
   // TODO: place custom component creation code here
@@ -82,6 +86,7 @@ public class AppSettingsForm {
       JComponent settingValueComponent = getSettingComponent(setting);
       settingsPanel.add(settingValueComponent, gc);
       label.setLabelFor(settingValueComponent);
+      fieldsBySettingKey.put(setting.getKey(), settingValueComponent);
 
       gc.setRow(gc.getRow() + 1);
     }
@@ -92,6 +97,7 @@ public class AppSettingsForm {
     settingsPanel.updateUI();
   }
 
+  // TODO: AppSettingsManager.getComponentValue() needs to support these types - do something else
   private JComponent getSettingComponent(Setting setting) {
     Object defaultValue = setting.defaultValue;
     String value = defaultValue != null ? defaultValue.toString() : "";
@@ -136,8 +142,7 @@ public class AppSettingsForm {
 
   public void sendSettingsToSimulator() {
     if (appSettingsManager != null) {
-      appSettingsManager.sendToSim();
+      appSettingsManager.sendToSim(fieldsBySettingKey);
     }
-    System.out.println("tehtud");
   }
 }

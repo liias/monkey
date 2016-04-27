@@ -137,7 +137,6 @@ public class SimulatorCommunication {
       throw new IOException("shell did not close in time");
     }
     int i = process.exitValue();
-    System.out.println("exit value: " + i);
 
     return i;
   }
