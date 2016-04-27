@@ -100,8 +100,6 @@ public class MonkeySdkType extends SdkType {
       //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
       doc.getDocumentElement().normalize();
 
-      System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-
       Node versionNode = doc.getElementsByTagName("version").item(0);
       version = versionNode.getTextContent();
     } catch (SAXException | ParserConfigurationException | IOException e) {
