@@ -49,6 +49,7 @@ public class SimulatorCommunication {
   public static final String SIMULATOR_TRIGGER_NEW_SETTINGS_PREFIX = "INPUT_NEW_SETTINGS ";
   public static final String SIMULATOR_TRIGGER_NEW_SETTINGS_RESPONSE = "OK";
 
+  public static final String SIMULATOR_SETTINGS_PATH = "0:/GARMIN/APPS/SETTINGS/";
 
   @NotNull
   private final Module module;
@@ -113,9 +114,8 @@ public class SimulatorCommunication {
   }
 
   // moduleName should actually be .prg filename, without extension
-  private boolean sendSettingsFileToSimulator(File tempSettings, String prgNameWithoutExtension) throws ExecutionException, IOException {
+  private boolean sendSettingsFileToSimulator(File tempSettings, String remotePath) throws ExecutionException, IOException {
     String tempSettingsPath = sanitizePath(tempSettings.getAbsolutePath());
-    String remotePath = "0:/GARMIN/APPS/SETTINGS/" + prgNameWithoutExtension + ".set";
     int exitValue = callShellCommand("push", tempSettingsPath, remotePath);
     return exitValue == 0;
   }
@@ -151,9 +151,6 @@ public class SimulatorCommunication {
     return createGeneralCommandLine(outputDir, exePath)
         .withParameters("--transport=tcp", "--transport_args=127.0.0.1:" + port, command, fromPath, toPath);
   }
-
-//     String cmd =
-// shellPath + " --transport=tcp --transport_args=127.0.0.1:" + port + " push " + filePath + " 0:/GARMIN/APPS/SETTINGS/" + name + ".set";
 
   private static String sanitizePath(String path) {
     String sanitizedPath = path;
@@ -213,24 +210,25 @@ public class SimulatorCommunication {
 
       String prgNameWithoutExtension = module.getName();
 
-      sendSettingsFileToSimulator(tempSettings, prgNameWithoutExtension);
+      String remotePath = SIMULATOR_SETTINGS_PATH + prgNameWithoutExtension + ".set";
+
+      sendSettingsFileToSimulator(tempSettings, remotePath);
       tempSettings.delete();
 
-      String destPrgPath = "0:/GARMIN/APPS/SETTINGS/" + prgNameWithoutExtension + ".set";
-      return notifySimulator(destPrgPath);
+      return notifySimulator(remotePath);
     } catch (IOException | ExecutionException e) {
       e.printStackTrace();
     }
     return false;
   }
 
-  private boolean notifySimulator(String destPrgPath) {
-    Optional<Boolean> refreshed = doWithSocket(socket -> refreshSettingsFile(socket, manifestApplicationId, destPrgPath));
+  private boolean notifySimulator(String remoteSettingsPath) {
+    Optional<Boolean> refreshed = doWithSocket(socket -> refreshSettingsFile(socket, manifestApplicationId, remoteSettingsPath));
     return refreshed.isPresent();
   }
 
-  public static Boolean refreshSettingsFile(Socket clientSocket, String manifestId, String destPrgPath) {
-    String command = SIMULATOR_TRIGGER_NEW_SETTINGS_PREFIX + manifestId + " " + destPrgPath;
+  public static Boolean refreshSettingsFile(Socket clientSocket, String manifestId, String remoteSettingsPath) {
+    String command = SIMULATOR_TRIGGER_NEW_SETTINGS_PREFIX + manifestId + " " + remoteSettingsPath;
 
     try {
       PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);

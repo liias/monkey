@@ -98,6 +98,7 @@ public class AppSettingsForm {
   }
 
   // TODO: AppSettingsManager.getComponentValue() needs to support these types - do something else
+  // Also, currently this doesn't set correct type for some values using text field, i.e floats
   private JComponent getSettingComponent(Setting setting) {
     Object defaultValue = setting.defaultValue;
     String value = defaultValue != null ? defaultValue.toString() : "";
