@@ -6,43 +6,45 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@SuppressWarnings({"unused", "NullableProblems"})
 public class Setting {
   @NotNull
-  String key;                  // "number_prop",
+  private String key;
 
   @NotNull
-  ValueType valueType;         // "number",
+  private ValueType valueType;
 
   @Nullable
-  Object defaultValue;         // 2,
+  private Object defaultValue;
+
+  // translatable string id
+  @NotNull
+  private String configTitle;
+
+  @Nullable
+  private String configPrompt;
+
+  @Nullable
+  private String configError;
 
   @NotNull
-  String configTitle;          // "number_title",
+  private ConfigType configType;
+
+  private boolean configReadonly;
+
+  private boolean configRequired;
 
   @Nullable
-  String configPrompt;         // null,
+  private List<Option> configOptions;
 
   @Nullable
-  String configError;          // null,
-
-  @NotNull
-  ConfigType configType;       // "numeric",
-
-  boolean configReadonly;      // false,
-
-  boolean configRequired;      // false,
+  private Number configMin;
 
   @Nullable
-  List<Option> configOptions;  // null,
+  private Number configMax;
 
   @Nullable
-  Number configMin;            // null,
-
-  @Nullable
-  Number configMax;            // null,
-
-  @Nullable
-  Integer configMaxLength;     // null
+  private Integer configMaxLength;
 
   public String getKey() {
     return key;
@@ -148,7 +150,7 @@ public class Setting {
     LIST, // value type: NUMBER
 
     @SerializedName("numeric")
-    NUMERIC, // value type: NUMBER
+    NUMERIC, // value type: NUMBER or FLOAT
 
     @SerializedName("password")
     PASSWORD, // value type: STRING
