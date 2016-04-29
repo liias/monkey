@@ -12,7 +12,8 @@ import com.intellij.ui.components.JBTextField;
 import com.intellij.ui.components.OnOffButton;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import io.github.liias.monkey.ide.actions.appsettings.AppSettingsManager.SettingsAndLanguages.Setting;
+import io.github.liias.monkey.ide.actions.appsettings.json.Setting;
+import io.github.liias.monkey.ide.actions.appsettings.json.SettingsAndLanguages;
 import io.github.liias.monkey.project.module.MonkeyModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.liias.monkey.ide.actions.appsettings.AppSettingsManager.SettingsAndLanguages.Setting.Type;
+import static io.github.liias.monkey.ide.actions.appsettings.json.Setting.ConfigType;
 
 public class AppSettingsForm {
   private JPanel panel;
@@ -58,7 +59,7 @@ public class AppSettingsForm {
 
         VirtualFile settingsFile = moduleOutputDir.findChild(settingsFilename);
         this.appSettingsManager = new AppSettingsManager(selectedModule, settingsFile);
-        AppSettingsManager.SettingsAndLanguages settingsAndLanguages = appSettingsManager.getSettingsAndLanguages();
+        SettingsAndLanguages settingsAndLanguages = appSettingsManager.getSettingsAndLanguages();
         fillSettings(settingsAndLanguages.getSettings(), settingsAndLanguages.getLanguages());
       }
     });
@@ -77,12 +78,12 @@ public class AppSettingsForm {
       gc.setColumn(0);
       gc.setFill(GridConstraints.FILL_NONE);
       gc.setHSizePolicy(GridConstraints.SIZEPOLICY_FIXED);
-      String displayName = Objects.firstNonNull(translations.get(setting.configTitle), setting.configTitle);
+      String displayName = Objects.firstNonNull(translations.get(setting.getConfigTitle()), setting.getConfigTitle());
       JBLabel label = new JBLabel(displayName);
       settingsPanel.add(label, gc);
 
       gc.setColumn(1);
-      int fill = setting.configType == Type.BOOLEAN ? GridConstraints.FILL_NONE : GridConstraints.FILL_HORIZONTAL;
+      int fill = setting.getConfigType() == ConfigType.BOOLEAN ? GridConstraints.FILL_NONE : GridConstraints.FILL_HORIZONTAL;
       gc.setFill(fill);
       gc.setHSizePolicy(GridConstraints.SIZEPOLICY_WANT_GROW);
 
@@ -104,13 +105,13 @@ public class AppSettingsForm {
   // TODO: AppSettingsManager.getComponentValue() needs to support these types - do something else
   // Also, currently this doesn't set correct type for some values using text field, i.e floats
   private JComponent getSettingComponent(Setting setting) {
-    Object defaultValue = setting.defaultValue;
+    Object defaultValue = setting.getDefaultValue();
     String value = defaultValue != null ? defaultValue.toString() : "";
-    switch (setting.configType) {
+    switch (setting.getConfigType()) {
       case ALPHA_NUMERIC:
         return new JBTextField(value);
       case NUMERIC:
-        Setting.ValueType valueType = setting.valueType;
+        Setting.ValueType valueType = setting.getValueType();
         if (valueType == Setting.ValueType.NUMBER) {
           JSpinner jSpinner = new JSpinner();
           jSpinner.setValue(Integer.valueOf(value));

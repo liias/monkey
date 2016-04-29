@@ -1,7 +1,7 @@
 package io.github.liias.monkey.ide.actions.appsettings;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.GsonBuilder;
 import com.intellij.execution.ExecutionException;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -10,7 +10,8 @@ import io.github.liias.monkey.deserializer.Serializer;
 import io.github.liias.monkey.deserializer.type.MonkeyType;
 import io.github.liias.monkey.deserializer.type.MonkeyTypeHash;
 import io.github.liias.monkey.deserializer.type.MonkeyTypeString;
-import io.github.liias.monkey.ide.actions.appsettings.AppSettingsManager.SettingsAndLanguages.Setting;
+import io.github.liias.monkey.ide.actions.appsettings.json.Setting;
+import io.github.liias.monkey.ide.actions.appsettings.json.SettingsAndLanguages;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
@@ -29,24 +30,26 @@ public class AppSettingsManager {
     try {
       InputStreamReader reader = new InputStreamReader(settingsFile.getInputStream(), settingsFile.getCharset());
 
-      Gson gson = new Gson();
+      GsonBuilder gsonBuilder = new GsonBuilder();
+      gsonBuilder.registerTypeAdapter(Setting.class, new SettingDeserializer());
+      Gson gson = gsonBuilder.create();
       this.settingsAndLanguages = gson.fromJson(reader, SettingsAndLanguages.class);
 
       this.simulatorCommunication = new SimulatorCommunication(module);
 
       Map<String, Setting> settingsByKey = this.settingsAndLanguages.getSettings().stream()
-          .collect(Collectors.toMap(setting -> setting.key, Function.identity()));
+        .collect(Collectors.toMap(Setting::getKey, Function.identity()));
 
       Map<MonkeyType, MonkeyType> remoteSettings = simulatorCommunication.parseFromSim();
 
       Map<String, MonkeyType> remoteSettingsByKey = remoteSettings.entrySet().stream()
-          .filter(e -> e.getKey() instanceof MonkeyTypeString)
-          .collect(Collectors.toMap(e -> ((MonkeyTypeString) e.getKey()).getValue(), Map.Entry::getValue));
+        .filter(e -> e.getKey() instanceof MonkeyTypeString)
+        .collect(Collectors.toMap(e -> ((MonkeyTypeString) e.getKey()).getValue(), Map.Entry::getValue));
 
       remoteSettingsByKey.forEach((key, value) -> {
         Setting setting = settingsByKey.get(key);
         if (setting != null) {
-          setting.defaultValue = value.getValue();
+          setting.setValue(value.getValue());
         }
       });
     } catch (IOException | ExecutionException e) {
@@ -59,96 +62,13 @@ public class AppSettingsManager {
   }
 
 
-  public static class SettingsAndLanguages {
-    List<Setting> settings;
-    Map<String, Map<String, String>> languages;
-
-    public List<Setting> getSettings() {
-      return settings;
-    }
-
-    public Map<String, Map<String, String>> getLanguages() {
-      return languages;
-    }
-
-    public static class Setting {
-      String key;                  // ": "number_prop",
-      ValueType valueType;            //       ": "number",
-      Object defaultValue;         //          ": 2,
-      String configTitle;          //         ": "number_title",
-      String configPrompt;         //          ": null,
-      String configError;          //         ": null,
-      Type configType;           //        ": "numeric",
-      boolean configReadonly;          //         ": false,
-      boolean configRequired;      //             ": false,
-      List<Option> configOptions;        //           ": null,
-      Number configMin;           //        ": null,
-      Number configMax;           //        ": null,
-      Integer configMaxLength;     //              ": null
-
-      public String getKey() {
-        return key;
-      }
-
-      public void setValue(Object value) {
-        defaultValue = value;
-      }
-
-      public Object getValue() {
-        return defaultValue;
-      }
-
-      public enum ValueType {
-        @SerializedName("string")
-        STRING,
-
-        // integer really
-        @SerializedName("number")
-        NUMBER,
-
-        @SerializedName("float")
-        FLOAT,
-
-        @SerializedName("boolean")
-        BOOLEAN
-      }
-
-      public enum Type {
-        @SerializedName("alphaNumeric")
-        ALPHA_NUMERIC,
-        @SerializedName("boolean")
-        BOOLEAN,
-        @SerializedName("date")
-        DATE,
-        @SerializedName("email")
-        EMAIL,
-        @SerializedName("list")
-        LIST,
-        @SerializedName("numeric")
-        NUMERIC,
-        @SerializedName("password")
-        PASSWORD,
-        @SerializedName("phone")
-        PHONE,
-        @SerializedName("url")
-        URL
-      }
-
-      public static class Option {
-        String display;
-        int value;
-      }
-    }
-
-  }
-
   public List<Setting> getSettings() {
     return getSettingsAndLanguages().getSettings();
   }
 
   private MonkeyTypeHash convertSettingsToMonkeyTypeHash() {
     Map<Object, Object> settingValuesByKey = getSettings().stream()
-        .collect(Collectors.toMap(Setting::getKey, Setting::getValue));
+      .collect(Collectors.toMap(Setting::getKey, Setting::getValue));
     return new MonkeyTypeHash(settingValuesByKey);
   }
 
