@@ -17,6 +17,10 @@ public class Setting {
   @Nullable
   private Object defaultValue;
 
+  // not coming from Json
+  @Nullable
+  private Object value;
+
   // translatable string id
   @NotNull
   private String configTitle;
@@ -103,11 +107,11 @@ public class Setting {
   }
 
   public void setValue(Object value) {
-    defaultValue = value;
+    this.value = value;
   }
 
   public Object getValue() {
-    return defaultValue;
+    return value;
   }
 
   public enum ValueType {
