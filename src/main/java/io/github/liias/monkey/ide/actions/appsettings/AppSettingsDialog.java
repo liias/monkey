@@ -18,7 +18,7 @@ public class AppSettingsDialog extends DialogWrapper {
 
     setTitle("App Settings Editor");
     setCancelButtonText(CommonBundle.getCloseButtonText());
-    appSettingsForm = new AppSettingsForm(project);
+    appSettingsForm = new AppSettingsForm(project, this);
     init();
   }
 

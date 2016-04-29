@@ -14,6 +14,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import io.github.liias.monkey.ide.actions.appsettings.AppSettingsManager.SettingsAndLanguages.Setting;
 import io.github.liias.monkey.project.module.MonkeyModuleType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -30,12 +31,14 @@ public class AppSettingsForm {
 
   @Nullable
   private final Project project;
+  private AppSettingsDialog appSettingsDialog;
   private AppSettingsManager appSettingsManager;
 
   private Map<String, JComponent> fieldsBySettingKey;
 
-  protected AppSettingsForm(@Nullable Project project) {
+  protected AppSettingsForm(@Nullable Project project, @NotNull AppSettingsDialog appSettingsDialog) {
     this.project = project;
+    this.appSettingsDialog = appSettingsDialog;
     this.fieldsBySettingKey = new HashMap<>();
   }
 
@@ -94,7 +97,8 @@ public class AppSettingsForm {
     gc.setVSizePolicy(GridConstraints.FILL_VERTICAL);
     gc.setHSizePolicy(GridConstraints.SIZEPOLICY_FIXED);
     settingsPanel.add(new JBLabel(""), gc);
-    settingsPanel.updateUI();
+
+    appSettingsDialog.pack();
   }
 
   // TODO: AppSettingsManager.getComponentValue() needs to support these types - do something else

@@ -42,12 +42,11 @@ public class SimulatorCommunication {
   public static final String SIMULATOR_PING = "MARCO";
   public static final String SIMULATOR_PONG = "POLO";
 
-
   public static final String SIMULATOR_SETTINGS_QUERY_PREFIX = "SETTINGS_WHERE_ARE_YOU ";
   public static final String SIMULATOR_SETTINGS_RESPONSE_NEGATIVE = "YOUR SETTINGS ARE IN ANOTHER CASTLE";
 
   public static final String SIMULATOR_TRIGGER_NEW_SETTINGS_PREFIX = "INPUT_NEW_SETTINGS ";
-  public static final String SIMULATOR_TRIGGER_NEW_SETTINGS_RESPONSE = "OK";
+  public static final String SIMULATOR_TRIGGER_NEW_SETTINGS_RESPONSE_OK = "OK";
 
   public static final String SIMULATOR_SETTINGS_PATH = "0:/GARMIN/APPS/SETTINGS/";
 
@@ -238,7 +237,7 @@ public class SimulatorCommunication {
            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))
       ) {
         String inputLine = br.readLine();
-        if (inputLine == null || !inputLine.equals(SIMULATOR_TRIGGER_NEW_SETTINGS_RESPONSE)) {
+        if (inputLine == null || !inputLine.equals(SIMULATOR_TRIGGER_NEW_SETTINGS_RESPONSE_OK)) {
           throw new IOException("Bad response from notifying simulator about new settings path");
         }
         return true;
