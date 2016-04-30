@@ -21,6 +21,7 @@ import org.apache.sanselan.util.IOUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -97,10 +98,10 @@ public class SimulatorCommunication {
 
 
     Optional<MonkeyTypeHash> settings = deserializer.getTypes()
-        .stream()
-        .filter(monkeyType -> monkeyType instanceof MonkeyTypeHash)
-        .map(monkeyType -> (MonkeyTypeHash) monkeyType)
-        .findFirst();
+      .stream()
+      .filter(monkeyType -> monkeyType instanceof MonkeyTypeHash)
+      .map(monkeyType -> (MonkeyTypeHash) monkeyType)
+      .findFirst();
 
     return settings.map(MonkeyTypeHash::getItems).orElse(new HashMap<>());
   }
@@ -148,7 +149,7 @@ public class SimulatorCommunication {
 
     //command is "pull" or "push"
     return createGeneralCommandLine(outputDir, exePath)
-        .withParameters("--transport=tcp", "--transport_args=127.0.0.1:" + port, command, fromPath, toPath);
+      .withParameters("--transport=tcp", "--transport_args=127.0.0.1:" + port, command, fromPath, toPath);
   }
 
   private static String sanitizePath(String path) {
@@ -179,12 +180,19 @@ public class SimulatorCommunication {
     return null;
   }
 
+  public static Socket openSocket(String hostname, int port) throws IOException {
+    Socket socket = new Socket();
+    socket.setSoTimeout(500); // read timeout
+    socket.connect(new InetSocketAddress(hostname, port), 100); // connect timeout
+    return socket;
+  }
+
   public static <T> Optional<T> doWithSocket(Function<Socket, T> callback) {
     for (int port = SIMULATOR_PORT_MIN; port <= SIMULATOR_PORT_MAX; port++) {
       try (
-          Socket socket = new Socket("localhost", port);
-          BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-          PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)
+        Socket socket = openSocket("localhost", port);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)
       ) {
         // Sends "MARCO" and waits for "POLO" to find correct socket
         writer.println(SIMULATOR_PING);
