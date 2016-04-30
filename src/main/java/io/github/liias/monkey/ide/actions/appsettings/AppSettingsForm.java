@@ -58,11 +58,20 @@ public class AppSettingsForm {
         String settingsFilename = projectName + "-settings.json";
 
         VirtualFile settingsFile = moduleOutputDir.findChild(settingsFilename);
-        this.appSettingsManager = new AppSettingsManager(selectedModule, settingsFile);
-        SettingsAndLanguages settingsAndLanguages = appSettingsManager.getSettingsAndLanguages();
-        fillSettings(settingsAndLanguages.getSettings(), settingsAndLanguages.getLanguages());
+        if (settingsFile == null) {
+          removeSettings();
+        } else {
+          this.appSettingsManager = new AppSettingsManager(selectedModule, settingsFile);
+          SettingsAndLanguages settingsAndLanguages = appSettingsManager.getSettingsAndLanguages();
+          fillSettings(settingsAndLanguages.getSettings(), settingsAndLanguages.getLanguages());
+        }
       }
     });
+  }
+
+  private void removeSettings() {
+    settingsPanel.removeAll();
+    appSettingsDialog.pack();
   }
 
   private void fillSettings(List<Setting> settings, Map<String, Map<String, String>> languages) {
