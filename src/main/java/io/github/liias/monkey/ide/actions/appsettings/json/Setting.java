@@ -1,5 +1,6 @@
 package io.github.liias.monkey.ide.actions.appsettings.json;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,10 +17,6 @@ public class Setting {
 
   @Nullable
   private Object defaultValue;
-
-  // not coming from Json
-  @Nullable
-  private Object value;
 
   // translatable string id
   @NotNull
@@ -51,6 +48,11 @@ public class Setting {
 
   @Nullable
   private Integer configMaxLength;
+
+  // Used to store new values input by user or taken from simulator
+  @Expose(deserialize = false, serialize = false)
+  @Nullable
+  private Object value;
 
   public String getKey() {
     return key;
