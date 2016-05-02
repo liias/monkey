@@ -30,14 +30,14 @@ public abstract class MonkeyType<T> {
   }
 
   public static Map<Byte, Integer> sizes = ImmutableMap.<Byte, Integer>builder()
-      .put(Type.NULL, 0)
-      .put(Type.INT, 4)
-      .put(Type.FLOAT, 4)
-      .put(Type.STRING, 4)
-      .put(Type.ARRAY, 4)
-      .put(Type.BOOLEAN, 1)
-      .put(Type.HASH, 4)
-      .build();
+    .put(Type.NULL, 0)
+    .put(Type.INT, 4)
+    .put(Type.FLOAT, 4)
+    .put(Type.STRING, 4)
+    .put(Type.ARRAY, 4)
+    .put(Type.BOOLEAN, 1)
+    .put(Type.HASH, 4)
+    .build();
 
   public static int getSize(byte type) {
     return sizes.get(type);
@@ -79,14 +79,12 @@ public abstract class MonkeyType<T> {
       return new MonkeyTypeFloat(new Float((Double) javaObject));
     } else if (javaObject instanceof String) {
       return new MonkeyTypeString((String) javaObject);
-    } else if (javaObject instanceof List) {
-      //noinspection unchecked
-      return new MonkeyTypeArray((List<Object>) javaObject);
+    } else if (javaObject instanceof List<?>) {
+      return new MonkeyTypeArray((List<?>) javaObject);
     } else if (javaObject instanceof Boolean) {
       return new MonkeyTypeBool((Boolean) javaObject);
-    } else if (javaObject instanceof Map) {
-      //noinspection unchecked
-      return new MonkeyTypeHash((Map<Object, Object>) javaObject);
+    } else if (javaObject instanceof Map<?,?>) {
+      return new MonkeyTypeHash((Map<?,?>) javaObject);
     }
     return new MonkeyTypeNull();
   }

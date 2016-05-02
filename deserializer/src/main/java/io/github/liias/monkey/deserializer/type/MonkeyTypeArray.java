@@ -23,7 +23,7 @@ public class MonkeyTypeArray extends MonkeyType<List<MonkeyType>> implements Mon
     items = new ArrayList<>();
   }
 
-  public MonkeyTypeArray(List<Object> values) {
+  public <T> MonkeyTypeArray(List<T> values) {
     childCount = values.size();
     items = values.stream()
         .map(MonkeyType::ofJavaObject)

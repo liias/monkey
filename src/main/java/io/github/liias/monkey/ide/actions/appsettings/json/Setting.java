@@ -25,6 +25,7 @@ public class Setting {
   @NotNull
   private String configTitle;
 
+  // message to display when prompting the user to set the value. Not used for e.g readonly and boolean settings.
   @Nullable
   private String configPrompt;
 
@@ -34,6 +35,7 @@ public class Setting {
   @NotNull
   private ConfigType configType;
 
+  // This attribute is valid for all types except list and password. Default: false
   private boolean configReadonly;
 
   private boolean configRequired;
@@ -114,6 +116,32 @@ public class Setting {
     return value;
   }
 
+  public Boolean getValueAsBoolean() {
+    return getValueAs(Boolean.class);
+  }
+
+  public Float getValueAsFloat() {
+    return getValueAs(Float.class);
+  }
+
+  public Integer getValueAsInteger() {
+    return getValueAs(Integer.class);
+  }
+
+  public String getValueAsString() {
+    return getValueAs(String.class);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T getValueAs(Class<T> clazz) {
+    return (T) getValue();
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T getDefaultValueAs(Class<T> clazz) {
+    return (T) getDefaultValue();
+  }
+
   public enum ValueType {
     @SerializedName("string")
     STRING,
@@ -154,7 +182,7 @@ public class Setting {
     LIST, // value type: NUMBER
 
     @SerializedName("numeric")
-    NUMERIC, // value type: NUMBER or FLOAT
+    NUMERIC, // value type: NUMBER(integer really) or FLOAT
 
     @SerializedName("password")
     PASSWORD, // value type: STRING
@@ -167,7 +195,9 @@ public class Setting {
   }
 
   public static class Option {
+    // translatable string id
     String display;
+
     int value;
   }
 }

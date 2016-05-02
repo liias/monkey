@@ -5,16 +5,14 @@ import com.google.gson.GsonBuilder;
 import com.intellij.execution.ExecutionException;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.components.OnOffButton;
 import io.github.liias.monkey.deserializer.Serializer;
 import io.github.liias.monkey.deserializer.type.MonkeyType;
 import io.github.liias.monkey.deserializer.type.MonkeyTypeHash;
 import io.github.liias.monkey.deserializer.type.MonkeyTypeString;
+import io.github.liias.monkey.ide.actions.appsettings.form.FieldModel;
 import io.github.liias.monkey.ide.actions.appsettings.json.Setting;
 import io.github.liias.monkey.ide.actions.appsettings.json.SettingsAndLanguages;
 
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -72,7 +70,7 @@ public class AppSettingsManager {
     return new MonkeyTypeHash(settingValuesByKey);
   }
 
-  public void sendToSim(Map<String, JComponent> fieldsBySettingKey) {
+  public void sendToSim(Map<String, FieldModel> fieldsBySettingKey) {
     updateSettingValuesFromForm(fieldsBySettingKey);
 
     MonkeyTypeHash monkeyTypeHash = convertSettingsToMonkeyTypeHash();
@@ -82,26 +80,11 @@ public class AppSettingsManager {
     boolean ok = simulatorCommunication.sendToSimulator(serialize);
   }
 
-  private void updateSettingValuesFromForm(Map<String, JComponent> fieldsBySettingKey) {
+  private void updateSettingValuesFromForm(Map<String, FieldModel> fieldsBySettingKey) {
     for (Setting setting : getSettings()) {
-      JComponent component = fieldsBySettingKey.get(setting.getKey());
-      Object componentValue = getComponentValue(component);
-      setting.setValue(componentValue);
+      FieldModel fieldModel = fieldsBySettingKey.get(setting.getKey());
+      setting.setValue(fieldModel.getValue());
     }
   }
 
-  private Object getComponentValue(JComponent component) {
-    if (component instanceof JTextComponent) {
-      JTextComponent jTextComponent = (JTextComponent) component;
-      return jTextComponent.getText();
-    } else if (component instanceof JSpinner) {
-      JSpinner jSpinner = (JSpinner) component;
-      Object value = jSpinner.getValue();
-      return Integer.valueOf(value.toString());
-    } else if (component instanceof OnOffButton) {
-      OnOffButton onOffButton = (OnOffButton) component;
-      return onOffButton.isSelected();
-    }
-    return null;
-  }
 }

@@ -4,7 +4,10 @@ import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MonkeyTypeHash extends MonkeyType<Map<MonkeyType, MonkeyType>> implements MonkeyTypeCollection {
@@ -20,13 +23,13 @@ public class MonkeyTypeHash extends MonkeyType<Map<MonkeyType, MonkeyType>> impl
     items = new HashMap<>();
   }
 
-  public MonkeyTypeHash(Map<Object, Object> javaMap) {
+  public <K, V> MonkeyTypeHash(Map<K, V> javaMap) {
     childCount = javaMap.size();
     items = javaMap.entrySet().stream()
-        .collect(Collectors.toMap(
-            e -> MonkeyType.ofJavaObject(e.getKey()),
-            e -> MonkeyType.ofJavaObject(e.getValue())
-        ));
+      .collect(Collectors.toMap(
+        e -> MonkeyType.ofJavaObject(e.getKey()),
+        e -> MonkeyType.ofJavaObject(e.getValue())
+      ));
   }
 
   @Override

@@ -7,11 +7,9 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBPasswordField;
-import com.intellij.ui.components.JBTextField;
-import com.intellij.ui.components.OnOffButton;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import io.github.liias.monkey.ide.actions.appsettings.form.FieldModel;
 import io.github.liias.monkey.ide.actions.appsettings.json.Setting;
 import io.github.liias.monkey.ide.actions.appsettings.json.SettingsAndLanguages;
 import io.github.liias.monkey.project.module.MonkeyModuleType;
@@ -35,7 +33,7 @@ public class AppSettingsForm {
   private AppSettingsDialog appSettingsDialog;
   private AppSettingsManager appSettingsManager;
 
-  private Map<String, JComponent> fieldsBySettingKey;
+  private Map<String, FieldModel> fieldsBySettingKey;
 
   protected AppSettingsForm(@Nullable Project project, @NotNull AppSettingsDialog appSettingsDialog) {
     this.project = project;
@@ -70,6 +68,7 @@ public class AppSettingsForm {
   }
 
   private void removeSettings() {
+    fieldsBySettingKey = new HashMap<>();
     settingsPanel.removeAll();
     appSettingsDialog.pack();
   }
@@ -96,10 +95,11 @@ public class AppSettingsForm {
       gc.setFill(fill);
       gc.setHSizePolicy(GridConstraints.SIZEPOLICY_WANT_GROW);
 
-      JComponent settingValueComponent = getSettingComponent(setting);
+      FieldModel fieldModel = FieldModel.create(setting);
+      JComponent settingValueComponent = fieldModel.getComponent();
       settingsPanel.add(settingValueComponent, gc);
       label.setLabelFor(settingValueComponent);
-      fieldsBySettingKey.put(setting.getKey(), settingValueComponent);
+      fieldsBySettingKey.put(setting.getKey(), fieldModel);
 
       gc.setRow(gc.getRow() + 1);
     }
@@ -111,45 +111,10 @@ public class AppSettingsForm {
     appSettingsDialog.pack();
   }
 
-  // TODO: AppSettingsManager.getComponentValue() needs to support these types - do something else
-  // Also, currently this doesn't set correct type for some values using text field, i.e floats
-  private JComponent getSettingComponent(Setting setting) {
-    Object defaultValue = setting.getDefaultValue();
-    String value = defaultValue != null ? defaultValue.toString() : "";
-    switch (setting.getConfigType()) {
-      case ALPHA_NUMERIC:
-        return new JBTextField(value);
-      case NUMERIC:
-        Setting.ValueType valueType = setting.getValueType();
-        if (valueType == Setting.ValueType.NUMBER) {
-          JSpinner jSpinner = new JSpinner();
-          jSpinner.setValue(Integer.valueOf(value));
-          return jSpinner;
-        } else {
-          return new JBTextField(value);
-        }
-      case BOOLEAN:
-        OnOffButton onOffButton = new OnOffButton();
-        onOffButton.setSelected(Boolean.valueOf(value));
-        return onOffButton;
-      case DATE:
-        return new JBTextField(value);
-      case EMAIL:
-        return new JBTextField(value);
-      case LIST:
-        return new JBTextField(value);
-      case PASSWORD:
-        JBPasswordField jbPasswordField = new JBPasswordField();
-        jbPasswordField.setText(value);
-        return jbPasswordField;
-      case PHONE:
-        return new JBTextField(value);
-      case URL:
-        return new JBTextField(value);
-      default:
-        return new JBTextField(value);
-    }
-  }
+
+
+
+
 
   public JPanel getPanel() {
     return panel;
