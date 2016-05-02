@@ -15,7 +15,7 @@ public class SettingDeserializer implements JsonDeserializer<Setting> {
     JsonElement defaultValueElement = jsonObject.get("defaultValue");
     Object defaultValue = getDefaultValueConsideringValueType(setting.getValueType(), defaultValueElement);
     setting.setDefaultValue(defaultValue);
-
+    setting.setValue(defaultValue);
     return setting;
   }
 

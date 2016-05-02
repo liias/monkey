@@ -3,6 +3,8 @@ package io.github.liias.monkey.project.runconfig;
 public class TargetDevice {
   public static final TargetDevice SQUARE_WATCH = new TargetDevice("square_watch", "Square Watch");
   public static final TargetDevice ROUND_WATCH = new TargetDevice("round_watch", "Round Watch");
+  public static final TargetDevice SEMI_ROUND_WATCH = new TargetDevice("semi_round_watch", "Semi-Round Watch");
+  public static final TargetDevice TALL_WATCH = new TargetDevice("tall_watch", "Tall Watch");
 
   private String id;
   private String name;

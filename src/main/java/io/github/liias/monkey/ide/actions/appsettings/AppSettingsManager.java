@@ -47,7 +47,7 @@ public class AppSettingsManager {
       remoteSettingsByKey.forEach((key, value) -> {
         Setting setting = settingsByKey.get(key);
         if (setting != null) {
-          setting.setValue(value.getValue());
+          setting.setValueAs(value.getValue(), setting.getValueType());
         }
       });
     } catch (IOException | ExecutionException e) {

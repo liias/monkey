@@ -14,7 +14,7 @@ import java.awt.*;
 
 public abstract class TargetDeviceConfigurable implements UnnamedConfigurable {
   private final Project myProject;
-  private ComboBox myComboBox;
+  private JComboBox myComboBox;
   private JPanel myPanel = new JPanel(new GridBagLayout());
 
   public TargetDeviceConfigurable(Project project) {

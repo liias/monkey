@@ -16,6 +16,9 @@ public class IntegerFieldModel implements FieldModel<Integer> {
   }
 
   public JSpinner createComponent(Integer value) {
+    if (value == null) {
+      value = 0; // can't support null here - can it be null for integers??
+    }
     if (configType == Setting.ConfigType.NUMERIC) {
       JSpinner jSpinner = new JSpinner(new SpinnerNumberModel(value, null, null, 1));
       jSpinner.setValue(value);

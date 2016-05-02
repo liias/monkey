@@ -35,7 +35,7 @@ public class Setting {
   @NotNull
   private ConfigType configType;
 
-  // This attribute is valid for all types except list and password. Default: false
+  // This attribute is valid for all types except list and password. Defaul
   private boolean configReadonly;
 
   private boolean configRequired;
@@ -108,6 +108,30 @@ public class Setting {
     this.defaultValue = defaultValue;
   }
 
+  public void setValueAs(Object value, ValueType valueType) {
+    if (value == null) {
+      setValue(null);
+      return;
+    }
+
+    // try to fix setting values if they somehow got into wrong type in simulator
+    try {
+      if (valueType == ValueType.FLOAT && !(value instanceof Float)) {
+        setValue(Float.parseFloat(value.toString()));
+      } else if (valueType == ValueType.NUMBER && !(value instanceof Integer)) {
+        setValue(Integer.parseInt(value.toString()));
+      } else if (valueType == ValueType.STRING && !(value instanceof String)) {
+        setValue(value.toString());
+      } else if (valueType == ValueType.BOOLEAN && !(value instanceof Boolean)) {
+        setValue(Boolean.valueOf(value.toString()));
+      } else {
+        setValue(value);
+      }
+    } catch (Exception e) {
+      setValue(null);
+    }
+  }
+
   public void setValue(Object value) {
     this.value = value;
   }
@@ -135,11 +159,6 @@ public class Setting {
   @SuppressWarnings("unchecked")
   public <T> T getValueAs(Class<T> clazz) {
     return (T) getValue();
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T> T getDefaultValueAs(Class<T> clazz) {
-    return (T) getDefaultValue();
   }
 
   public enum ValueType {

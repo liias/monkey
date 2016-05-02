@@ -16,7 +16,7 @@ public class BooleanFieldModel implements FieldModel<Boolean> {
     this.component = createComponent(value);
   }
 
-  public OnOffButton createComponent(Boolean value) {
+  public OnOffButton createComponent(boolean value) {
     OnOffButton onOffButton = new OnOffButton();
     onOffButton.setSelected(value);
     return onOffButton;
