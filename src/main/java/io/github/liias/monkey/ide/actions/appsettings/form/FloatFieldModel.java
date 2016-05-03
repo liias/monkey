@@ -11,9 +11,9 @@ public class FloatFieldModel implements FieldModel<Float> {
   private final Setting.ConfigType configType;
   private final JBTextField component;
 
-  public FloatFieldModel(Setting.ConfigType configType, Float value) {
-    this.configType = configType;
-    this.component = createComponent(value);
+  public FloatFieldModel(Setting setting) {
+    this.configType = setting.getConfigType();
+    this.component = createComponent(setting.getValueAsFloat());
   }
 
   public JBTextField createComponent(Float value) {
@@ -28,12 +28,10 @@ public class FloatFieldModel implements FieldModel<Float> {
 
   @Override
   public void setValue(Float value) {
-    component.setText(value.toString());
   }
 
   @Override
   public Float getValue() {
-    String value = component.getText();
-    return Float.valueOf(value);
+    return Float.valueOf(component.getText());
   }
 }

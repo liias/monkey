@@ -11,9 +11,9 @@ public class BooleanFieldModel implements FieldModel<Boolean> {
   private final Setting.ConfigType configType;
   private final OnOffButton component;
 
-  public BooleanFieldModel(Setting.ConfigType configType, Boolean value) {
-    this.configType = configType;
-    this.component = createComponent(value);
+  public BooleanFieldModel(Setting setting) {
+    this.configType = setting.getConfigType();
+    this.component = createComponent(setting.getValueAsBoolean());
   }
 
   public OnOffButton createComponent(boolean value) {

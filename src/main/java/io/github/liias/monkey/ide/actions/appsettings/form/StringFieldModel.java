@@ -11,9 +11,9 @@ public class StringFieldModel implements FieldModel<String> {
   private Setting.ConfigType configType;
   private final JTextField component;
 
-  public StringFieldModel(Setting.ConfigType configType, String value) {
-    this.configType = configType;
-    this.component = createComponent(value);
+  public StringFieldModel(Setting setting) {
+    this.configType = setting.getConfigType();
+    this.component = createComponent(setting.getValueAsString());
   }
 
   public JTextField createComponent(String value) {

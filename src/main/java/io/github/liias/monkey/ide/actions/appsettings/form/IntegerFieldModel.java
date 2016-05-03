@@ -10,9 +10,9 @@ public class IntegerFieldModel implements FieldModel<Integer> {
   private Setting.ConfigType configType;
   private JComponent component;
 
-  public IntegerFieldModel(Setting.ConfigType configType, Integer value) {
-    this.configType = configType;
-    this.component = createComponent(value);
+  public IntegerFieldModel(Setting setting) {
+    this.configType = setting.getConfigType();
+    this.component = createComponent(setting.getValueAsInteger());
   }
 
   public JSpinner createComponent(Integer value) {
@@ -20,19 +20,13 @@ public class IntegerFieldModel implements FieldModel<Integer> {
       value = 0; // can't support null here - can it be null for integers??
     }
     if (configType == Setting.ConfigType.NUMERIC) {
-      JSpinner jSpinner = new JSpinner(new SpinnerNumberModel(value, null, null, 1));
-      jSpinner.setValue(value);
-      return jSpinner;
+      return new JSpinner(new SpinnerNumberModel(value, null, null, 1));
     } else if (configType == Setting.ConfigType.DATE) {
       // TODO: use SpinnerDateModel
-      JSpinner jSpinner = new JSpinner(new SpinnerNumberModel(value, null, null, 1));
-      jSpinner.setValue(value);
-      return jSpinner;
+      return new JSpinner(new SpinnerNumberModel(value, null, null, 1));
     } else if (configType == Setting.ConfigType.LIST) {
       // TODO: use SpinnerListModel
-      JSpinner jSpinner = new JSpinner(new SpinnerNumberModel(value, null, null, 1));
-      jSpinner.setValue(value);
-      return jSpinner;
+      return new JSpinner(new SpinnerNumberModel(value, null, null, 1));
     }
     throw new IllegalArgumentException("unknown config type " + configType);
   }

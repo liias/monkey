@@ -15,20 +15,15 @@ boolean	  boolean
 public interface FieldModel<V> {
 
   static FieldModel create(Setting setting) {
-    Setting.ConfigType configType = setting.getConfigType();
     switch (setting.getValueType()) {
       case BOOLEAN:
-        // config type: boolean
-        return new BooleanFieldModel(configType, setting.getValueAsBoolean());
+        return new BooleanFieldModel(setting);
       case FLOAT:
-        // config type: numeric
-        return new FloatFieldModel(configType, setting.getValueAsFloat());
+        return new FloatFieldModel(setting);
       case NUMBER:
-        // config type: numeric, list, date
-        return new IntegerFieldModel(configType, setting.getValueAsInteger());
+        return new IntegerFieldModel(setting);
       case STRING:
-        // config type: alphaNumeric, phone, email, url, password
-        return new StringFieldModel(configType, setting.getValueAsString());
+        return new StringFieldModel(setting);
     }
     throw new IllegalArgumentException("unknown setting value type: " + setting.getValueType());
   }
