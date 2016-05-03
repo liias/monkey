@@ -226,5 +226,13 @@ public class Setting {
     String display;
 
     int value;
+
+    public String getDisplay() {
+      return display;
+    }
+
+    public int getValue() {
+      return value;
+    }
   }
 }
