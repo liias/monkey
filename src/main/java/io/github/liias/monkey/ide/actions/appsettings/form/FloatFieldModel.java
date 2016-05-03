@@ -4,30 +4,29 @@ import com.intellij.ui.components.JBTextField;
 import io.github.liias.monkey.ide.actions.appsettings.json.Setting;
 
 import javax.swing.*;
+import java.util.Map;
 import java.util.Objects;
 
 // config type: numeric
-public class FloatFieldModel implements FieldModel<Float> {
-  private final Setting.ConfigType configType;
+public class FloatFieldModel extends FieldModel<Float> {
   private final JBTextField component;
 
-  public FloatFieldModel(Setting setting) {
-    this.configType = setting.getConfigType();
-    this.component = createComponent(setting.getValueAsFloat());
+  public FloatFieldModel(Setting setting, Map<String, String> translations) {
+    super(setting, translations);
+    this.component = createComponent();
   }
 
-  public JBTextField createComponent(Float value) {
-    String valueAsString = Objects.toString(value, null);
-    return new JBTextField(valueAsString);
+  public JBTextField createComponent() {
+    String valueAsString = Objects.toString(setting.getValueAsFloat(), null);
+    JBTextField jbTextField = new JBTextField(valueAsString);
+
+    applyGenericProperties(jbTextField);
+    return jbTextField;
   }
 
   @Override
   public JComponent getComponent() {
     return component;
-  }
-
-  @Override
-  public void setValue(Float value) {
   }
 
   @Override

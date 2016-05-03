@@ -3,30 +3,35 @@ package io.github.liias.monkey.ide.actions.appsettings.form;
 import io.github.liias.monkey.ide.actions.appsettings.json.Setting;
 
 import javax.swing.*;
+import java.util.Map;
 
 // config type: numeric, list, date
-public class IntegerFieldModel implements FieldModel<Integer> {
-
-  private Setting.ConfigType configType;
+public class IntegerFieldModel extends FieldModel<Integer> {
   private JComponent component;
 
-  public IntegerFieldModel(Setting setting) {
-    this.configType = setting.getConfigType();
-    this.component = createComponent(setting.getValueAsInteger());
+  public IntegerFieldModel(Setting setting, Map<String, String> translations) {
+    super(setting, translations);
+    this.component = createComponent();
   }
 
-  public JSpinner createComponent(Integer value) {
+  public JSpinner createComponent() {
+    Integer value = setting.getValueAsInteger();
     if (value == null) {
       value = 0; // can't support null here - can it be null for integers??
     }
+    Setting.ConfigType configType = setting.getConfigType();
+
+    JSpinner jSpinner = new JSpinner(new SpinnerNumberModel(value, null, null, 1));
+    applyGenericProperties(jSpinner);
+
     if (configType == Setting.ConfigType.NUMERIC) {
-      return new JSpinner(new SpinnerNumberModel(value, null, null, 1));
+      return jSpinner;
     } else if (configType == Setting.ConfigType.DATE) {
       // TODO: use SpinnerDateModel
-      return new JSpinner(new SpinnerNumberModel(value, null, null, 1));
+      return jSpinner;
     } else if (configType == Setting.ConfigType.LIST) {
       // TODO: use SpinnerListModel
-      return new JSpinner(new SpinnerNumberModel(value, null, null, 1));
+      return jSpinner;
     }
     throw new IllegalArgumentException("unknown config type " + configType);
   }
@@ -37,12 +42,9 @@ public class IntegerFieldModel implements FieldModel<Integer> {
   }
 
   @Override
-  public void setValue(Integer value) {
-
-  }
-
-  @Override
   public Integer getValue() {
+    Setting.ConfigType configType = setting.getConfigType();
+
     if (configType == Setting.ConfigType.NUMERIC) {
       JSpinner jSpinner = (JSpinner) component;
       SpinnerNumberModel model = (SpinnerNumberModel) jSpinner.getModel();

@@ -22,17 +22,20 @@ public class Setting {
   @NotNull
   private String configTitle;
 
+  // translatable string
   // message to display when prompting the user to set the value. Not used for e.g readonly and boolean settings.
   @Nullable
   private String configPrompt;
 
+  // translatable string
+  // message to display when user sets invalid value (based on configType, valueType, configMin, configMax, configLength)
   @Nullable
   private String configError;
 
   @NotNull
   private ConfigType configType;
 
-  // This attribute is valid for all types except list and password. Defaul
+  // This attribute is valid for all types except list and password. Default is false
   private boolean configReadonly;
 
   private boolean configRequired;
@@ -40,12 +43,15 @@ public class Setting {
   @Nullable
   private List<Option> configOptions;
 
+  // used for ConfigType numeric and date
   @Nullable
   private Number configMin;
 
+  // used for ConfigType numeric and date
   @Nullable
   private Number configMax;
 
+  // used for ValueType string
   @Nullable
   private Integer configMaxLength;
 

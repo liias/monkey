@@ -86,7 +86,7 @@ public class AppSettingsForm {
       gc.setColumn(0);
       gc.setFill(GridConstraints.FILL_NONE);
       gc.setHSizePolicy(GridConstraints.SIZEPOLICY_FIXED);
-      String displayName = Objects.firstNonNull(translations.get(setting.getConfigTitle()), setting.getConfigTitle());
+      String displayName = getTranslated(translations, setting.getConfigTitle());
       JBLabel label = new JBLabel(displayName);
       settingsPanel.add(label, gc);
 
@@ -95,7 +95,7 @@ public class AppSettingsForm {
       gc.setFill(fill);
       gc.setHSizePolicy(GridConstraints.SIZEPOLICY_WANT_GROW);
 
-      FieldModel fieldModel = FieldModel.create(setting);
+      FieldModel fieldModel = FieldModel.create(setting, translations);
       JComponent settingValueComponent = fieldModel.getComponent();
       settingsPanel.add(settingValueComponent, gc);
       label.setLabelFor(settingValueComponent);
@@ -111,10 +111,9 @@ public class AppSettingsForm {
     appSettingsDialog.pack();
   }
 
-
-
-
-
+  private static String getTranslated(Map<String, String> translations, String stringId) {
+    return Objects.firstNonNull(translations.get(stringId), stringId);
+  }
 
   public JPanel getPanel() {
     return panel;

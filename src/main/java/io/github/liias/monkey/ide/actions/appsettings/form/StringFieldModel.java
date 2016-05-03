@@ -5,34 +5,37 @@ import com.intellij.ui.components.JBTextField;
 import io.github.liias.monkey.ide.actions.appsettings.json.Setting;
 
 import javax.swing.*;
+import java.util.Map;
 
 // config type: alphaNumeric, phone, email, url, password
-public class StringFieldModel implements FieldModel<String> {
-  private Setting.ConfigType configType;
+public class StringFieldModel extends FieldModel<String> {
   private final JTextField component;
 
-  public StringFieldModel(Setting setting) {
-    this.configType = setting.getConfigType();
-    this.component = createComponent(setting.getValueAsString());
+  public StringFieldModel(Setting setting, Map<String, String> translations) {
+    super(setting, translations);
+    this.component = createComponent();
   }
 
-  public JTextField createComponent(String value) {
+  public JTextField createComponent() {
+    Setting.ConfigType configType = setting.getConfigType();
+    String value = setting.getValueAsString();
+    JTextField jTextField;
     if (configType == Setting.ConfigType.PASSWORD) {
       JBPasswordField jbPasswordField = new JBPasswordField();
       jbPasswordField.setText(value);
-      return jbPasswordField;
+      jTextField = jbPasswordField;
+    } else {
+      JBTextField jbTextField = new JBTextField(value);
+      jTextField = jbTextField;
     }
-    return new JBTextField(value);
+
+    applyGenericProperties(jTextField);
+    return jTextField;
   }
 
   @Override
   public JComponent getComponent() {
     return component;
-  }
-
-  @Override
-  public void setValue(String value) {
-    component.setText(value);
   }
 
   @Override
