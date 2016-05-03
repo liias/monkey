@@ -2,13 +2,14 @@ package io.github.liias.monkey.ide.actions.appsettings.form;
 
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.CollectionComboBoxModel;
+import com.intellij.util.text.DateFormatUtil;
+import com.michaelbaranov.microba.calendar.DatePicker;
 import io.github.liias.monkey.ide.actions.appsettings.json.Setting;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.text.DateFormat;
+import java.time.ZoneOffset;
+import java.util.*;
 
 // config type: numeric, list, date
 public class IntegerFieldModel extends FieldModel<Integer> {
@@ -31,8 +32,15 @@ public class IntegerFieldModel extends FieldModel<Integer> {
     if (configType == Setting.ConfigType.NUMERIC) {
       component = new JSpinner(new SpinnerNumberModel(value, null, null, 1));
     } else if (configType == Setting.ConfigType.DATE) {
-      // TODO: use SpinnerDateModel
-      component = new JSpinner(new SpinnerNumberModel(value, null, null, 1));
+      // using long, as int wouldn't fit after multiplying with 1000
+      Date date = new Date(value.longValue() * 1000L);
+      DateFormat dateFormat = DateFormatUtil.getDateFormat().getDelegate();
+      TimeZone timeZoneUtc = TimeZone.getTimeZone(ZoneOffset.UTC);
+      dateFormat.setTimeZone(timeZoneUtc);
+      DatePicker datePicker = new DatePicker(date, dateFormat, Locale.getDefault(), timeZoneUtc);
+      datePicker.setKeepTime(false);
+      component = datePicker;
+      // or use JSpinner with SpinnerDateModel
     } else if (configType == Setting.ConfigType.LIST) {
       List<Setting.Option> configOptions = setting.getConfigOptions();
       List<ComboOption> comboOptions = new ArrayList<>();
@@ -98,9 +106,10 @@ public class IntegerFieldModel extends FieldModel<Integer> {
       SpinnerNumberModel model = (SpinnerNumberModel) jSpinner.getModel();
       return model.getNumber().intValue();
     } else if (configType == Setting.ConfigType.DATE) {
-      JSpinner jSpinner = (JSpinner) component;
-      SpinnerNumberModel model = (SpinnerNumberModel) jSpinner.getModel();
-      return model.getNumber().intValue();
+      DatePicker datePicker = (DatePicker) component;
+      Date date = datePicker.getDate();
+      Long ms = date.getTime() / 1000;
+      return ms.intValue();
     } else if (configType == Setting.ConfigType.LIST) {
       ComboBox comboBox = (ComboBox) component;
       ComboOption comboOption = (ComboOption) comboBox.getModel().getSelectedItem();
