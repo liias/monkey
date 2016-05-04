@@ -4,7 +4,7 @@ import com.intellij.ide.util.projectWizard.*;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.ModuleTypeManager;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
-import io.github.liias.monkey.icons.MonkeyIcons;
+import icons.MonkeyIcons;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

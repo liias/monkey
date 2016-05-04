@@ -16,7 +16,7 @@
       <grid id="15e39" layout-manager="GridLayoutManager" row-count="3" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="0" column="0" row-span="3" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="0" column="0" row-span="3" col-span="3" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="200" height="-1"/>
           </grid>
         </constraints>
@@ -70,18 +70,7 @@
             </constraints>
             <properties/>
             <border type="none"/>
-            <children>
-              <component id="f64fa" class="com.intellij.ui.components.JBLabel">
-                <constraints border-constraint="North"/>
-                <properties>
-                  <enabled value="true"/>
-                  <text value="&lt;html&gt;Here you can send app settings to the simulator.&#10;&lt;br&gt;&lt;br&gt;&#10;With real devices, application settings can be changed through Garmin Connect Mobile and Garmin Express. &#10;&lt;br&gt;&lt;br&gt;&#10;The app should be running before selecting the module.&lt;br&gt;&#10;App settings require at least Connect IQ SDK 1.2.1"/>
-                </properties>
-                <clientProperties>
-                  <html.disable class="java.lang.Boolean" value="false"/>
-                </clientProperties>
-              </component>
-            </children>
+            <children/>
           </grid>
         </children>
       </grid>

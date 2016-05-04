@@ -3,7 +3,7 @@ package io.github.liias.monkey.project.runconfig;
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.*;
 import com.intellij.openapi.project.Project;
-import io.github.liias.monkey.icons.MonkeyIcons;
+import icons.MonkeyIcons;
 import org.jetbrains.annotations.NotNull;
 
 public class MonkeyConfigurationType extends ConfigurationTypeBase {

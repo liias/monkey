@@ -5,7 +5,7 @@ import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.HashMap;
-import io.github.liias.monkey.icons.MonkeyIcons;
+import icons.MonkeyIcons;
 import io.github.liias.monkey.project.module.MonkeyConstants;
 import io.github.liias.monkey.project.sdk.skeleton.SdkSkeleton;
 import org.jdom.Element;

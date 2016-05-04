@@ -1,7 +1,7 @@
 package io.github.liias.monkey.lang.file;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import io.github.liias.monkey.icons.MonkeyIcons;
+import icons.MonkeyIcons;
 import io.github.liias.monkey.lang.MonkeyLanguage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

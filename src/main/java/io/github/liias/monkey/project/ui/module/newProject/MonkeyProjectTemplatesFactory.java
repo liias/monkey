@@ -4,7 +4,7 @@ import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.platform.ProjectTemplate;
 import com.intellij.platform.ProjectTemplatesFactory;
 import com.intellij.platform.templates.BuilderBasedTemplate;
-import io.github.liias.monkey.icons.MonkeyIcons;
+import icons.MonkeyIcons;
 import io.github.liias.monkey.project.module.MonkeyModuleBuilder;
 import io.github.liias.monkey.project.ui.module.AppType;
 import org.jetbrains.annotations.NotNull;

@@ -4,7 +4,7 @@ import com.intellij.ide.actions.CreateFileFromTemplateAction;
 import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
-import io.github.liias.monkey.icons.MonkeyIcons;
+import icons.MonkeyIcons;
 
 public class CreateMonkeyFileAction extends CreateFileFromTemplateAction {
   public CreateMonkeyFileAction() {

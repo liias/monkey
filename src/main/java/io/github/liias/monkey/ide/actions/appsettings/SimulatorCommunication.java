@@ -224,7 +224,7 @@ public class SimulatorCommunication {
 
       return notifySimulator(remotePath);
     } catch (IOException | ExecutionException e) {
-      e.printStackTrace();
+      Throwables.propagate(e);
     }
     return false;
   }

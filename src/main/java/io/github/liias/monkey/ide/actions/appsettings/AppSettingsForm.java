@@ -5,15 +5,14 @@ import com.intellij.application.options.ModulesComboBox;
 import com.intellij.openapi.compiler.CompilerPaths;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import io.github.liias.monkey.ide.actions.appsettings.form.FieldModel;
 import io.github.liias.monkey.ide.actions.appsettings.json.Setting;
-import io.github.liias.monkey.ide.actions.appsettings.json.SettingsAndLanguages;
 import io.github.liias.monkey.project.module.MonkeyModuleType;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -30,12 +29,12 @@ public class AppSettingsForm {
 
   @Nullable
   private final Project project;
-  private AppSettingsDialog appSettingsDialog;
+  private DialogWrapper appSettingsDialog;
   private AppSettingsManager appSettingsManager;
 
   private Map<String, FieldModel> fieldsBySettingKey;
 
-  protected AppSettingsForm(@Nullable Project project, @NotNull AppSettingsDialog appSettingsDialog) {
+  public AppSettingsForm(@Nullable Project project, @Nullable DialogWrapper appSettingsDialog) {
     this.project = project;
     this.appSettingsDialog = appSettingsDialog;
     this.fieldsBySettingKey = new HashMap<>();
@@ -49,31 +48,53 @@ public class AppSettingsForm {
     }
 
     modulesComboBox.addActionListener(e -> {
-      final Module selectedModule = modulesComboBox.getSelectedModule();
-      if (selectedModule != null) {
-        VirtualFile moduleOutputDir = CompilerPaths.getModuleOutputDirectory(selectedModule, false);
-        String projectName = selectedModule.getProject().getName();
-        String settingsFilename = projectName + "-settings.json";
-
-        VirtualFile settingsFile = moduleOutputDir.findChild(settingsFilename);
-        if (settingsFile == null) {
-          removeSettings();
-        } else {
-          this.appSettingsManager = new AppSettingsManager(selectedModule, settingsFile);
-          SettingsAndLanguages settingsAndLanguages = appSettingsManager.getSettingsAndLanguages();
-          fillSettings(settingsAndLanguages.getSettings(), settingsAndLanguages.getLanguages());
-        }
-      }
+      receiveSettings();
     });
+  }
+
+  private static VirtualFile findSettingsJsonFile(Module module) {
+    VirtualFile moduleOutputDir = CompilerPaths.getModuleOutputDirectory(module, false);
+    String projectName = module.getProject().getName();
+    String settingsFilename = projectName + "-settings.json";
+    return moduleOutputDir.findChild(settingsFilename);
+  }
+
+  public void receiveSettings() {
+    final Module selectedModule = modulesComboBox.getSelectedModule();
+    if (selectedModule != null) {
+      VirtualFile settingsJsonFile = findSettingsJsonFile(selectedModule);
+      if (settingsJsonFile == null) {
+        removeSettings();
+      } else {
+        if (appSettingsManager == null) {
+          appSettingsManager = new AppSettingsManager(selectedModule, settingsJsonFile);
+        } else {
+          appSettingsManager.initSettingsAndLanguages(settingsJsonFile);
+        }
+        fillSettings(appSettingsManager.getSettings(), this.appSettingsManager.getLanguages());
+      }
+    } else {
+      removeSettings();
+    }
   }
 
   private void removeSettings() {
     fieldsBySettingKey = new HashMap<>();
     settingsPanel.removeAll();
-    appSettingsDialog.pack();
+    settingsPanel.revalidate();
+
+    resizeParentWindow();
+  }
+
+  private void resizeParentWindow() {
+    if (appSettingsDialog != null) {
+      appSettingsDialog.pack();
+    }
   }
 
   private void fillSettings(List<Setting> settings, Map<String, Map<String, String>> languages) {
+    settingsPanel.removeAll();
+
     GridLayoutManager layout = new GridLayoutManager(settings.size() + 1, 2);
     settingsPanel.setLayout(layout);
     GridConstraints gc = new GridConstraints();
@@ -108,7 +129,9 @@ public class AppSettingsForm {
     gc.setHSizePolicy(GridConstraints.SIZEPOLICY_FIXED);
     settingsPanel.add(new JBLabel(""), gc);
 
-    appSettingsDialog.pack();
+    settingsPanel.revalidate();
+
+    resizeParentWindow();
   }
 
   private static String getTranslated(Map<String, String> translations, String stringId) {
@@ -121,7 +144,7 @@ public class AppSettingsForm {
 
   public void sendSettingsToSimulator() {
     if (appSettingsManager != null) {
-      appSettingsManager.sendToSim(fieldsBySettingKey);
+      appSettingsManager.sendToSimulator(fieldsBySettingKey);
     }
   }
 }
