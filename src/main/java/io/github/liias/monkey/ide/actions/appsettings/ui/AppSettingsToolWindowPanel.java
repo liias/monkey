@@ -1,6 +1,5 @@
 package io.github.liias.monkey.ide.actions.appsettings.ui;
 
-import com.intellij.ide.actions.ContextHelpAction;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.SimpleToolWindowPanel;
@@ -30,22 +29,7 @@ public class AppSettingsToolWindowPanel extends SimpleToolWindowPanel {
     group.add(new SendAction());
     group.add(new ReceiveAction());
 
-    group.addSeparator();
-    //group.add(new ContextHelpAction(HelpID.ANT));
-
-    /*group.add(new RemoveAction());
-    group.add(new RunAction());
-    group.add(new ShowAllTargetsAction());
-    AnAction action = CommonActionsManager.getInstance().createExpandAllAction(myTreeExpander, this);
-    action.getTemplatePresentation().setDescription(AntBundle.message("ant.explorer.expand.all.nodes.action.description"));
-    group.add(action);
-    action = CommonActionsManager.getInstance().createCollapseAllAction(myTreeExpander, this);
-    action.getTemplatePresentation().setDescription(AntBundle.message("ant.explorer.collapse.all.nodes.action.description"));
-    group.add(action);
-    group.add(myAntBuildFilePropertiesAction);
-    group.add(new ContextHelpAction(HelpID.ANT));*/
-
-    final ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar(ActionPlaces.ANT_EXPLORER_TOOLBAR, group, true);
+    final ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar("AppSettingsToolWindowPanel", group, true);
     return JBUI.Panels.simplePanel(actionToolBar.getComponent());
   }
 
