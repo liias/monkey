@@ -52,8 +52,13 @@ public class AppSettingsForm {
     });
   }
 
+  @Nullable
   private static VirtualFile findSettingsJsonFile(Module module) {
     VirtualFile moduleOutputDir = CompilerPaths.getModuleOutputDirectory(module, false);
+    // moduleOutputDir is null if the output directories don't exist yet (e.g module has not been built)
+    if (moduleOutputDir == null) {
+      return null;
+    }
     String projectName = module.getProject().getName();
     String settingsFilename = projectName + "-settings.json";
     return moduleOutputDir.findChild(settingsFilename);
