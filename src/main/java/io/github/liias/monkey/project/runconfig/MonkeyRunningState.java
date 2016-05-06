@@ -64,7 +64,7 @@ public class MonkeyRunningState extends CommandLineState {
     GeneralCommandLine runSimulatorCmd = createRunSimulatorCmd();
     runSimulatorCmd.createProcess();
 
-    if (!simulatorHelper.findSimulatorPortNTimes().isPresent()) {
+    if (!simulatorHelper.findSimulatorPortNTimes(5, 1000).isPresent()) {
       throw new ExecutionException("Could not connect to simulatorHelper");
     }
 
@@ -112,10 +112,10 @@ public class MonkeyRunningState extends CommandLineState {
     Sdk sdk = monkeyParameters.getSdk();
 
     return new GeneralCommandLine()
-        .withWorkDirectory(MonkeySdkType.getBinPath(sdk))
-        .withCharset(CharsetToolkit.UTF8_CHARSET)
-        .withExePath(MonkeySdkType.getMonkeydoBatPath(sdk))
-        .withParameters(prgPath, getConfiguration().getTargetDeviceId());
+      .withWorkDirectory(MonkeySdkType.getBinPath(sdk))
+      .withCharset(CharsetToolkit.UTF8_CHARSET)
+      .withExePath(MonkeySdkType.getMonkeydoBatPath(sdk))
+      .withParameters(prgPath, getConfiguration().getTargetDeviceId());
   }
 
 }

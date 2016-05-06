@@ -38,15 +38,14 @@ public class SimulatorHelper {
     this.outputDir = outputDir;
   }
 
-  public Optional<Integer> findSimulatorPortNTimes() throws ExecutionException {
-    final int maxAttempts = 5;
+  public Optional<Integer> findSimulatorPortNTimes(int maxAttempts, int delay) throws ExecutionException {
     for (int i = 0; i < maxAttempts; i++) {
       Optional<Integer> simulatorPort = findSimulatorPort(i + 1);
       if (simulatorPort.isPresent()) {
         return simulatorPort;
       }
       try {
-        Thread.sleep(1000L);
+        Thread.sleep(delay);
       } catch (InterruptedException e) {
         printToConsole(e.getMessage(), ConsoleViewContentType.ERROR_OUTPUT);
       }
@@ -76,22 +75,18 @@ public class SimulatorHelper {
     String exePath = sdkBinPath + shellExecutableName;
 
     return createGeneralCommandLine(outputDir, exePath)
-        .withParameters("--transport=tcp", "--transport_args=127.0.0.1:" + port, "tvm", "help");
+      .withParameters("--transport=tcp", "--transport_args=127.0.0.1:" + port, "tvm", "help");
   }
 
   private static boolean hasProcessOutputLineContaining(Process process, String successLine) {
     try (InputStream inputStream = process.getInputStream();
-         InputStreamReader in = new InputStreamReader(inputStream);
-         BufferedReader br = new BufferedReader(in)
+         BufferedReader br = new BufferedReader(new InputStreamReader(inputStream))
     ) {
-      if (br.lines().anyMatch(l -> l.contains(successLine))) {
-        return true;
-      }
+      return br.lines().anyMatch(l -> l.contains(successLine));
     } catch (IOException e) {
       e.printStackTrace();
       return false;
     }
-    return false;
   }
 
   private void printToConsole(String message, ConsoleViewContentType messageType) {

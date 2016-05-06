@@ -125,7 +125,7 @@ public class SimulatorCommunication {
     String outputDir = moduleOutputDir.getPath() + File.separator;
 
     SimulatorHelper simulatorHelper = new SimulatorHelper(null, sdk, outputDir);
-    Optional<Integer> simulatorPortNTimes = simulatorHelper.findSimulatorPortNTimes();
+    Optional<Integer> simulatorPortNTimes = simulatorHelper.findSimulatorPortNTimes(2, 100);
     if (!simulatorPortNTimes.isPresent()) {
       throw new IOException("simulator not found");
     }
