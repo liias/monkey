@@ -3,7 +3,7 @@
   <name>Monkey C (Garmin Connect IQ)</name>
   <!-- this version is overridden on gradle building and is
   specified in gradle.properties as  pluginVersion -->
-  <version>0.2.2</version>
+  <version>0.2.3</version>
   <vendor email="madisliias@gmail.com" url="https://liias.github.io">Madis Liias</vendor>
 
   <description><![CDATA[
@@ -11,6 +11,13 @@
     ]]></description>
 
   <change-notes><![CDATA[
+    <p>0.2.3</p>
+    <ul>
+      <li>Added App Settings window tool bar to the right</li>
+      <li>Improved creating project/module from existing sources.
+      Now marking resource directories, setting target device and creating run configuration
+      </li>
+    </ul>
     <p>0.2.2</p>
     <ul>
       <li>Improved creating project/module from existing sources</li>
