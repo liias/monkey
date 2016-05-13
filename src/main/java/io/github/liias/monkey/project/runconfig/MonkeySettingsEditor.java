@@ -1,5 +1,6 @@
 package io.github.liias.monkey.project.runconfig;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.intellij.application.options.ModulesComboBox;
 import com.intellij.execution.ui.CommonProgramParametersPanel;
@@ -40,6 +41,7 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
 
   private final Project project;
   private LabeledComponent<JComboBox<TargetDevice>> targetDevice;
+  private LabeledComponent<JComboBox<DeploymentTarget>> deploymentTarget;
   private JComponent anchor;
   private CommonProgramParametersPanel commonProgramParameters;
   private LabeledComponent<ModulesComboBox> moduleComponent;
@@ -51,6 +53,7 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
     ModulesComboBox modulesComboBox = moduleComponent.getComponent();
     modulesComboBox.fillModules(project, MonkeyModuleType.getInstance());
     fillTargetDevices();
+    fillDeploymentTargets();
   }
 
   public List<TargetDevice> getAllDevices() {
@@ -67,6 +70,32 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
       if (device != null) {
         //setIcon(ModuleType.get(value).getIcon());
         setText(device.getName());
+      } else {
+        setText("<unspecified>");
+        setIcon(null);
+      }
+    }
+  }
+
+  private void fillDeploymentTargets() {
+    final JComboBox<DeploymentTarget> comboBox = deploymentTarget.getComponent();
+    comboBox.removeAllItems();
+    comboBox.setRenderer(new DeploymentTargetListRenderer());
+
+    comboBox.addItem(new DeploymentTarget("SIMULATOR", "Simulator"));
+    comboBox.addItem(new DeploymentTarget("DEVICE", "Device"));
+  }
+
+  private static class DeploymentTargetListRenderer extends ListCellRendererWrapper<DeploymentTarget> {
+    public DeploymentTargetListRenderer() {
+      super();
+    }
+
+    @Override
+    public void customize(JList list, DeploymentTarget deploymentTarget, int index, boolean selected, boolean hasFocus) {
+      if (deploymentTarget != null) {
+        //setIcon(ModuleType.get(value).getIcon());
+        setText(deploymentTarget.getName());
       } else {
         setText("<unspecified>");
         setIcon(null);
@@ -113,14 +142,26 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
     } else {
       this.targetDevice.getComponent().setSelectedIndex(0);
     }
+
+    final String deploymentTargetId = configuration.getDeploymentTargetId();
+    if (!Strings.isNullOrEmpty(deploymentTargetId)) {
+      final DeploymentTarget selectedDeploymentTarget = new DeploymentTarget(deploymentTargetId, null);
+      this.deploymentTarget.getComponent().setSelectedItem(selectedDeploymentTarget);
+    } else {
+      this.deploymentTarget.getComponent().setSelectedIndex(0);
+    }
   }
 
   @Override
   protected void applyEditorTo(MonkeyModuleBasedConfiguration configuration) throws ConfigurationException {
     commonProgramParameters.applyTo(configuration);
     configuration.setModule(moduleComponent.getComponent().getSelectedModule());
+
     final TargetDevice selectedTargetDevice = (TargetDevice) this.targetDevice.getComponent().getSelectedItem();
     configuration.setTargetDeviceId(selectedTargetDevice.getId());
+
+    DeploymentTarget selectedDeploymentTarget = (DeploymentTarget) this.deploymentTarget.getComponent().getSelectedItem();
+    configuration.setDeploymentTargetId(selectedDeploymentTarget.getId());
   }
 
   @NotNull

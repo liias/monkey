@@ -1,6 +1,5 @@
 package io.github.liias.monkey.project.runconfig;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
@@ -132,10 +131,19 @@ public class MonkeyModuleBasedConfiguration extends ModuleBasedConfiguration<Mon
     bean.TARGET_DEVICE_ID = targetDeviceId;
   }
 
+  public String getDeploymentTargetId() {
+    return bean.DEPLOYMENT_TARGET_ID;
+  }
+
+  public void setDeploymentTargetId(String deploymentTargetId) {
+    bean.DEPLOYMENT_TARGET_ID = deploymentTargetId;
+  }
+
   private static class MCModuleBasedConfigurationBean {
     public String PROGRAM_PARAMETERS = "";
     public String WORKING_DIRECTORY = "";
     public boolean PASS_PARENT_ENVS = true;
     public String TARGET_DEVICE_ID = "";
+    public String DEPLOYMENT_TARGET_ID = "";
   }
 }

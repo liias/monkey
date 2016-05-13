@@ -40,6 +40,7 @@ public class MonkeyContentEntriesEditor extends CommonContentEntriesEditor {
       }
     };
     mainPanel.add(myTargetDeviceConfigurable.createComponent(), BorderLayout.NORTH);
+    mainPanel.add(myTargetDeviceConfigurable.createComponent(), BorderLayout.NORTH);
     myTargetDeviceConfigurable.reset();
   }
 

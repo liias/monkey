@@ -2,6 +2,7 @@ package io.github.liias.monkey.jps.builder;
 
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.BaseOSProcessHandler;
@@ -12,12 +13,15 @@ import com.intellij.openapi.projectRoots.JdkUtil;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.SystemProperties;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleProperties;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleType;
 import io.github.liias.monkey.jps.model.JpsMonkeySdkType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jps.builders.BuildOutputConsumer;
 import org.jetbrains.jps.builders.DirtyFilesHolder;
 import org.jetbrains.jps.incremental.CompileContext;
@@ -37,10 +41,7 @@ import org.jetbrains.jps.model.module.JpsTypedModule;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -74,6 +75,57 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     JpsTypedModule<JpsSimpleElement<JpsMonkeyModuleProperties>> module = jpsModule.asTyped(JpsMonkeyModuleType.INSTANCE);
     assert module != null;
 
+    JpsMonkeyModuleProperties moduleProperties = getModuleProperties(target);
+
+    final String targetDeviceId = moduleProperties.TARGET_DEVICE_ID;
+
+    JpsSdk<JpsDummyElement> sdk = getSdk(context, jpsModule);
+
+    for (String contentRootUrl : jpsModule.getContentRootsList().getUrls()) {
+      String outputPrg = buildPrgForSimulator(target, context, contentRootUrl, sdk.getHomePath(), false, targetDeviceId);
+      File outputPrgFile = new File(outputPrg);
+      Set<String> sourcePaths = ImmutableSet.of(contentRootUrl);
+      outputConsumer.registerOutputFile(outputPrgFile, sourcePaths);
+    }
+  }
+
+  public static String buildPrgForSimulator(MonkeyBuildTarget target, @NotNull CompileContext context,
+                                            @NotNull String contentRootUrl, String sdkHomePath,
+                                            boolean releaseBuild, String targetDeviceId) throws ProjectBuildException {
+    return buildPrg(target, context, contentRootUrl, sdkHomePath, releaseBuild, targetDeviceId);
+  }
+
+  public static void buildPrgForDevice(MonkeyBuildTarget target, @NotNull CompileContext context,
+                                       @NotNull String contentRootUrl, String sdkHomePath, String outputPath,
+                                       boolean releaseBuild, String targetDeviceId) throws ProjectBuildException, IOException {
+    String prgOutputPath = buildPrg(target, context, contentRootUrl, sdkHomePath, releaseBuild, targetDeviceId);
+
+    VirtualFile outputPrg = LocalFileSystem.getInstance().refreshAndFindFileByPath(prgOutputPath);
+    VirtualFile outputParent = LocalFileSystem.getInstance().findFileByPath(outputPath);
+
+    final String projectName = context.getProjectDescriptor().getProject().getName();
+
+    outputPrg.copy(target, outputParent, projectName + ".prg");
+  }
+
+
+  private static String buildPrg(MonkeyBuildTarget target, @NotNull CompileContext context, @NotNull String contentRootUrl,
+                                 String sdkHomePath, boolean releaseBuild, String targetDeviceId) throws ProjectBuildException {
+    JpsModule jpsModule = target.getModule();
+
+    File outputDirectory = getBuildOutputDirectory(jpsModule, target.isTests(), context);
+
+    final String projectName = context.getProjectDescriptor().getProject().getName();
+    String outputPath = outputDirectory.getAbsolutePath() + File.separator + projectName + ".prg";
+
+    String contentRootPath = VfsUtilCore.urlToPath(contentRootUrl);
+    final GeneralCommandLine buildCmd = createBuildCmd(contentRootPath, outputPath, sdkHomePath, targetDeviceId, releaseBuild);
+    runBuildProcess(context, buildCmd, contentRootPath);
+    return outputPath;
+  }
+
+  @NotNull
+  private static JpsMonkeyModuleProperties getModuleProperties(@NotNull MonkeyBuildTarget target) throws ProjectBuildException {
     final JpsElement propertiesUntyped = target.getModule().getProperties();
     if (!(propertiesUntyped instanceof JpsSimpleElement)) {
       throw new ProjectBuildException("module properties has wrong type");
@@ -81,23 +133,11 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
 
     @SuppressWarnings("unchecked")
     JpsSimpleElement<JpsMonkeyModuleProperties> properties = (JpsSimpleElement<JpsMonkeyModuleProperties>) propertiesUntyped;
-    JpsMonkeyModuleProperties moduleProperties = properties.getData();
-    final String targetDeviceId = moduleProperties.TARGET_DEVICE_ID;
-
-    JpsSdk<JpsDummyElement> sdk = getSdk(context, module);
-
-    File outputDirectory = getBuildOutputDirectory(jpsModule, target.isTests(), context);
-
-    for (String contentRootUrl : jpsModule.getContentRootsList().getUrls()) {
-      String contentRootPath = VfsUtilCore.urlToPath(contentRootUrl);
-      final String projectName = context.getProjectDescriptor().getProject().getName();
-      final GeneralCommandLine buildCmd = createBuildCmd(projectName, contentRootPath, outputDirectory, sdk.getHomePath(), targetDeviceId);
-      runBuildProcess(context, buildCmd, contentRootPath);
-    }
+    return properties.getData();
   }
 
   private static void runBuildProcess(@NotNull CompileContext context, @NotNull GeneralCommandLine commandLine, @NotNull String path)
-      throws ProjectBuildException {
+    throws ProjectBuildException {
     try {
       LOG.debug(commandLine.getCommandLineString());
       final Process process = commandLine.createProcess();
@@ -146,34 +186,32 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
   }
 
   // TODO: paths that contain spaces should be quoted?
-  public GeneralCommandLine createBuildCmd(String projectName, String projectRootPath, File outputDirectory, String sdkHomePath, String targetDeviceId) {
+  public static GeneralCommandLine createBuildCmd(String projectRootPath, String outputPath,
+                                                  String sdkHomePath, @Nullable String targetDeviceId, boolean releaseBuild) {
+
     final File projectRoot = new File(FileUtil.toSystemIndependentName(projectRootPath));
 
     // TODO: Use module sources functionality instead
     Pattern sourcePattern = Pattern.compile(".*\\.mc");
     final List<File> mcFiles = FileUtil.findFilesByMask(sourcePattern, projectRoot);
     final ImmutableList<String> sourceFilePaths = FluentIterable.from(mcFiles)
-        .transform(File::getAbsolutePath).toList();
+      .transform(File::getAbsolutePath).toList();
 
     // TODO: Use module resources functionality instead
     Pattern resourcePattern = Pattern.compile(".*\\.xml");
     final List<File> xmlFiles = FileUtil.findFilesByMask(resourcePattern, projectRoot);
     final ImmutableList<String> resourceFilePaths = FluentIterable.from(xmlFiles)
-        .filter(file -> file != null && file.getParentFile().getAbsolutePath().contains("resource"))
-        .transform(File::getAbsolutePath).toList();
+      .filter(file -> file != null && file.getParentFile().getAbsolutePath().contains("resource"))
+      .transform(File::getAbsolutePath).toList();
 
     String sdkPath = sdkHomePath + File.separator;
     String sdkBinPath = sdkPath + "bin" + File.separator;
 
-    String outputName = projectName + ".prg";
-
-    String outputDir = outputDirectory.getAbsolutePath() + File.separator;
-
     ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
-        .add("-a", sdkBinPath + "api.db")
-        .add("-i", sdkBinPath + "api.debug.xml")
-        .add("-o", outputDir + outputName)
-        .add("-w"); // Show compilation warnings in the Console
+      .add("-a", sdkBinPath + "api.db")
+      .add("-i", sdkBinPath + "api.debug.xml")
+      .add("-o", outputPath)
+      .add("-w"); // Show compilation warnings in the Console
 //        .add("-g") // Print debug output (-g)
 
     // TODO: check what -e means
@@ -198,16 +236,22 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     String devicesXmlPath = sdkBinPath + "devices.xml";
     String projectInfoXmlPath = sdkBinPath + "projectInfo.xml"; // todo: is this file optional?
     parameters.add("-m", manifestXmlPath)
-        .add("-u", devicesXmlPath)
-        .add("-p", projectInfoXmlPath); // optional file?
+      .add("-u", devicesXmlPath)
+      .add("-p", projectInfoXmlPath); // optional file?
 
     // in format: C:\xyz\source\aaApp.mc C:\xyz\source\aaMenuDelegate.mc C:\xyz\source\aaView.mc
     parameters.addAll(sourceFilePaths);
 
     final String deviceId = targetDeviceId != null ? targetDeviceId : "round_watch";
     final String deviceSim = deviceId + "_sim";
-    // parameters.add("-r"); // if release build
-    parameters.add("-d", deviceSim);
+
+    if (targetDeviceId != null) {
+      parameters.add("-d", deviceSim);
+    }
+
+    if (releaseBuild) {
+      parameters.add("-r");
+    }
 
     //final String javaHome = SystemProperties.getJavaHome();
     //String javaPath = javaHome + File.separator + "bin" + File.separator + "java";
@@ -229,9 +273,9 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
   public static String findJreHome() {
     String javaHome = SystemProperties.getJavaHome();
     Optional<String> jreHome = Stream.of(javaHome, new File(javaHome).getParent(), System.getenv("JDK_16_x64"), System.getenv("JDK_16"))
-        .filter(Objects::nonNull)
-        .filter(JdkUtil::checkForJre)
-        .findFirst();
+      .filter(Objects::nonNull)
+      .filter(JdkUtil::checkForJre)
+      .findFirst();
 
     if (jreHome.isPresent()) {
       return jreHome.get();
