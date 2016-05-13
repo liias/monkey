@@ -13,9 +13,7 @@ import com.intellij.openapi.projectRoots.JdkUtil;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtilCore;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.SystemProperties;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleProperties;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleType;
@@ -94,20 +92,6 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
                                             boolean releaseBuild, String targetDeviceId) throws ProjectBuildException {
     return buildPrg(target, context, contentRootUrl, sdkHomePath, releaseBuild, targetDeviceId);
   }
-
-  public static void buildPrgForDevice(MonkeyBuildTarget target, @NotNull CompileContext context,
-                                       @NotNull String contentRootUrl, String sdkHomePath, String outputPath,
-                                       boolean releaseBuild, String targetDeviceId) throws ProjectBuildException, IOException {
-    String prgOutputPath = buildPrg(target, context, contentRootUrl, sdkHomePath, releaseBuild, targetDeviceId);
-
-    VirtualFile outputPrg = LocalFileSystem.getInstance().refreshAndFindFileByPath(prgOutputPath);
-    VirtualFile outputParent = LocalFileSystem.getInstance().findFileByPath(outputPath);
-
-    final String projectName = context.getProjectDescriptor().getProject().getName();
-
-    outputPrg.copy(target, outputParent, projectName + ".prg");
-  }
-
 
   private static String buildPrg(MonkeyBuildTarget target, @NotNull CompileContext context, @NotNull String contentRootUrl,
                                  String sdkHomePath, boolean releaseBuild, String targetDeviceId) throws ProjectBuildException {

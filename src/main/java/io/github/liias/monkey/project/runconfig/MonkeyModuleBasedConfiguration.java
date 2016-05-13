@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class MonkeyModuleBasedConfiguration extends ModuleBasedConfiguration<MonkeyRunConfigurationModule> implements CommonProgramRunConfigurationParameters {
   private static final SkipDefaultValuesSerializationFilters SERIALIZATION_FILTERS = new SkipDefaultValuesSerializationFilters();
-  private MCModuleBasedConfigurationBean bean = new MCModuleBasedConfigurationBean();
+  private MonkeyModuleBasedConfigurationBean bean = new MonkeyModuleBasedConfigurationBean();
   private final Map<String, String> envs = new LinkedHashMap<>();
 
   public MonkeyModuleBasedConfiguration(String name, @NotNull MonkeyRunConfigurationModule configurationModule, @NotNull ConfigurationFactory factory) {
@@ -139,11 +139,20 @@ public class MonkeyModuleBasedConfiguration extends ModuleBasedConfiguration<Mon
     bean.DEPLOYMENT_TARGET_ID = deploymentTargetId;
   }
 
-  private static class MCModuleBasedConfigurationBean {
+  public String getDeviceDirectory() {
+    return bean.DEVICE_DIRECTORY;
+  }
+
+  public void setDeviceDirectory(String deviceDirectory) {
+    bean.DEVICE_DIRECTORY = deviceDirectory;
+  }
+
+  private static class MonkeyModuleBasedConfigurationBean {
     public String PROGRAM_PARAMETERS = "";
     public String WORKING_DIRECTORY = "";
     public boolean PASS_PARENT_ENVS = true;
     public String TARGET_DEVICE_ID = "";
     public String DEPLOYMENT_TARGET_ID = "";
+    public String DEVICE_DIRECTORY = "";
   }
 }

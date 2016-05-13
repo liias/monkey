@@ -1,6 +1,9 @@
 package io.github.liias.monkey.project.runconfig;
 
 public class DeploymentTarget {
+  public static final DeploymentTarget SIMULATOR = new DeploymentTarget("SIMULATOR", "Simulator");
+  public static final DeploymentTarget DEVICE = new DeploymentTarget("DEVICE", "Device");
+
   private String id;
   private String name;
 

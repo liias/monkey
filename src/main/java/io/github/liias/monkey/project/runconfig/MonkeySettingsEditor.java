@@ -4,10 +4,14 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.intellij.application.options.ModulesComboBox;
 import com.intellij.execution.ui.CommonProgramParametersPanel;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.LabeledComponent;
+import com.intellij.openapi.ui.TextBrowseFolderListener;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.ui.ListCellRendererWrapper;
 import com.intellij.ui.PanelWithAnchor;
 import com.intellij.util.ui.UIUtil;
@@ -42,6 +46,9 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
   private final Project project;
   private LabeledComponent<JComboBox<TargetDevice>> targetDevice;
   private LabeledComponent<JComboBox<DeploymentTarget>> deploymentTarget;
+
+  private LabeledComponent<TextFieldWithBrowseButton> deviceDirectory;
+
   private JComponent anchor;
   private CommonProgramParametersPanel commonProgramParameters;
   private LabeledComponent<ModulesComboBox> moduleComponent;
@@ -50,10 +57,22 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
   public MonkeySettingsEditor(final Project project) {
     this.project = project;
     this.anchor = UIUtil.mergeComponentsWithAnchor(commonProgramParameters);
+    initComponents();
+  }
+
+  public TextFieldWithBrowseButton getDeviceDirectoryField() {
+    return deviceDirectory.getComponent();
+  }
+
+  public void initComponents() {
     ModulesComboBox modulesComboBox = moduleComponent.getComponent();
     modulesComboBox.fillModules(project, MonkeyModuleType.getInstance());
     fillTargetDevices();
     fillDeploymentTargets();
+
+    FileChooserDescriptor fileChooserDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
+    fileChooserDescriptor.setTitle("Select Device Path");
+    getDeviceDirectoryField().addBrowseFolderListener(new TextBrowseFolderListener(fileChooserDescriptor, this.project));
   }
 
   public List<TargetDevice> getAllDevices() {
@@ -82,8 +101,8 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
     comboBox.removeAllItems();
     comboBox.setRenderer(new DeploymentTargetListRenderer());
 
-    comboBox.addItem(new DeploymentTarget("SIMULATOR", "Simulator"));
-    comboBox.addItem(new DeploymentTarget("DEVICE", "Device"));
+    comboBox.addItem(DeploymentTarget.SIMULATOR);
+    comboBox.addItem(DeploymentTarget.DEVICE);
   }
 
   private static class DeploymentTargetListRenderer extends ListCellRendererWrapper<DeploymentTarget> {
@@ -134,7 +153,7 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
     commonProgramParameters.reset(configuration);
     moduleComponent.getComponent().setSelectedModule(configuration.getConfigurationModule().getModule());
 
-    final String targetDeviceId = configuration.getTargetDeviceId();
+    String targetDeviceId = configuration.getTargetDeviceId();
     if (targetDeviceId != null) {
       final TargetDevice selectedTargetDevice = new TargetDevice();
       selectedTargetDevice.setId(targetDeviceId);
@@ -143,12 +162,17 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
       this.targetDevice.getComponent().setSelectedIndex(0);
     }
 
-    final String deploymentTargetId = configuration.getDeploymentTargetId();
+    String deploymentTargetId = configuration.getDeploymentTargetId();
     if (!Strings.isNullOrEmpty(deploymentTargetId)) {
       final DeploymentTarget selectedDeploymentTarget = new DeploymentTarget(deploymentTargetId, null);
       this.deploymentTarget.getComponent().setSelectedItem(selectedDeploymentTarget);
     } else {
       this.deploymentTarget.getComponent().setSelectedIndex(0);
+    }
+
+    String deviceDirectoryPath = configuration.getDeviceDirectory();
+    if (!Strings.isNullOrEmpty(deviceDirectoryPath)) {
+      getDeviceDirectoryField().setText(deviceDirectoryPath);
     }
   }
 
@@ -162,6 +186,8 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
 
     DeploymentTarget selectedDeploymentTarget = (DeploymentTarget) this.deploymentTarget.getComponent().getSelectedItem();
     configuration.setDeploymentTargetId(selectedDeploymentTarget.getId());
+
+    configuration.setDeviceDirectory(getDeviceDirectoryField().getText());
   }
 
   @NotNull

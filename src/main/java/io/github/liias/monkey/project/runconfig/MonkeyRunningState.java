@@ -13,13 +13,19 @@ import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.util.ProgramParametersUtil;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.util.ThrowableComputable;
 import com.intellij.openapi.vfs.CharsetToolkit;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import io.github.liias.monkey.project.sdk.tools.SimulatorHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 
 import static io.github.liias.monkey.Utils.createGeneralCommandLine;
 import static io.github.liias.monkey.Utils.getForWinLinOrMac;
@@ -37,12 +43,12 @@ public class MonkeyRunningState extends CommandLineState {
 
   public MonkeyParameters getMonkeyParameters() throws ExecutionException {
     if (monkeyParameters == null) {
-      monkeyParameters = createMcParameters();
+      monkeyParameters = createMonkeyParameters();
     }
     return monkeyParameters;
   }
 
-  private MonkeyParameters createMcParameters() throws ExecutionException {
+  private MonkeyParameters createMonkeyParameters() throws ExecutionException {
     final MonkeyParameters params = new MonkeyParameters();
     final MonkeyModuleBasedConfiguration runConfig = getConfiguration();
     final MonkeyRunConfigurationModule configurationModule = runConfig.getConfigurationModule();
@@ -55,10 +61,17 @@ public class MonkeyRunningState extends CommandLineState {
   @Override
   @NotNull
   public ExecutionResult execute(@NotNull final Executor executor, @NotNull final ProgramRunner runner) throws ExecutionException {
+    if (DeploymentTarget.DEVICE.getId().equals(getConfiguration().getDeploymentTargetId())) {
+      VirtualFile copiedPrg = copyBuiltPrgToDevice();
+
+      return new DefaultExecutionResult();
+    }
+
     console = createConsole(executor);
     MonkeyParameters monkeyParameters = getMonkeyParameters();
     Sdk sdk = monkeyParameters.getSdk();
     String outputDir = monkeyParameters.getOutputPath().getPath() + File.separator;
+
     simulatorHelper = new SimulatorHelper(console, sdk, outputDir);
 
     GeneralCommandLine runSimulatorCmd = createRunSimulatorCmd();
@@ -73,7 +86,8 @@ public class MonkeyRunningState extends CommandLineState {
       console.attachToProcess(runInSimHandler);
     }
 
-    return new DefaultExecutionResult(console, runInSimHandler);
+    AnAction[] actions = createActions(console, runInSimHandler, executor);
+    return new DefaultExecutionResult(console, runInSimHandler, actions);
   }
 
   @NotNull
@@ -94,6 +108,41 @@ public class MonkeyRunningState extends CommandLineState {
     return (MonkeyModuleBasedConfiguration) configuration;
   }
 
+  private VirtualFile copyBuiltPrgToDevice() throws ExecutionException {
+    try {
+      MonkeyParameters monkeyParameters = getMonkeyParameters();
+      String prgPath = monkeyParameters.getOutputPath().findChild(getPrgName()).getPath();
+      String deviceDirectory = getConfiguration().getDeviceDirectory();
+
+      return copyPrgTo(prgPath, deviceDirectory);
+    } catch (IOException e) {
+      throw new ExecutionException(e);
+    }
+  }
+
+  @NotNull
+  private VirtualFile copyPrgTo(String prgOutputPath, String outputPath) throws IOException {
+    LocalFileSystem lfs = LocalFileSystem.getInstance();
+    VirtualFile fromOutputPrg = lfs.refreshAndFindFileByPath(prgOutputPath);
+
+    VirtualFile toOutputParent = lfs.findFileByPath(outputPath);
+    String fileName = fromOutputPrg.getName();
+
+    return ApplicationManager.getApplication()
+      .runWriteAction((ThrowableComputable<VirtualFile, IOException>) () ->
+        {
+          toOutputParent.refresh(false, true);
+
+          VirtualFile existingPrg = toOutputParent.findChild(fileName);
+          if (existingPrg != null) {
+            lfs.deleteFile(this, existingPrg);
+          }
+
+          return lfs.copyFile(this, fromOutputPrg, toOutputParent, fileName);
+        }
+      );
+  }
+
   private GeneralCommandLine createRunSimulatorCmd() throws ExecutionException {
     final Sdk sdk = getMonkeyParameters().getSdk();
     String sdkBinPath = MonkeySdkType.getBinPath(sdk);
@@ -105,9 +154,7 @@ public class MonkeyRunningState extends CommandLineState {
 
   private GeneralCommandLine createRunInSimulatorCmd() throws ExecutionException {
     MonkeyParameters monkeyParameters = getMonkeyParameters();
-    String outputDir = monkeyParameters.getOutputPath().getPath() + File.separator;
-    String outputName = getEnvironment().getProject().getName() + ".prg";
-    String prgPath = outputDir + outputName;
+    String prgPath = monkeyParameters.getOutputPath().findChild(getPrgName()).getPath();
 
     Sdk sdk = monkeyParameters.getSdk();
 
@@ -117,5 +164,10 @@ public class MonkeyRunningState extends CommandLineState {
       .withExePath(MonkeySdkType.getMonkeydoBatPath(sdk))
       .withParameters(prgPath, getConfiguration().getTargetDeviceId());
   }
+
+  public String getPrgName() {
+    return getEnvironment().getProject().getName() + ".prg";
+  }
+
 
 }
