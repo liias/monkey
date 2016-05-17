@@ -13,6 +13,7 @@ import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.execution.ui.ConsoleView;
+import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.execution.util.ProgramParametersUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.application.ApplicationManager;
@@ -25,9 +26,11 @@ import com.intellij.openapi.vfs.newvfs.impl.VirtualDirectoryImpl;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import io.github.liias.monkey.project.sdk.tools.SimulatorHelper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import static io.github.liias.monkey.Utils.createGeneralCommandLine;
 import static io.github.liias.monkey.Utils.getForWinLinOrMac;
@@ -63,13 +66,18 @@ public class MonkeyRunningState extends CommandLineState {
   @Override
   @NotNull
   public ExecutionResult execute(@NotNull final Executor executor, @NotNull final ProgramRunner runner) throws ExecutionException {
+    console = createConsole(executor);
+
     if (DeploymentTarget.DEVICE.getId().equals(getConfiguration().getDeploymentTargetId())) {
       VirtualFile copiedPrg = copyBuiltPrgToDevice();
 
-      return new DefaultExecutionResult();
+      String message = String.format("Generated %s\nYou can now start the app on your device.", copiedPrg);
+      console.print(message, ConsoleViewContentType.NORMAL_OUTPUT);
+      ProcessHandler processHandler = new DummyProcessHandler();
+      processHandler.destroyProcess();
+      return new DefaultExecutionResult(console, processHandler);
     }
 
-    console = createConsole(executor);
     MonkeyParameters monkeyParameters = getMonkeyParameters();
     Sdk sdk = monkeyParameters.getSdk();
     String outputDir = monkeyParameters.getOutputPath().getPath() + File.separator;
@@ -173,4 +181,27 @@ public class MonkeyRunningState extends CommandLineState {
   }
 
 
+  private static class DummyProcessHandler extends ProcessHandler {
+
+    @Override
+    protected void destroyProcessImpl() {
+      notifyProcessTerminated(0);
+    }
+
+    @Override
+    protected void detachProcessImpl() {
+      notifyProcessDetached();
+    }
+
+    @Override
+    public boolean detachIsDefault() {
+      return false;
+    }
+
+    @Nullable
+    @Override
+    public OutputStream getProcessInput() {
+      return null;
+    }
+  }
 }
