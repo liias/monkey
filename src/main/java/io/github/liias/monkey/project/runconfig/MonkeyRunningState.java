@@ -1,5 +1,6 @@
 package io.github.liias.monkey.project.runconfig;
 
+import com.google.common.base.Preconditions;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
@@ -20,6 +21,7 @@ import com.intellij.openapi.util.ThrowableComputable;
 import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.newvfs.impl.VirtualDirectoryImpl;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import io.github.liias.monkey.project.sdk.tools.SimulatorHelper;
 import org.jetbrains.annotations.NotNull;
@@ -124,21 +126,22 @@ public class MonkeyRunningState extends CommandLineState {
   private VirtualFile copyPrgTo(String prgOutputPath, String outputPath) throws IOException {
     LocalFileSystem lfs = LocalFileSystem.getInstance();
     VirtualFile fromOutputPrg = lfs.refreshAndFindFileByPath(prgOutputPath);
+    Preconditions.checkNotNull(fromOutputPrg);
 
-    VirtualFile toOutputParent = lfs.findFileByPath(outputPath);
+    VirtualDirectoryImpl toOutputDirectory = (VirtualDirectoryImpl) lfs.refreshAndFindFileByPath(outputPath);
+    Preconditions.checkNotNull(toOutputDirectory);
+
     String fileName = fromOutputPrg.getName();
 
+    VirtualFile existingPrg = toOutputDirectory.refreshAndFindChild(fileName);
+
     return ApplicationManager.getApplication()
-      .runWriteAction((ThrowableComputable<VirtualFile, IOException>) () ->
-        {
-          toOutputParent.refresh(false, true);
-
-          VirtualFile existingPrg = toOutputParent.findChild(fileName);
+      .runWriteAction((ThrowableComputable<VirtualFile, IOException>) () -> {
           if (existingPrg != null) {
-            lfs.deleteFile(this, existingPrg);
+            Preconditions.checkState(!existingPrg.isDirectory()); // just in case to catch mistakes
+            existingPrg.delete(this);
           }
-
-          return lfs.copyFile(this, fromOutputPrg, toOutputParent, fileName);
+          return fromOutputPrg.copy(this, toOutputDirectory, fileName);
         }
       );
   }
