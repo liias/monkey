@@ -31,6 +31,7 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
     .add(TargetDevice.SEMI_ROUND_WATCH)
     .add(TargetDevice.TALL_WATCH)
     .add(new TargetDevice("d2bravo", "D2™ Bravo"))
+    .add(new TargetDevice("d2bravo_titanium", "D2™ Bravo Titanium"))
     .add(new TargetDevice("edge_520", "Edge 520"))
     .add(new TargetDevice("edge_1000", "Edge 1000 / Explore"))
     .add(new TargetDevice("epix", "epix®"))
