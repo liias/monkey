@@ -45,7 +45,8 @@ public class MonkeyModuleBasedConfiguration extends ModuleBasedConfiguration<Mon
   @Override
   public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
     SettingsEditorGroup<MonkeyModuleBasedConfiguration> group = new SettingsEditorGroup<>();
-    group.addEditor(ExecutionBundle.message("run.configuration.configuration.tab.title"), new MonkeySettingsEditor(getProject()));
+    Module module = getConfigurationModule().getModule();
+    group.addEditor(ExecutionBundle.message("run.configuration.configuration.tab.title"), new MonkeySettingsEditor(getProject(), module));
     group.addEditor(ExecutionBundle.message("logs.tab.title"), new LogConfigurationPanel<>());
     return group;
   }

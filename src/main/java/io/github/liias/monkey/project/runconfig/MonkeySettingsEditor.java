@@ -1,14 +1,16 @@
 package io.github.liias.monkey.project.runconfig;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.intellij.application.options.ModulesComboBox;
 import com.intellij.execution.ui.CommonProgramParametersPanel;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
@@ -16,15 +18,20 @@ import com.intellij.ui.ListCellRendererWrapper;
 import com.intellij.ui.PanelWithAnchor;
 import com.intellij.util.ui.UIUtil;
 import io.github.liias.monkey.project.module.MonkeyModuleType;
+import io.github.liias.monkey.project.sdk.MonkeySdkType;
+import io.github.liias.monkey.project.sdk.devices.DevicesReader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfiguration> implements PanelWithAnchor {
 
   // TODO: populate from sdk devices.xml
+  /*
   public static final List<TargetDevice> ALL_DEVICES = new ImmutableList.Builder<TargetDevice>()
     .add(TargetDevice.SQUARE_WATCH)
     .add(TargetDevice.ROUND_WATCH)
@@ -43,7 +50,7 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
     .add(new TargetDevice("vivoactive", "vívoactive"))
     .add(new TargetDevice("vivoactive_hr", "vívoactive HR"))
     .build();
-
+*/
   private final Project project;
   private LabeledComponent<JComboBox<TargetDevice>> targetDevice;
   private LabeledComponent<JComboBox<DeploymentTarget>> deploymentTarget;
@@ -55,20 +62,20 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
   private LabeledComponent<ModulesComboBox> moduleComponent;
   private JComponent wholePanel;
 
-  public MonkeySettingsEditor(final Project project) {
+  public MonkeySettingsEditor(final Project project, Module module) {
     this.project = project;
     this.anchor = UIUtil.mergeComponentsWithAnchor(commonProgramParameters);
-    initComponents();
+    initComponents(module);
   }
 
   public TextFieldWithBrowseButton getDeviceDirectoryField() {
     return deviceDirectory.getComponent();
   }
 
-  public void initComponents() {
+  public void initComponents(Module module) {
     ModulesComboBox modulesComboBox = moduleComponent.getComponent();
     modulesComboBox.fillModules(project, MonkeyModuleType.getInstance());
-    fillTargetDevices();
+    fillTargetDevices(module);
     fillDeploymentTargets();
 
     FileChooserDescriptor fileChooserDescriptor = FileChooserDescriptorFactory.createSingleFolderDescriptor();
@@ -76,8 +83,12 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
     getDeviceDirectoryField().addBrowseFolderListener(new TextBrowseFolderListener(fileChooserDescriptor, this.project));
   }
 
-  public List<TargetDevice> getAllDevices() {
-    return ALL_DEVICES;
+  public List<TargetDevice> getAllDevices(Module module) {
+    Sdk sdk = checkNotNull(ModuleRootManager.getInstance(module).getSdk());
+    String sdkBinPath = MonkeySdkType.getBinPath(sdk);
+
+    DevicesReader devicesReader = new DevicesReader(sdkBinPath);
+    return devicesReader.parseDevicesXml();
   }
 
   private static class TargetDeviceListRenderer extends ListCellRendererWrapper<TargetDevice> {
@@ -123,13 +134,13 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
     }
   }
 
-  private void fillTargetDevices() {
+  private void fillTargetDevices(Module module) {
     final JComboBox<TargetDevice> comboBox = targetDevice.getComponent();
     comboBox.removeAllItems();
     //noinspection unchecked
     comboBox.setRenderer(new TargetDeviceListRenderer());
 
-    getAllDevices().forEach(comboBox::addItem);
+    getAllDevices(module).forEach(comboBox::addItem);
 
     comboBox.addActionListener(e -> {
       final TargetDevice selectedItem = (TargetDevice) comboBox.getSelectedItem();
