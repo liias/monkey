@@ -1,1 +1,3 @@
+apply plugin: 'org.jetbrains.intellij'
+
 jar.archiveName = "jps-plugin.jar"

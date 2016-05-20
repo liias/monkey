@@ -1,6 +1,7 @@
 package io.github.liias.monkey.project.sdk;
 
 import io.github.liias.monkey.project.sdk.skeleton.ApiReader;
+import io.github.liias.monkey.yard.YardDecompiler;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -16,4 +17,12 @@ public class SkeletonTest {
     apiReader.parseApiDebugXml();
   }
 
+  @Test
+  @Ignore
+  public void testSomething2() {
+    String docDirPath = "D:\\connectiq\\connectiq-sdk-win-1.2.9\\doc\\";
+    YardDecompiler yardDecompiler = new YardDecompiler(docDirPath);
+    String parsed = yardDecompiler.parse();
+    System.out.println(parsed);
+  }
 }

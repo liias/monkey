@@ -6,22 +6,22 @@ plugins {
 
 allprojects {
   apply plugin: 'java'
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
+  sourceCompatibility = javaVersion
+  targetCompatibility = javaVersion
   tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+}
 
-  apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'org.jetbrains.intellij'
 
-  intellij {
-    version ideaVersion
-    pluginName 'monkey'
-    downloadSources Boolean.valueOf(downloadIdeaSources)
-    publish {
-      username publishUsername
-      password publishPassword
-      pluginId '8253'
-      channel publishChannel
-    }
+intellij {
+  version ideaVersion
+  pluginName 'monkey'
+  downloadSources Boolean.valueOf(downloadIdeaSources)
+  publish {
+    username publishUsername
+    password publishPassword
+    pluginId '8253'
+    channel publishChannel
   }
 }
 
@@ -38,6 +38,7 @@ repositories {
 dependencies {
   compile project(':jps-plugin')
   compile project(':deserializer')
+  compile project(':yard-decompiler')
 }
 
 sourceSets.main.java.srcDirs += 'src/main/gen'

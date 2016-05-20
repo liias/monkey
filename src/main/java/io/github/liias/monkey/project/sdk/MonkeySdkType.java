@@ -142,6 +142,10 @@ public class MonkeySdkType extends SdkType {
     return getConvertedHomePath(sdk) + "bin" + File.separator;
   }
 
+  public static String getApiDocPath(@NotNull Sdk sdk) {
+    return getConvertedHomePath(sdk) + "doc" + File.separator;
+  }
+
   private static String getConvertedHomePath(@NotNull Sdk sdk) {
     String path = sdk.getHomePath().replace('/', File.separatorChar);
     if (!path.endsWith(File.separator)) {

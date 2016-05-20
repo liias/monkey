@@ -9,6 +9,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
+import io.github.liias.monkey.yard.YardDecompiler;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -45,9 +46,15 @@ public class SdkSkeleton {
     String skeletonFilePath = skeletonsPath + File.separator + "connectiq.mc";
     Path path = Paths.get(skeletonFilePath);
 
+    String apiDocPath = MonkeySdkType.getApiDocPath(sdk);
+    YardDecompiler yardDecompiler = new YardDecompiler(apiDocPath);
+    String skeletonsAsOneFile = yardDecompiler.parse();
+
+    /*
     String sdkBinPath = MonkeySdkType.getBinPath(sdk);
     ApiReader apiReader = new ApiReader(sdkBinPath);
     String skeletonsAsOneFile = apiReader.parseApiDebugXml();
+    */
 
     try (BufferedWriter writer = Files.newBufferedWriter(path)) {
       writer.write(skeletonsAsOneFile);

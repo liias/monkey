@@ -1,3 +1,4 @@
 rootProject.name = 'monkey'
 include ':jps-plugin'
 include ':deserializer'
+include ':yard-decompiler'
