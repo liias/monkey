@@ -30,9 +30,6 @@ version pluginVersion
 
 repositories {
   mavenCentral()
-  flatDir {
-    dirs 'lib'
-  }
 }
 
 dependencies {
