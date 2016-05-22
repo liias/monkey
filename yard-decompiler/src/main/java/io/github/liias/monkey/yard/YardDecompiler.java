@@ -138,20 +138,19 @@ public class YardDecompiler {
       SdkMethod sdkMethod = (SdkMethod) sdkEntity;
 
       for (SdkMethod.SdkMethodParameter param : sdkMethod.getParameters()) {
-        skeletonBuilder.append(stepPrefix).append("//! @param ");
-        if (param.getType() != null) {
-          skeletonBuilder.append("[").append(param.getType()).append("] ");
-        }
-        skeletonBuilder.append(param.getName());
+        skeletonBuilder.append(commentPrefix).append("@param ");
+        skeletonBuilder.append(paramAsDocString(param));
+        skeletonBuilder.append("\n");
+      }
 
-        if (param.getComment() != null) {
-          skeletonBuilder.append(" ").append(param.getComment());
-        }
+      for (SdkMethod.SdkMethodParameter option : sdkMethod.getOptions()) {
+        skeletonBuilder.append(commentPrefix).append("@option ");
+        skeletonBuilder.append(paramAsDocString(option));
         skeletonBuilder.append("\n");
       }
 
       if (sdkMethod.getReturnType() != null || sdkMethod.getReturnComment() != null) {
-        skeletonBuilder.append(stepPrefix).append("//! @return ");
+        skeletonBuilder.append(commentPrefix).append("@return ");
 
         if (sdkMethod.getReturnType() != null) {
           String returnType = "[" + sdkMethod.getReturnType() + "]";
@@ -172,6 +171,19 @@ public class YardDecompiler {
         skeletonBuilder.append(stepPrefix).append("//! @return ").append(returnType).append("\n");
       }
     }
+  }
+
+  private static String paramAsDocString(SdkMethod.SdkMethodParameter param) {
+    StringBuilder docStringBuilder = new StringBuilder();
+    if (param.getType() != null) {
+      docStringBuilder.append("[").append(param.getType()).append("] ");
+    }
+    docStringBuilder.append(param.getSafeName());
+
+    if (param.getDocumentation() != null) {
+      docStringBuilder.append(" ").append(param.getDocumentation());
+    }
+    return docStringBuilder.toString();
   }
 
   private static void addConstantsToStringBuilder(int step, SdkModuleOrClass sdkModuleOrClass, StringBuilder moduleSkeletonBuilder) {
@@ -296,20 +308,40 @@ public class YardDecompiler {
       }
     }
 
-    for (Element methodParamEl : methodEl.select(".tags ul.param li")) {
-      String paramName = methodParamEl.select(".name").first().text();
-      if (!validParamNames.contains(paramName)) {
+    Elements tagsEl = methodEl.select(".tags");
+
+    for (Element methodParamEl : tagsEl.select("ul.param li")) {
+      SdkMethod.SdkMethodParameter param = parseParam(methodParamEl);
+      String paramName = param.getName();
+      if (!validParamNames.contains(paramName) &&
+        !paramName.equals("...")// "..." is special case and will be printed as "args" instead
+        ) {
+        sdkMethod.addOption(param); // Some options are marked as mistakenly parameters in SDK API doc
         continue;
       }
-      Element paramTypeEl = methodParamEl.select(".type tt").first(); // typeless has .type, but not tt
-      String paramType = paramTypeEl == null ? null : Strings.emptyToNull(paramTypeEl.text().trim());
-      String paramComment = Strings.emptyToNull(methodParamEl.select(".inline p").text());
-      SdkMethod.SdkMethodParameter param = new SdkMethod.SdkMethodParameter(paramName, paramType, paramComment);
       sdkMethod.addParameter(param);
     }
+
+    for (Element paramOptionEl : tagsEl.select("ul.option li")) {
+      SdkMethod.SdkMethodParameter param = parseParam(paramOptionEl);
+      sdkMethod.addOption(param);
+    }
+
     findAndSetDocCommentParams(methodEl, sdkMethod);
 
     moduleOrClass.addChildMethod(sdkMethod);
+  }
+
+  private static SdkMethod.SdkMethodParameter parseParam(Element methodParamEl) {
+    String paramName = methodParamEl.select(".name").first().text();
+
+    Element paramTypeEl = methodParamEl.select(".type tt").first(); // typeless has .type, but not tt
+    String paramType = paramTypeEl == null ? null : Strings.emptyToNull(paramTypeEl.text().trim());
+    String paramComment = Strings.emptyToNull(methodParamEl.select(".inline p").text());
+
+    SdkMethod.SdkMethodParameter param = new SdkMethod.SdkMethodParameter(paramName, paramType);
+    param.setDocumentation(paramComment);
+    return param;
   }
 
   private static void findAndSetDocCommentParams(Element el, SdkEntity sdkEntity) {
@@ -667,6 +699,7 @@ public class YardDecompiler {
     private String returnComment;
 
     public List<SdkMethodParameter> parameters = new ArrayList<>();
+    public List<SdkMethodParameter> options = new ArrayList<>();
 
     public SdkMethod(String name) {
       super(name);
@@ -694,26 +727,29 @@ public class YardDecompiler {
       return parameters;
     }
 
+    // would be more correct to set options under parameter
+    public List<SdkMethodParameter> getOptions() {
+      return options;
+    }
+
     public void addParameter(SdkMethodParameter parameter) {
       parameters.add(parameter);
     }
 
+    public void addOption(SdkMethodParameter option) {
+      options.add(option);
+    }
+
     private static class SdkMethodParameter extends SdkEntity {
       private String type;
-      private String comment;
 
-      public SdkMethodParameter(String name, String type, String comment) {
+      public SdkMethodParameter(String name, String type) {
         super(name);
         this.type = type;
-        this.comment = comment;
       }
 
       public String getType() {
         return type;
-      }
-
-      public String getComment() {
-        return comment;
       }
 
       public String getSafeName() {

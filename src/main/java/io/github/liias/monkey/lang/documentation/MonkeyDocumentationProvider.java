@@ -1,5 +1,6 @@
 package io.github.liias.monkey.lang.documentation;
 
+import com.google.common.base.Strings;
 import com.intellij.lang.documentation.AbstractDocumentationProvider;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiComment;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MonkeyDocumentationProvider extends AbstractDocumentationProvider {
 
@@ -26,19 +28,19 @@ public class MonkeyDocumentationProvider extends AbstractDocumentationProvider {
       MonkeyComponent monkeyComponent = (MonkeyComponent) element.getParent();
       List<PsiComment> commentsForElement = getCommentsForElement(monkeyComponent);
 
-      StringBuilder stringBuilder = new StringBuilder();
-      for (PsiComment psiComment : commentsForElement) {
-        String text = psiComment.getText();
-        if (text.startsWith("//!")) {
-          stringBuilder.append(StringUtil.trimStart(text, "//!"));
-        }
-      }
-      docText = stringBuilder.toString();
+      docText = commentsForElement.stream()
+        .filter(c -> c.getText().startsWith("//!"))
+        .map(c -> StringUtil.trimStart(c.getText(), "//!").trim())
+        .collect(Collectors.joining("<br>"));
+
       //docText = commentsForElement.stream().map(PsiElement::getText).collect(Collectors.joining("\n"));
       //docText = getDocumentationText(monkeyComponent);
     }
 
-    return quickNavigateInfo + docText;
+    if (quickNavigateInfo != null) {
+      return quickNavigateInfo + docText;
+    }
+    return Strings.nullToEmpty(docText);
   }
 
   @NotNull
