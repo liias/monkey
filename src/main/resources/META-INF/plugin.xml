@@ -141,9 +141,13 @@
             text="Monkey C File" description="Create new Monkey C source file"/>
 
     <group id="ConnectIqActionGroup" text="Connect I_Q" description="Garmin Connect IQ specific actions" popup="true">
-      <action id="Monkey.ObjectStore"
+      <action id="Monkey.AppSettings"
               class="io.github.liias.monkey.ide.actions.appsettings.AppSettingsAction"
               description="App Settings Editor aka Object Store"/>
+
+      <action id="Monkey.ApiDoc"
+              class="io.github.liias.monkey.ide.actions.ApiDocsAction"
+              description="Open API documentation in a browser"/>
 
       <add-to-group group-id="MainMenu" relative-to-action="HelpMenu" anchor="before"/>
     </group>
