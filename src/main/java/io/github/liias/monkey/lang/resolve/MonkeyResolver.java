@@ -74,6 +74,11 @@ public class MonkeyResolver implements ResolveCache.AbstractResolver<MonkeyRefer
     5. Members of the superclass’s parent module up to the global namespace
     */
 
+    // You can bring a module into your scoping level with the using keyword.
+    // using allows a module to be imported into another class or module by a symbol.
+    // using statements are scoped to the class or module in which they are defined.
+
+
     return result;
   }
 }

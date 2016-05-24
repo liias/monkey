@@ -24,13 +24,13 @@ public class MonkeyFile extends PsiFileBase {
 
   @Override
   public String toString() {
-    return "Monkey C File";
+    return "Monkey C File: " + getName();
   }
 
   @Override
   public boolean processDeclarations(@NotNull PsiScopeProcessor processor, @NotNull ResolveState state, PsiElement lastParent, @NotNull PsiElement place) {
     return MonkeyPsiCompositeElementImpl.processDeclarationsImpl(this, processor, state)
-        && super.processDeclarations(processor, state, lastParent, place);
+      && super.processDeclarations(processor, state, lastParent, place);
   }
 
 }

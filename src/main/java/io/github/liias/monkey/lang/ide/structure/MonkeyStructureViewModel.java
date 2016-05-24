@@ -7,6 +7,7 @@ import com.intellij.psi.PsiFile;
 import io.github.liias.monkey.lang.psi.MonkeyClass;
 import io.github.liias.monkey.lang.psi.MonkeyComponent;
 import io.github.liias.monkey.lang.psi.MonkeyFieldDeclaration;
+import io.github.liias.monkey.lang.psi.MonkeyModuleDeclaration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,12 +15,12 @@ public class MonkeyStructureViewModel extends StructureViewModelBase implements 
   public MonkeyStructureViewModel(@NotNull PsiFile psiFile, @Nullable Editor editor) {
     super(psiFile, editor, new MonkeyStructureViewElement(psiFile));
     // order matters, first elements are compared first when walking up parents in AST:
-    withSuitableClasses(MonkeyFieldDeclaration.class, MonkeyClass.class);
+    withSuitableClasses(MonkeyFieldDeclaration.class, MonkeyClass.class, MonkeyModuleDeclaration.class);
   }
 
   @Override
   public boolean shouldEnterElement(Object element) {
-    return element instanceof MonkeyClass;
+    return element instanceof MonkeyClass || element instanceof MonkeyModuleDeclaration;
   }
 
   @Override

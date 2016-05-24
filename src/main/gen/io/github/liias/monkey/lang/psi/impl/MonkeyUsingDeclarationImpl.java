@@ -33,8 +33,8 @@ public class MonkeyUsingDeclarationImpl extends MonkeyPsiCompositeElementImpl im
 
   @Override
   @NotNull
-  public MonkeyQualifiedName getQualifiedName() {
-    return findNotNullChildByClass(MonkeyQualifiedName.class);
+  public List<MonkeyExpression> getExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
   }
 
 }

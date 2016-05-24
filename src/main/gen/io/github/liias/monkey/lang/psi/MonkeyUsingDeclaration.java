@@ -11,6 +11,6 @@ public interface MonkeyUsingDeclaration extends MonkeyPsiCompositeElement {
   MonkeyComponentName getComponentName();
 
   @NotNull
-  MonkeyQualifiedName getQualifiedName();
+  List<MonkeyExpression> getExpressionList();
 
 }

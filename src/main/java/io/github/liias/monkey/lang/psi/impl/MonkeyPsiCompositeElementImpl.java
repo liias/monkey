@@ -35,7 +35,7 @@ public class MonkeyPsiCompositeElementImpl extends ASTWrapperPsiElement implemen
                                      PsiElement lastParent,
                                      @NotNull PsiElement place) {
     return processDeclarationsImpl(this, processor, state)
-        && super.processDeclarations(processor, state, lastParent, place);
+      && super.processDeclarations(processor, state, lastParent, place);
   }
 
   public static boolean processDeclarationsImpl(@Nullable PsiElement context,
@@ -59,6 +59,16 @@ public class MonkeyPsiCompositeElementImpl extends ASTWrapperPsiElement implemen
       if (child instanceof MonkeyUsingDeclaration) {
         MonkeyUsingDeclaration usingDeclaration = (MonkeyUsingDeclaration) child;
         result.add(usingDeclaration.getComponentName());
+      }
+
+      if (child instanceof MonkeyModuleDeclaration) {
+        MonkeyModuleDeclaration moduleDeclaration = (MonkeyModuleDeclaration) child;
+        MonkeyModuleBodyMembers moduleBodyMembers = moduleDeclaration.getModuleBody().getModuleBodyMembers();
+        if (moduleBodyMembers != null) {
+          Set<MonkeyComponentName> moduleChildrenNames = getDeclarationElementToProcess(moduleBodyMembers);// moduleBodyMembers.getChildren() will contain stuff
+          result.addAll(moduleChildrenNames);
+        }
+        result.add(moduleDeclaration.getComponentName());
       }
 
       if (child instanceof MonkeyEnumDeclaration) {

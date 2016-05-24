@@ -5,15 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface MonkeyObjectCreator extends MonkeyPsiCompositeElement {
-
-  @Nullable
-  MonkeyArguments getArguments();
-
-  @Nullable
-  MonkeyClassBody getClassBody();
+public interface MonkeyQualifiedReferenceExpression extends MonkeyExpression {
 
   @NotNull
-  List<MonkeyExpression> getExpressionList();
+  MonkeyReferenceExpression getReferenceExpression();
 
 }

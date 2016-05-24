@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static io.github.liias.monkey.lang.psi.MonkeyTypes.*;
 import io.github.liias.monkey.lang.psi.*;
 
-public class MonkeyObjectCreatorImpl extends MonkeyPsiCompositeElementImpl implements MonkeyObjectCreator {
+public class MonkeyQualifiedReferenceExpressionImpl extends MonkeyExpressionImpl implements MonkeyQualifiedReferenceExpression {
 
-  public MonkeyObjectCreatorImpl(ASTNode node) {
+  public MonkeyQualifiedReferenceExpressionImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MonkeyVisitor visitor) {
-    visitor.visitObjectCreator(this);
+    visitor.visitQualifiedReferenceExpression(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -26,21 +26,9 @@ public class MonkeyObjectCreatorImpl extends MonkeyPsiCompositeElementImpl imple
   }
 
   @Override
-  @Nullable
-  public MonkeyArguments getArguments() {
-    return findChildByClass(MonkeyArguments.class);
-  }
-
-  @Override
-  @Nullable
-  public MonkeyClassBody getClassBody() {
-    return findChildByClass(MonkeyClassBody.class);
-  }
-
-  @Override
   @NotNull
-  public List<MonkeyExpression> getExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
+  public MonkeyReferenceExpression getReferenceExpression() {
+    return findNotNullChildByClass(MonkeyReferenceExpression.class);
   }
 
 }

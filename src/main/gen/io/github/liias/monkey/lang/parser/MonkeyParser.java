@@ -176,6 +176,9 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     else if (t == QUALIFIED_NAME) {
       r = qualifiedName(b, 0);
     }
+    else if (t == QUALIFIED_REFERENCE_EXPRESSION) {
+      r = qualifiedReferenceExpression(b, 0);
+    }
     else if (t == REFERENCE_EXPRESSION) {
       r = referenceExpression(b, 0);
     }
@@ -241,8 +244,8 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     create_token_set_(ADDITIVE_EXPRESSION, AND_EXPRESSION, BITWISE_EXPRESSION, CONDITIONAL_AND_EXPRESSION,
       CONDITIONAL_EXPRESSION, CONDITIONAL_OR_EXPRESSION, EQUALITY_EXPRESSION, EXCLUSIVE_OR_EXPRESSION,
       EXPRESSION, HAS_EXPRESSION, INCLUSIVE_OR_EXPRESSION, INSTANCE_OF_EXPRESSION,
-      MULTIPLICATIVE_EXPRESSION, PAR_EXPRESSION, REFERENCE_EXPRESSION, RELATIONAL_EXPRESSION,
-      SHIFT_EXPRESSION, UNARY_EXPRESSION),
+      MULTIPLICATIVE_EXPRESSION, PAR_EXPRESSION, QUALIFIED_REFERENCE_EXPRESSION, REFERENCE_EXPRESSION,
+      RELATIONAL_EXPRESSION, SHIFT_EXPRESSION, UNARY_EXPRESSION),
   };
 
   /* ********************************************************** */
@@ -814,7 +817,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // modifiers CLASS componentName (EXTENDS referenceExpression qualifiedReferenceExpression*)? classBody
+  // modifiers CLASS componentName (EXTENDS fullyQualifiedReferenceExpression)? classBody
   public static boolean classDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classDeclaration")) return false;
     boolean r, p;
@@ -829,35 +832,22 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // (EXTENDS referenceExpression qualifiedReferenceExpression*)?
+  // (EXTENDS fullyQualifiedReferenceExpression)?
   private static boolean classDeclaration_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classDeclaration_3")) return false;
     classDeclaration_3_0(b, l + 1);
     return true;
   }
 
-  // EXTENDS referenceExpression qualifiedReferenceExpression*
+  // EXTENDS fullyQualifiedReferenceExpression
   private static boolean classDeclaration_3_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "classDeclaration_3_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, EXTENDS);
-    r = r && referenceExpression(b, l + 1);
-    r = r && classDeclaration_3_0_2(b, l + 1);
+    r = r && fullyQualifiedReferenceExpression(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
-  }
-
-  // qualifiedReferenceExpression*
-  private static boolean classDeclaration_3_0_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "classDeclaration_3_0_2")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!qualifiedReferenceExpression(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "classDeclaration_3_0_2", c)) break;
-      c = current_position_(b);
-    }
-    return true;
   }
 
   /* ********************************************************** */
@@ -1487,6 +1477,31 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // referenceExpression qualifiedReferenceExpression*
+  static boolean fullyQualifiedReferenceExpression(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fullyQualifiedReferenceExpression")) return false;
+    if (!nextTokenIs(b, IDENTIFIER)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = referenceExpression(b, l + 1);
+    r = r && fullyQualifiedReferenceExpression_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // qualifiedReferenceExpression*
+  private static boolean fullyQualifiedReferenceExpression_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "fullyQualifiedReferenceExpression_1")) return false;
+    int c = current_position_(b);
+    while (true) {
+      if (!qualifiedReferenceExpression(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "fullyQualifiedReferenceExpression_1", c)) break;
+      c = current_position_(b);
+    }
+    return true;
+  }
+
+  /* ********************************************************** */
   // modifiers FUNCTION componentName
   //  LPAREN formalParameterDeclarations? RPAREN block
   public static boolean functionDeclaration(PsiBuilder b, int l) {
@@ -1885,37 +1900,24 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // NEW referenceExpression qualifiedReferenceExpression* arguments classBody?
+  // NEW fullyQualifiedReferenceExpression arguments classBody?
   public static boolean objectCreator(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "objectCreator")) return false;
     if (!nextTokenIs(b, NEW)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, OBJECT_CREATOR, null);
     r = consumeToken(b, NEW);
-    r = r && referenceExpression(b, l + 1);
+    r = r && fullyQualifiedReferenceExpression(b, l + 1);
     p = r; // pin = 2
-    r = r && report_error_(b, objectCreator_2(b, l + 1));
-    r = p && report_error_(b, arguments(b, l + 1)) && r;
-    r = p && objectCreator_4(b, l + 1) && r;
+    r = r && report_error_(b, arguments(b, l + 1));
+    r = p && objectCreator_3(b, l + 1) && r;
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }
 
-  // qualifiedReferenceExpression*
-  private static boolean objectCreator_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "objectCreator_2")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!qualifiedReferenceExpression(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "objectCreator_2", c)) break;
-      c = current_position_(b);
-    }
-    return true;
-  }
-
   // classBody?
-  private static boolean objectCreator_4(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "objectCreator_4")) return false;
+  private static boolean objectCreator_3(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "objectCreator_3")) return false;
     classBody(b, l + 1);
     return true;
   }
@@ -1936,7 +1938,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // parExpression
-  //                   | referenceExpression qualifiedReferenceExpression* identifierSuffix?
+  //                   | fullyQualifiedReferenceExpression identifierSuffix?
   //                   | literal
   //                   | symbol
   //                   | creator
@@ -1955,33 +1957,20 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // referenceExpression qualifiedReferenceExpression* identifierSuffix?
+  // fullyQualifiedReferenceExpression identifierSuffix?
   private static boolean primary_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "primary_1")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = referenceExpression(b, l + 1);
+    r = fullyQualifiedReferenceExpression(b, l + 1);
     r = r && primary_1_1(b, l + 1);
-    r = r && primary_1_2(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
-  // qualifiedReferenceExpression*
+  // identifierSuffix?
   private static boolean primary_1_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "primary_1_1")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!qualifiedReferenceExpression(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "primary_1_1", c)) break;
-      c = current_position_(b);
-    }
-    return true;
-  }
-
-  // identifierSuffix?
-  private static boolean primary_1_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "primary_1_2")) return false;
     identifierSuffix(b, l + 1);
     return true;
   }
@@ -2031,7 +2020,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, DOT);
     r = r && referenceExpression(b, l + 1);
-    exit_section_(b, m, REFERENCE_EXPRESSION, r);
+    exit_section_(b, m, QUALIFIED_REFERENCE_EXPRESSION, r);
     return r;
   }
 
@@ -2680,14 +2669,14 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // USING qualifiedName (AS componentName)? SEMI
+  // USING fullyQualifiedReferenceExpression (AS componentName)? SEMI
   public static boolean usingDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "usingDeclaration")) return false;
     if (!nextTokenIs(b, USING)) return false;
     boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, USING_DECLARATION, null);
     r = consumeToken(b, USING);
-    r = r && qualifiedName(b, l + 1);
+    r = r && fullyQualifiedReferenceExpression(b, l + 1);
     p = r; // pin = 2
     r = r && report_error_(b, usingDeclaration_2(b, l + 1));
     r = p && consumeToken(b, SEMI) && r;

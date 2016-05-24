@@ -149,7 +149,7 @@ private compilationUnit ::= usingDeclaration
 // You can bring a module into your scoping level with the using keyword.
 // using allows a module to be imported into another class or module by a symbol.
 // using statements are scoped to the class or module in which they are defined.
-usingDeclaration ::= USING qualifiedName (AS componentName)? SEMI {pin=2}
+usingDeclaration ::= USING fullyQualifiedReferenceExpression (AS componentName)? SEMI {pin=2}
 
 // module
 // TODO: can a module have static/hidden modifiers?
@@ -159,8 +159,10 @@ moduleBody ::= LBRACE moduleBodyMembers RBRACE {pin=1}
 moduleBodyMembers ::= moduleBodyMember* {implements="io.github.liias.monkey.lang.psi.MonkeyExecutionScope"}
 private moduleBodyMember ::= constDeclaration | fieldDeclarationList | functionDeclaration | classDeclaration | enumDeclaration | moduleDeclaration
 
+private fullyQualifiedReferenceExpression ::= referenceExpression qualifiedReferenceExpression*
+
 // class
-classDeclaration ::= modifiers CLASS componentName (EXTENDS referenceExpression qualifiedReferenceExpression*)? classBody
+classDeclaration ::= modifiers CLASS componentName (EXTENDS fullyQualifiedReferenceExpression)? classBody
 {pin=2 mixin="io.github.liias.monkey.lang.psi.impl.AbstractMonkeyPsiClass" implements="io.github.liias.monkey.lang.psi.MonkeyClass"}
 
 classBody ::= LBRACE classBodyMembers RBRACE {pin=1}
@@ -317,13 +319,14 @@ private unaryExpressionNotPlusMinus ::= TILDE unaryExpression
                                       | primary selector* (PLUSPLUS | SUBSUB)?
 
 private primary ::= parExpression
-                  | referenceExpression qualifiedReferenceExpression* identifierSuffix?
+                  | fullyQualifiedReferenceExpression identifierSuffix?
                   | literal
                   | symbol
                   | creator
                   | VOID DOT CLASS
 
-qualifiedReferenceExpression ::= DOT referenceExpression {elementType="referenceExpression"}
+qualifiedReferenceExpression ::= DOT referenceExpression
+// {elementType="referenceExpression"}
 
 referenceExpression ::= id {
   mixin="io.github.liias.monkey.lang.psi.impl.MonkeyReferenceImpl"
@@ -340,7 +343,7 @@ selector ::= DOT IDENTIFIER arguments?
            | LBRACKET expression RBRACKET
 
 creator ::= objectCreator | arrayCreator
-objectCreator ::= NEW referenceExpression qualifiedReferenceExpression* arguments classBody? {pin=2}
+objectCreator ::= NEW fullyQualifiedReferenceExpression arguments classBody? {pin=2}
 
 arrayCreator ::= NEW LBRACKET expression RBRACKET // new [expression evaluating to integer]
                | LBRACKET (expression (COMMA expression)* )? RBRACKET // [expression1, expression2, ...]
