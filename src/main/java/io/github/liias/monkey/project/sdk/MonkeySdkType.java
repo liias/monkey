@@ -55,6 +55,7 @@ public class MonkeySdkType extends SdkType {
 
   // 16x16
   @Override
+  @NotNull
   public Icon getIconForAddAction() {
     return MonkeyIcons.ADD_SDK;
   }
@@ -112,10 +113,11 @@ public class MonkeySdkType extends SdkType {
 
   @Nullable
   @Override
-  public AdditionalDataConfigurable createAdditionalDataConfigurable(SdkModel sdkModel, SdkModificator sdkModificator) {
+  public AdditionalDataConfigurable createAdditionalDataConfigurable(@NotNull SdkModel sdkModel, @NotNull SdkModificator sdkModificator) {
     return null;
   }
 
+  @NotNull
   @Override
   public String getPresentableName() {
     return "Connect IQ SDK";

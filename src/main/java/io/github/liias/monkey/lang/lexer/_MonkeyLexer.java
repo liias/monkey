@@ -441,7 +441,7 @@ public class _MonkeyLexer implements FlexLexer {
 
   /* user code: */
   public _MonkeyLexer() {
-    this((java.io.Reader)null);
+    this(null);
   }
 
 
@@ -451,7 +451,7 @@ public class _MonkeyLexer implements FlexLexer {
    * @param   in  the java.io.Reader to read input from.
    */
   public _MonkeyLexer(java.io.Reader in) {
-    this.zzReader = in;
+    zzReader = in;
   }
 
 

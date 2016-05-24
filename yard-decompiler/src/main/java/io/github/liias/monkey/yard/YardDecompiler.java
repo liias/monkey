@@ -552,7 +552,6 @@ public class YardDecompiler {
 
     public void addPermission(String permission) {
       this.permissions.add(permission);
-      ;
     }
 
     public List<String> getPermissions() {

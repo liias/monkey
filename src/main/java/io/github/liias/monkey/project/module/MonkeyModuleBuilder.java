@@ -70,7 +70,7 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
   @Nullable
   private final String appType;
 
-  public MonkeyModuleBuilder(String appType) {
+  public MonkeyModuleBuilder(@Nullable String appType) {
     this.appType = appType;
   }
 
@@ -124,11 +124,11 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     if (files.length > 0) {
       final VirtualFile contentRoot = files[0];
       StartupManager.getInstance(project).runWhenProjectIsInitialized(() ->
-          ApplicationManager.getApplication().invokeLater(() ->
-              DocumentUtil.writeInRunUndoTransparentAction(() ->
-                  createModule(module, contentRoot)
-              )
+        ApplicationManager.getApplication().invokeLater(() ->
+          DocumentUtil.writeInRunUndoTransparentAction(() ->
+            createModule(module, contentRoot)
           )
+        )
       );
     }
   }
@@ -208,9 +208,9 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
 
     // TODO: allow user to choose apptype's app (i.e Simple or Complex), instead of selecting random first
     final NewProjectFileMap newProjectFileMap = newProjectFileMaps.stream()
-        .filter(fileMap -> fileMap != null && appType.equals(fileMap.getAppType().getStringValue())
-        )
-        .findFirst().get();
+      .filter(fileMap -> fileMap != null && appType.equals(fileMap.getAppType().getStringValue())
+      )
+      .findFirst().get();
     final GenericAttributeValue<String> baseDir = newProjectFileMap.getBaseDir(); // e.g templates/watch-app/simple
 
     String appName = module.getName(); // used in resources.xml to set freeform app name
@@ -317,7 +317,7 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
 
     final VirtualFile virtualFile = psiFile.getVirtualFile();
     if (virtualFile == null ||
-        !ReadonlyStatusHandler.ensureFilesWritable(psiFile.getProject(), virtualFile)) {
+      !ReadonlyStatusHandler.ensureFilesWritable(psiFile.getProject(), virtualFile)) {
       return null;
     }
 

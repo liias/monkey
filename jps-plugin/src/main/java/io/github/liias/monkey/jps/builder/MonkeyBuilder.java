@@ -48,9 +48,7 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
   public static final String NAME = "Monkey C";
 
   private final static Logger LOG = Logger.getInstance(MonkeyBuilder.class);
-  public static final String MONKEYBRAINS_FQN = "com.garmin.monkeybrains.Monkeybrains";
   public static final String MONKEYBRAINS_JAR_FILENAME = "monkeybrains.jar";
-
 
   private static final Pattern COMPILE_OUTPUT_LINE_WITH_FILE_AND_LINE_INFO = Pattern.compile("(?<type>(ERROR|WARNING)):(?<file>.*):(?<lineNo>[0-9]*):(?<message>.*)");
   private static final String COMPILER_OUTPUT_TYPE_ERROR = "ERROR";
