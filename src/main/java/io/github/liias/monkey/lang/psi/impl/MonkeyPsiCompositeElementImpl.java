@@ -71,6 +71,16 @@ public class MonkeyPsiCompositeElementImpl extends ASTWrapperPsiElement implemen
         result.add(moduleDeclaration.getComponentName());
       }
 
+      if (child instanceof MonkeyClassDeclaration) {
+        MonkeyClassDeclaration classDeclaration = (MonkeyClassDeclaration) child;
+
+        if (classDeclaration.getBodyMembers() != null) {
+          Set<MonkeyComponentName> classChildrenNames = getDeclarationElementToProcess(classDeclaration.getBodyMembers());
+          result.addAll(classChildrenNames);
+        }
+        result.add(classDeclaration.getComponentName());
+      }
+
       if (child instanceof MonkeyEnumDeclaration) {
         MonkeyEnumDeclaration enumDeclaration = (MonkeyEnumDeclaration) child;
         List<MonkeyEnumConstant> enumConstantList = enumDeclaration.getEnumConstantList();
