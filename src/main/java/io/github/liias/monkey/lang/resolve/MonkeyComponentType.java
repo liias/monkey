@@ -46,7 +46,7 @@ public enum MonkeyComponentType {
     if (element instanceof MonkeyConstDeclaration) {
       return CONSTANT;
     }
-    if (element instanceof MonkeyEnumDeclaration) {
+    if (element instanceof MonkeyEnumConstant) {
       return ENUM;
     }
     if (element instanceof MonkeyVariableDeclaration) {
