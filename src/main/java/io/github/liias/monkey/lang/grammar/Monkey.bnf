@@ -325,8 +325,7 @@ private primary ::= parExpression
                   | creator
                   | VOID DOT CLASS
 
-qualifiedReferenceExpression ::= DOT referenceExpression
-// {elementType="referenceExpression"}
+qualifiedReferenceExpression ::= DOT referenceExpression {elementType="referenceExpression"}
 
 referenceExpression ::= id {
   mixin="io.github.liias.monkey.lang.psi.impl.MonkeyReferenceImpl"

@@ -8,9 +8,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.UIUtil;
-import io.github.liias.monkey.lang.psi.MonkeyComponent;
-import io.github.liias.monkey.lang.psi.MonkeyFunctionDeclaration;
-import io.github.liias.monkey.lang.psi.MonkeyTypes;
+import io.github.liias.monkey.lang.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,17 +26,27 @@ public class MonkeyDocumentationProvider extends AbstractDocumentationProvider {
       MonkeyComponent monkeyComponent = (MonkeyComponent) element.getParent();
       List<PsiComment> commentsForElement = getCommentsForElement(monkeyComponent);
 
+      List<String> parameters = MonkeyDocParser.getParameters(commentsForElement);
+
       docText = commentsForElement.stream()
         .filter(c -> c.getText().startsWith("//!"))
         .map(c -> StringUtil.trimStart(c.getText(), "//!").trim())
+        .filter(line -> !line.startsWith("@param"))
         .collect(Collectors.joining("<br>"));
+      docText += "<br>";
+
+      if (!parameters.isEmpty()) {
+        docText += "<b>Parameters</b>:<br>";
+        String params = parameters.stream().collect(Collectors.joining("<br>"));
+        docText += params + "<br>";
+      }
 
       //docText = commentsForElement.stream().map(PsiElement::getText).collect(Collectors.joining("\n"));
       //docText = getDocumentationText(monkeyComponent);
     }
 
     if (quickNavigateInfo != null) {
-      return quickNavigateInfo + docText;
+      return quickNavigateInfo + "<br>" + docText;
     }
     return Strings.nullToEmpty(docText);
   }
@@ -147,14 +155,24 @@ public class MonkeyDocumentationProvider extends AbstractDocumentationProvider {
 
   private static void appendSignature(final MonkeyComponent namedComponent, final StringBuilder builder) {
     if (namedComponent instanceof MonkeyFunctionDeclaration) {
-      appendFunctionSignature(builder, namedComponent);
+      appendFunctionSignature(builder, (MonkeyFunctionDeclaration) namedComponent);
     }
   }
 
-  private static void appendFunctionSignature(final StringBuilder builder, final MonkeyComponent function) {
+  private static void appendFunctionSignature(final StringBuilder builder, final MonkeyFunctionDeclaration function) {
     builder.append("<b>").append(function.getName()).append("</b>");
 
     builder.append('(');
+
+    MonkeyFormalParameterDeclarations formalParameterDeclarations = function.getFormalParameterDeclarations();
+    if (formalParameterDeclarations != null) {
+      List<MonkeyComponentName> names = formalParameterDeclarations.getComponentNameList();
+      String args = names.stream()
+        .map(cn -> cn.getName())
+        .collect(Collectors.joining(", "));
+      builder.append(args);
+    }
+
     //builder.append(StringUtil.escapeXml(
     //    DartPresentableUtil.getPresentableParameterList(function, new DartGenericSpecialization(), true, true, false)));
     builder.append(')');

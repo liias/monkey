@@ -40,8 +40,14 @@ public class MonkeyStructureViewElement extends PsiTreeElementBase<NavigatablePs
         }
       }
     } else if (element instanceof MonkeyClass) {
-      for (MonkeyComponent subNamedComponent : getNamedSubComponents((MonkeyClass) element)) {
+      MonkeyClass monkeyClass = (MonkeyClass) element;
+      for (MonkeyComponent subNamedComponent : getNamedSubComponents(monkeyClass)) {
         result.add(new MonkeyStructureViewElement(subNamedComponent));
+      }
+    } else if (element instanceof MonkeyModuleDeclaration) {
+      MonkeyModuleDeclaration moduleDeclaration = (MonkeyModuleDeclaration) element;
+      for (MonkeyComponent monkeyComponent : getNamedSubComponents(moduleDeclaration)) {
+        result.add(new MonkeyStructureViewElement(monkeyComponent));
       }
     }
 
@@ -49,9 +55,20 @@ public class MonkeyStructureViewElement extends PsiTreeElementBase<NavigatablePs
   }
 
   @NotNull
+  private static List<MonkeyComponent> getNamedSubComponents(MonkeyModuleDeclaration monkeyModuleDeclaration) {
+    MonkeyModuleBodyMembers moduleBodyMembers = monkeyModuleDeclaration.getModuleBody().getModuleBodyMembers();
+    return getModuleOrClassChildren(moduleBodyMembers);
+  }
+
+  @NotNull
   private static List<MonkeyComponent> getNamedSubComponents(MonkeyClass monkeyClass) {
     PsiElement classBodyMembers = monkeyClass.getBodyMembers();
 
+    return getModuleOrClassChildren(classBodyMembers);
+  }
+
+  @NotNull
+  private static List<MonkeyComponent> getModuleOrClassChildren(PsiElement classBodyMembers) {
     List<MonkeyComponent> result = new ArrayList<>();
     if (classBodyMembers == null) {
       return result;

@@ -31,6 +31,7 @@ public class MonkeyStructureViewModel extends StructureViewModelBase implements 
   @Override
   public boolean isAlwaysLeaf(StructureViewTreeElement element) {
     final Object value = element.getValue();
-    return value instanceof MonkeyComponent && !(value instanceof MonkeyClass);
+    return value instanceof MonkeyComponent &&
+      !(value instanceof MonkeyClass || value instanceof MonkeyModuleDeclaration);
   }
 }

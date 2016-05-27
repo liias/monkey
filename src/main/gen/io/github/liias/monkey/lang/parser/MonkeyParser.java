@@ -176,9 +176,6 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     else if (t == QUALIFIED_NAME) {
       r = qualifiedName(b, 0);
     }
-    else if (t == QUALIFIED_REFERENCE_EXPRESSION) {
-      r = qualifiedReferenceExpression(b, 0);
-    }
     else if (t == REFERENCE_EXPRESSION) {
       r = referenceExpression(b, 0);
     }
@@ -244,8 +241,8 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     create_token_set_(ADDITIVE_EXPRESSION, AND_EXPRESSION, BITWISE_EXPRESSION, CONDITIONAL_AND_EXPRESSION,
       CONDITIONAL_EXPRESSION, CONDITIONAL_OR_EXPRESSION, EQUALITY_EXPRESSION, EXCLUSIVE_OR_EXPRESSION,
       EXPRESSION, HAS_EXPRESSION, INCLUSIVE_OR_EXPRESSION, INSTANCE_OF_EXPRESSION,
-      MULTIPLICATIVE_EXPRESSION, PAR_EXPRESSION, QUALIFIED_REFERENCE_EXPRESSION, REFERENCE_EXPRESSION,
-      RELATIONAL_EXPRESSION, SHIFT_EXPRESSION, UNARY_EXPRESSION),
+      MULTIPLICATIVE_EXPRESSION, PAR_EXPRESSION, REFERENCE_EXPRESSION, RELATIONAL_EXPRESSION,
+      SHIFT_EXPRESSION, UNARY_EXPRESSION),
   };
 
   /* ********************************************************** */
@@ -2020,7 +2017,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, DOT);
     r = r && referenceExpression(b, l + 1);
-    exit_section_(b, m, QUALIFIED_REFERENCE_EXPRESSION, r);
+    exit_section_(b, m, REFERENCE_EXPRESSION, r);
     return r;
   }
 

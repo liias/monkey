@@ -210,10 +210,6 @@ public class MonkeyVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
-  public void visitQualifiedReferenceExpression(@NotNull MonkeyQualifiedReferenceExpression o) {
-    visitExpression(o);
-  }
-
   public void visitReferenceExpression(@NotNull MonkeyReferenceExpression o) {
     visitExpression(o);
     // visitReference(o);

@@ -39,8 +39,8 @@ public class MonkeyObjectCreatorImpl extends MonkeyPsiCompositeElementImpl imple
 
   @Override
   @NotNull
-  public List<MonkeyExpression> getExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
+  public List<MonkeyReferenceExpression> getReferenceExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyReferenceExpression.class);
   }
 
 }

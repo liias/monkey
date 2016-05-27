@@ -59,7 +59,6 @@ public interface MonkeyTypes {
   IElementType OBJECT_CREATOR = new MonkeyElementType("OBJECT_CREATOR");
   IElementType PAR_EXPRESSION = new MonkeyElementType("PAR_EXPRESSION");
   IElementType QUALIFIED_NAME = new MonkeyElementType("QUALIFIED_NAME");
-  IElementType QUALIFIED_REFERENCE_EXPRESSION = new MonkeyElementType("QUALIFIED_REFERENCE_EXPRESSION");
   IElementType REFERENCE_EXPRESSION = new MonkeyElementType("REFERENCE_EXPRESSION");
   IElementType RELATIONAL_EXPRESSION = new MonkeyElementType("RELATIONAL_EXPRESSION");
   IElementType RELATIONAL_OP = new MonkeyElementType("RELATIONAL_OP");
@@ -325,9 +324,6 @@ public interface MonkeyTypes {
       }
       else if (type == QUALIFIED_NAME) {
         return new MonkeyQualifiedNameImpl(node);
-      }
-      else if (type == QUALIFIED_REFERENCE_EXPRESSION) {
-        return new MonkeyQualifiedReferenceExpressionImpl(node);
       }
       else if (type == REFERENCE_EXPRESSION) {
         return new MonkeyReferenceExpressionImpl(node);

@@ -39,14 +39,14 @@ public class MonkeyClassDeclarationImpl extends AbstractMonkeyPsiClass implement
 
   @Override
   @NotNull
-  public List<MonkeyExpression> getExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
+  public MonkeyModifiers getModifiers() {
+    return findNotNullChildByClass(MonkeyModifiers.class);
   }
 
   @Override
   @NotNull
-  public MonkeyModifiers getModifiers() {
-    return findNotNullChildByClass(MonkeyModifiers.class);
+  public List<MonkeyReferenceExpression> getReferenceExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyReferenceExpression.class);
   }
 
 }
