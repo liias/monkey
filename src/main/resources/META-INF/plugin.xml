@@ -3,7 +3,7 @@
   <name>Monkey C (Garmin Connect IQ)</name>
   <!-- this version is overridden on gradle building and is
   specified in gradle.properties as  pluginVersion -->
-  <version>0.2.3</version>
+  <version>0.2.4</version>
   <vendor email="madisliias@gmail.com" url="https://liias.github.io">Madis Liias</vendor>
 
   <description><![CDATA[
@@ -11,6 +11,14 @@
     ]]></description>
 
   <change-notes><![CDATA[
+    <p>0.2.4</p>
+    <ul>
+      <li>Allow run app action to build prg and copy it to device (currently no release prg)</li>
+      <li>Parse SDK skeleton from the SDK documentation</li>
+      <li>Added "Browse API Documentation" to Connect IQ menu</li>
+      <li>Parse module references (still very dumb, ref search is only by name)</li>
+      <li>Take devices list from SDK</li>
+    </ul>
     <p>0.2.3</p>
     <ul>
       <li>Added App Settings window tool bar to the right</li>

@@ -1,7 +1,7 @@
 import org.jetbrains.intellij.RunIdeaTask
 
 plugins {
-  id "org.jetbrains.intellij" version "0.0.43"
+  id "org.jetbrains.intellij" version "0.1.4"
 }
 
 allprojects {
