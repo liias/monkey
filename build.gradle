@@ -20,7 +20,6 @@ intellij {
   publish {
     username publishUsername
     password publishPassword
-    pluginId '8253'
     channel publishChannel
   }
 }
