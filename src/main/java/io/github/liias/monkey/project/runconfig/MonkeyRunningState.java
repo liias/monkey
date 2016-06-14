@@ -19,7 +19,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.util.ThrowableComputable;
-import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.impl.VirtualDirectoryImpl;
@@ -169,10 +168,7 @@ public class MonkeyRunningState extends CommandLineState {
 
     Sdk sdk = monkeyParameters.getSdk();
 
-    return new GeneralCommandLine()
-      .withWorkDirectory(MonkeySdkType.getBinPath(sdk))
-      .withCharset(CharsetToolkit.UTF8_CHARSET)
-      .withExePath(MonkeySdkType.getMonkeydoBatPath(sdk))
+    return createGeneralCommandLine(MonkeySdkType.getBinPath(sdk), MonkeySdkType.getMonkeydoBatPath(sdk))
       .withParameters(prgPath, getConfiguration().getTargetDeviceId());
   }
 
