@@ -19,7 +19,6 @@ import io.github.liias.monkey.jps.model.JpsMonkeyModuleProperties;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleType;
 import io.github.liias.monkey.jps.model.JpsMonkeySdkType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jps.builders.BuildOutputConsumer;
 import org.jetbrains.jps.builders.DirtyFilesHolder;
 import org.jetbrains.jps.incremental.CompileContext;
@@ -71,28 +70,25 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     JpsTypedModule<JpsSimpleElement<JpsMonkeyModuleProperties>> module = jpsModule.asTyped(JpsMonkeyModuleType.INSTANCE);
     assert module != null;
 
-    JpsMonkeyModuleProperties moduleProperties = getModuleProperties(target);
-
-    final String targetDeviceId = moduleProperties.TARGET_DEVICE_ID;
-
+    JpsMonkeyModuleProperties monkeyModuleProperties = getModuleProperties(target);
     JpsSdk<JpsDummyElement> sdk = getSdk(context, jpsModule);
 
     for (String contentRootUrl : jpsModule.getContentRootsList().getUrls()) {
-      String outputPrg = buildPrgForSimulator(target, context, contentRootUrl, sdk.getHomePath(), false, targetDeviceId);
+      String outputPrg = buildPrgForSimulator(target, context, contentRootUrl, sdk, false, monkeyModuleProperties);
       File outputPrgFile = new File(outputPrg);
       Set<String> sourcePaths = ImmutableSet.of(contentRootUrl);
       outputConsumer.registerOutputFile(outputPrgFile, sourcePaths);
     }
   }
 
-  public static String buildPrgForSimulator(MonkeyBuildTarget target, @NotNull CompileContext context,
-                                            @NotNull String contentRootUrl, String sdkHomePath,
-                                            boolean releaseBuild, String targetDeviceId) throws ProjectBuildException {
-    return buildPrg(target, context, contentRootUrl, sdkHomePath, releaseBuild, targetDeviceId);
+  public String buildPrgForSimulator(MonkeyBuildTarget target, @NotNull CompileContext context,
+                                     @NotNull String contentRootUrl, JpsSdk<JpsDummyElement> sdk,
+                                     boolean releaseBuild, JpsMonkeyModuleProperties monkeyModuleProperties) throws ProjectBuildException {
+    return buildPrg(target, context, contentRootUrl, sdk, releaseBuild, monkeyModuleProperties);
   }
 
-  private static String buildPrg(MonkeyBuildTarget target, @NotNull CompileContext context, @NotNull String contentRootUrl,
-                                 String sdkHomePath, boolean releaseBuild, String targetDeviceId) throws ProjectBuildException {
+  private String buildPrg(MonkeyBuildTarget target, @NotNull CompileContext context, @NotNull String contentRootUrl,
+                          JpsSdk<JpsDummyElement> sdk, boolean releaseBuild, JpsMonkeyModuleProperties monkeyModuleProperties) throws ProjectBuildException {
     JpsModule jpsModule = target.getModule();
 
     File outputDirectory = getBuildOutputDirectory(jpsModule, target.isTests(), context);
@@ -101,7 +97,7 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     String outputPath = outputDirectory.getAbsolutePath() + File.separator + projectName + ".prg";
 
     String contentRootPath = VfsUtilCore.urlToPath(contentRootUrl);
-    final GeneralCommandLine buildCmd = createBuildCmd(contentRootPath, outputPath, sdkHomePath, targetDeviceId, releaseBuild);
+    final GeneralCommandLine buildCmd = createBuildCmd(contentRootPath, outputPath, sdk, monkeyModuleProperties, releaseBuild);
     runBuildProcess(context, buildCmd, contentRootPath);
     return outputPath;
   }
@@ -168,8 +164,8 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
   }
 
   // TODO: paths that contain spaces should be quoted?
-  public static GeneralCommandLine createBuildCmd(String projectRootPath, String outputPath,
-                                                  String sdkHomePath, @Nullable String targetDeviceId, boolean releaseBuild) {
+  public GeneralCommandLine createBuildCmd(String projectRootPath, String outputPath,
+                                           JpsSdk<JpsDummyElement> sdk, JpsMonkeyModuleProperties monkeyModuleProperties, boolean releaseBuild) throws ProjectBuildException {
 
     final File projectRoot = new File(FileUtil.toSystemIndependentName(projectRootPath));
 
@@ -186,6 +182,7 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
       .filter(file -> file != null && file.getParentFile().getAbsolutePath().contains("resource"))
       .transform(File::getAbsolutePath).toList();
 
+    String sdkHomePath = sdk.getHomePath();
     String sdkPath = sdkHomePath + File.separator;
     String sdkBinPath = sdkPath + "bin" + File.separator;
 
@@ -224,12 +221,12 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     // in format: C:\xyz\source\aaApp.mc C:\xyz\source\aaMenuDelegate.mc C:\xyz\source\aaView.mc
     parameters.addAll(sourceFilePaths);
 
-    final String deviceId = targetDeviceId != null ? targetDeviceId : "round_watch";
+    final String deviceId = monkeyModuleProperties.TARGET_DEVICE_ID != null ? monkeyModuleProperties.TARGET_DEVICE_ID : "round_watch";
     final String deviceSim = deviceId + "_sim";
 
-    if (targetDeviceId != null) {
-      parameters.add("-d", deviceSim);
-    }
+    //if (deviceSim != null) {
+    parameters.add("-d", deviceSim);
+    //}
 
     if (releaseBuild) {
       parameters.add("-r");
