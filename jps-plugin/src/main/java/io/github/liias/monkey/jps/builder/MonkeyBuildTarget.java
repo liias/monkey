@@ -1,6 +1,8 @@
 package io.github.liias.monkey.jps.builder;
 
 import com.intellij.util.containers.ContainerUtil;
+import io.github.liias.monkey.jps.model.JpsMonkeyGlobalProperties;
+import io.github.liias.monkey.jps.model.JpsMonkeyModelSerializerExtension;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,6 +11,7 @@ import org.jetbrains.jps.builders.storage.BuildDataPaths;
 import org.jetbrains.jps.incremental.CompileContext;
 import org.jetbrains.jps.indices.IgnoredFileIndex;
 import org.jetbrains.jps.indices.ModuleExcludeIndex;
+import org.jetbrains.jps.model.JpsGlobal;
 import org.jetbrains.jps.model.JpsModel;
 import org.jetbrains.jps.model.java.JavaSourceRootProperties;
 import org.jetbrains.jps.model.java.JavaSourceRootType;
@@ -92,4 +95,9 @@ public class MonkeyBuildTarget extends ModuleBasedTarget<MonkeySourceRootDescrip
     return JpsJavaExtensionService.getInstance().getOutputDirectory(getModule(), isTests());
   }
 
+  public JpsMonkeyGlobalProperties getMonkeyGlobalProperties() {
+    JpsModel jpsModel = getModule().getProject().getModel();
+    JpsGlobal jpsGlobal = jpsModel.getGlobal();
+    return jpsGlobal.getContainer().getChild(JpsMonkeyModelSerializerExtension.MONKEY_GLOBAL_CONFIG_ROLE);
+  }
 }

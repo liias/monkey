@@ -1,5 +1,6 @@
 package io.github.liias.monkey.jps.builder;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -15,6 +16,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.util.SystemProperties;
+import io.github.liias.monkey.jps.model.JpsMonkeyGlobalProperties;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleProperties;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleType;
 import io.github.liias.monkey.jps.model.JpsMonkeySdkType;
@@ -111,7 +113,13 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
 
     @SuppressWarnings("unchecked")
     JpsSimpleElement<JpsMonkeyModuleProperties> properties = (JpsSimpleElement<JpsMonkeyModuleProperties>) propertiesUntyped;
-    return properties.getData();
+
+    JpsMonkeyGlobalProperties monkeyGlobalProperties = target.getMonkeyGlobalProperties();
+    File developerKeyPath = monkeyGlobalProperties.getDeveloperKeyPath();
+
+    JpsMonkeyModuleProperties moduleProperties = properties.getData();
+    moduleProperties.DEVELOPER_KEY_PATH = developerKeyPath;
+    return moduleProperties;
   }
 
   private static void runBuildProcess(@NotNull CompileContext context, @NotNull GeneralCommandLine commandLine, @NotNull String path)
@@ -197,6 +205,18 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
 /*    if(outputPath.endsWith(".iq")) {
       cmdLine.addArgument("-e");
     }*/
+
+    JpsMonkeySdkType.SdkVersion sdkVersion = JpsMonkeySdkType.getSdkVersion(sdk);
+    if (JpsMonkeySdkType.hasAppSigningSupport(sdkVersion)) {
+      final File developerKeyPath = monkeyModuleProperties.DEVELOPER_KEY_PATH;
+      String devKeyPathStr = developerKeyPath != null ? developerKeyPath.getAbsolutePath() : null;
+
+      if (Strings.isNullOrEmpty(devKeyPathStr)) {
+        throw new ProjectBuildException("Developer Key is not set. Go to Settings; Build; Connect IQ");
+      }
+
+      parameters.add("-y", devKeyPathStr);
+    }
 
     if (!resourceFilePaths.isEmpty()) {
       // in format: -z C:\xyz\resources\layouts\layout.xml;C:\xyz\resources\menus\menu.xml;C:\xyz\resources\resources.xml

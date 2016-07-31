@@ -57,7 +57,13 @@
   <depends>com.intellij.modules.lang</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <!-- Important stuff -->
+    <!-- IDE Configuration -->
+    <applicationConfigurable groupId="build" displayName="Connect IQ" id="monkeyc.settings"
+                             instance="io.github.liias.monkey.ide.conf.MonkeyConfigurable"/>
+
+    <applicationService serviceImplementation="io.github.liias.monkey.ide.conf.MonkeyOptions"/>
+
+    <!-- Monkey C language -->
     <fileTypeFactory implementation="io.github.liias.monkey.lang.file.MonkeyFileTypeFactory"/>
     <lang.parserDefinition language="MonkeyC"
                            implementationClass="io.github.liias.monkey.lang.parser.MonkeyParserDefinition"/>
