@@ -1,4 +1,5 @@
 package io.github.liias.monkey.lang.lexer;
+
 import com.intellij.lexer.*;
 import com.intellij.psi.tree.IElementType;
 import static io.github.liias.monkey.lang.psi.MonkeyTypes.*;
@@ -18,9 +19,8 @@ import static io.github.liias.monkey.lang.psi.MonkeyTypes.*;
 %type IElementType
 %unicode
 
-EOL="\r"|"\n"|"\r\n"
-LINE_WS=[\ \t\f]
-WHITE_SPACE=({LINE_WS}|{EOL})+
+EOL=\R
+WHITE_SPACE=\s
 
 WHITE_SPACE=[ \t\n\x0B\f\r]+
 SINGLE_LINE_COMMENT="//"[^!].*
@@ -133,5 +133,6 @@ CHARLITERAL=('([^'\\]|\\.)*')
   {STRING}                       { return STRING; }
   {CHARLITERAL}                  { return CHARLITERAL; }
 
-  [^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }
 }
+
+[^] { return com.intellij.psi.TokenType.BAD_CHARACTER; }

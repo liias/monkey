@@ -27,12 +27,6 @@ public class MonkeyRelationalExpressionImpl extends MonkeyExpressionImpl impleme
 
   @Override
   @NotNull
-  public List<MonkeyExpression> getExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
-  }
-
-  @Override
-  @NotNull
   public List<MonkeyRelationalOp> getRelationalOpList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyRelationalOp.class);
   }

@@ -25,10 +25,4 @@ public class MonkeyEqualityExpressionImpl extends MonkeyExpressionImpl implement
     else super.accept(visitor);
   }
 
-  @Override
-  @NotNull
-  public List<MonkeyExpression> getExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
-  }
-
 }

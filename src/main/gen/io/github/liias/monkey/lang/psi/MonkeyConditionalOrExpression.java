@@ -7,7 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface MonkeyConditionalOrExpression extends MonkeyExpression {
 
-  @NotNull
-  List<MonkeyExpression> getExpressionList();
-
 }

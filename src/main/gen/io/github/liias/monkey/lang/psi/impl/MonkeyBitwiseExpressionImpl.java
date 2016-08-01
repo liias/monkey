@@ -31,10 +31,4 @@ public class MonkeyBitwiseExpressionImpl extends MonkeyExpressionImpl implements
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyBitwiseOperator.class);
   }
 
-  @Override
-  @NotNull
-  public List<MonkeyExpression> getExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
-  }
-
 }

@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyRelationalExpression extends MonkeyExpression {
 
   @NotNull
-  List<MonkeyExpression> getExpressionList();
-
-  @NotNull
   List<MonkeyRelationalOp> getRelationalOpList();
 
 }

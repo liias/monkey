@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyShiftExpression extends MonkeyExpression {
 
   @NotNull
-  List<MonkeyExpression> getExpressionList();
-
-  @NotNull
   List<MonkeyShiftOp> getShiftOpList();
 
 }

@@ -10,7 +10,4 @@ public interface MonkeyBitwiseExpression extends MonkeyExpression {
   @NotNull
   List<MonkeyBitwiseOperator> getBitwiseOperatorList();
 
-  @NotNull
-  List<MonkeyExpression> getExpressionList();
-
 }

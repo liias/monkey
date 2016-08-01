@@ -27,12 +27,6 @@ public class MonkeyShiftExpressionImpl extends MonkeyExpressionImpl implements M
 
   @Override
   @NotNull
-  public List<MonkeyExpression> getExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
-  }
-
-  @Override
-  @NotNull
   public List<MonkeyShiftOp> getShiftOpList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyShiftOp.class);
   }
