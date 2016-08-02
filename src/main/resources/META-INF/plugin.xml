@@ -85,8 +85,11 @@
     <!-- run application -->
     <programRunner id="MonkeyCRunner" implementation="io.github.liias.monkey.project.runconfig.MonkeyProgramRunner"/>
     <runConfigurationProducer
-        implementation="io.github.liias.monkey.project.runconfig.MonkeyModuleConfigurationProducer"/>
-    <configurationType implementation="io.github.liias.monkey.project.runconfig.MonkeyConfigurationType"/>
+        implementation="io.github.liias.monkey.project.runconfig.running.MonkeyModuleConfigurationProducer"/>
+    <runConfigurationProducer
+        implementation="io.github.liias.monkey.project.runconfig.testing.MonkeyTestModuleConfigurationProducer"/>
+    <configurationType implementation="io.github.liias.monkey.project.runconfig.running.MonkeyConfigurationType"/>
+    <configurationType implementation="io.github.liias.monkey.project.runconfig.testing.MonkeyTestConfigurationType"/>
     <moduleExtension implementation="io.github.liias.monkey.project.configuration.TargetDeviceModuleExtension"/>
 
     <!-- xml file parsers -->

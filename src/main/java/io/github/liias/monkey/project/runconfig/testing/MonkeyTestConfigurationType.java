@@ -1,4 +1,4 @@
-package io.github.liias.monkey.project.runconfig;
+package io.github.liias.monkey.project.runconfig.testing;
 
 import com.intellij.execution.configuration.ConfigurationFactoryEx;
 import com.intellij.execution.configurations.*;
@@ -6,13 +6,11 @@ import com.intellij.openapi.project.Project;
 import icons.MonkeyIcons;
 import org.jetbrains.annotations.NotNull;
 
-public class MonkeyConfigurationType extends ConfigurationTypeBase {
-
+public class MonkeyTestConfigurationType extends ConfigurationTypeBase {
   private final ConfigurationFactoryEx factory;
 
-  protected MonkeyConfigurationType() {
-    // icon is 16 (default for java is AllIcons.RunConfigurations.Application)
-    super("MonkeyCApplication", "Monkey C Application", "Configuration to run a Connect IQ app with the simulator", MonkeyIcons.MODULE16);
+  protected MonkeyTestConfigurationType() {
+    super("MonkeyCApplicationTest", "Monkey C Application Test", "Configuration to run a Connect IQ unit tests", MonkeyIcons.MODULE_TEST_16);
 
     factory = new ConfigurationFactoryEx(this) {
       @Override
@@ -23,7 +21,7 @@ public class MonkeyConfigurationType extends ConfigurationTypeBase {
 
       @NotNull
       public RunConfiguration createTemplateConfiguration(@NotNull Project project) {
-        return new MonkeyModuleBasedConfiguration("", new MonkeyRunConfigurationModule(project), this);
+        return new MonkeyTestModuleBasedConfiguration("", new MonkeyTestRunConfigurationModule(project), this);
       }
     };
     addFactory(factory);
@@ -34,8 +32,7 @@ public class MonkeyConfigurationType extends ConfigurationTypeBase {
   }
 
   @NotNull
-  public static MonkeyConfigurationType getInstance() {
-    return ConfigurationTypeUtil.findConfigurationType(MonkeyConfigurationType.class);
-    //return Extensions.findExtension(CONFIGURATION_TYPE_EP, MonkeyConfigurationType.class);
+  public static MonkeyTestConfigurationType getInstance() {
+    return ConfigurationTypeUtil.findConfigurationType(MonkeyTestConfigurationType.class);
   }
 }

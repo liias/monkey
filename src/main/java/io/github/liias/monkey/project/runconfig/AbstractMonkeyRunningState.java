@@ -34,63 +34,55 @@ import java.io.OutputStream;
 import static io.github.liias.monkey.Utils.createGeneralCommandLine;
 import static io.github.liias.monkey.Utils.getForWinLinOrMac;
 
-// Starts app in simulatorHelper
-public class MonkeyRunningState extends CommandLineState {
-
-  private SimulatorHelper simulatorHelper;
+public abstract class AbstractMonkeyRunningState extends CommandLineState {
   private MonkeyParameters monkeyParameters;
-  private ConsoleView console;
 
-  protected MonkeyRunningState(ExecutionEnvironment environment) {
+  protected AbstractMonkeyRunningState(ExecutionEnvironment environment) {
     super(environment);
   }
 
-  public MonkeyParameters getMonkeyParameters() throws ExecutionException {
+  @Override
+  @NotNull
+  public abstract ExecutionResult execute(@NotNull final Executor executor, @NotNull final ProgramRunner runner)
+    throws ExecutionException;
+
+  @NotNull
+  @Override
+  protected ProcessHandler startProcess() throws ExecutionException {
+    throw new UnsupportedOperationException("overridden execute() does not use startProcess()");
+  }
+
+  protected MonkeyParameters getMonkeyParameters() throws ExecutionException {
     if (monkeyParameters == null) {
       monkeyParameters = createMonkeyParameters();
     }
     return monkeyParameters;
   }
 
-  private MonkeyParameters createMonkeyParameters() throws ExecutionException {
+  protected MonkeyParameters createMonkeyParameters() throws ExecutionException {
     final MonkeyParameters params = new MonkeyParameters();
-    final MonkeyModuleBasedConfiguration runConfig = getConfiguration();
-    final MonkeyRunConfigurationModule configurationModule = runConfig.getConfigurationModule();
+    final AbstractMonkeyModuleBasedConfiguration runConfig = getConfiguration();
+    final AbstractMonkeyRunConfigurationModule configurationModule = runConfig.getConfigurationModule();
     final int classPathType = MonkeyParameters.SDK_AND_CLASSES;
     params.configureByModule(configurationModule.getModule(), classPathType);
     ProgramParametersUtil.configureConfiguration(params, runConfig);
     return params;
   }
 
-  @Override
-  @NotNull
-  public ExecutionResult execute(@NotNull final Executor executor, @NotNull final ProgramRunner runner) throws ExecutionException {
-    console = createConsole(executor);
-
-    if (DeploymentTarget.DEVICE.getId().equals(getConfiguration().getDeploymentTargetId())) {
-      VirtualFile copiedPrg = copyBuiltPrgToDevice();
-
-      String message = String.format("Generated %s\nYou can now start the app on your device.", copiedPrg);
-      console.print(message, ConsoleViewContentType.NORMAL_OUTPUT);
-      ProcessHandler processHandler = new DummyProcessHandler();
-      processHandler.destroyProcess();
-      return new DefaultExecutionResult(console, processHandler);
+  protected AbstractMonkeyModuleBasedConfiguration getConfiguration() {
+    if (getEnvironment().getRunnerAndConfigurationSettings() == null) {
+      throw new RuntimeException("runnerAndConfigurationSettings is null");
     }
-
-    MonkeyParameters monkeyParameters = getMonkeyParameters();
-    Sdk sdk = monkeyParameters.getSdk();
-    String outputDir = monkeyParameters.getOutputPath().getPath() + File.separator;
-
-    simulatorHelper = new SimulatorHelper(console, sdk, outputDir);
-
-    GeneralCommandLine runSimulatorCmd = createRunSimulatorCmd();
-    runSimulatorCmd.createProcess();
-
-    if (!simulatorHelper.findSimulatorPortNTimes(5, 1000).isPresent()) {
-      throw new ExecutionException("Could not connect to simulatorHelper");
+    final RunConfiguration configuration = getEnvironment().getRunnerAndConfigurationSettings().getConfiguration();
+    if (configuration == null || !(configuration instanceof AbstractMonkeyModuleBasedConfiguration)) {
+      throw new RuntimeException("runnerAndConfigurationSettings.getConfiguration() is null or wrong type");
     }
+    return (AbstractMonkeyModuleBasedConfiguration) configuration;
+  }
 
-    final ProcessHandler runInSimHandler = startProcess();
+  protected ExecutionResult runOnSimulator(ConsoleView console, Executor executor) throws ExecutionException {
+    GeneralCommandLine runInSimulatorCmd = createRunInSimulatorCmd();
+    ProcessHandler runInSimHandler = new KillableColoredProcessHandler(runInSimulatorCmd);
     if (console != null) {
       console.attachToProcess(runInSimHandler);
     }
@@ -99,25 +91,32 @@ public class MonkeyRunningState extends CommandLineState {
     return new DefaultExecutionResult(console, runInSimHandler, actions);
   }
 
-  @NotNull
-  @Override
-  protected ProcessHandler startProcess() throws ExecutionException {
-    GeneralCommandLine runInSimulatorCmd = createRunInSimulatorCmd();
-    return new KillableColoredProcessHandler(runInSimulatorCmd);
+  protected void runSimulator(ConsoleView console) throws ExecutionException {
+    MonkeyParameters monkeyParameters = getMonkeyParameters();
+    Sdk sdk = monkeyParameters.getSdk();
+    String outputDir = monkeyParameters.getOutputPath().getPath() + File.separator;
+    SimulatorHelper simulatorHelper = new SimulatorHelper(console, sdk, outputDir);
+
+    GeneralCommandLine runSimulatorCmd = createRunSimulatorCmd();
+    runSimulatorCmd.createProcess();
+
+    if (!simulatorHelper.findSimulatorPortNTimes(5, 1000).isPresent()) {
+      throw new ExecutionException("Could not connect to simulatorHelper");
+    }
   }
 
-  private MonkeyModuleBasedConfiguration getConfiguration() {
-    if (getEnvironment().getRunnerAndConfigurationSettings() == null) {
-      throw new RuntimeException("runnerAndConfigurationSettings is null");
-    }
-    final RunConfiguration configuration = getEnvironment().getRunnerAndConfigurationSettings().getConfiguration();
-    if (configuration == null || !(configuration instanceof MonkeyModuleBasedConfiguration)) {
-      throw new RuntimeException("runnerAndConfigurationSettings.getConfiguration() is null or wrong type");
-    }
-    return (MonkeyModuleBasedConfiguration) configuration;
+  // doesn't really run, but just copies prg on the device
+  protected ExecutionResult runOnRealDevice(ConsoleView console) throws ExecutionException {
+    VirtualFile copiedPrg = copyBuiltPrgToDevice();
+
+    String message = String.format("Generated %s\nYou can now start the app on your device.", copiedPrg);
+    console.print(message, ConsoleViewContentType.NORMAL_OUTPUT);
+    ProcessHandler processHandler = new DummyProcessHandler();
+    processHandler.destroyProcess();
+    return new DefaultExecutionResult(console, processHandler);
   }
 
-  private VirtualFile copyBuiltPrgToDevice() throws ExecutionException {
+  protected VirtualFile copyBuiltPrgToDevice() throws ExecutionException {
     try {
       MonkeyParameters monkeyParameters = getMonkeyParameters();
       String prgPath = monkeyParameters.getOutputPath().findChild(getPrgName()).getPath();
@@ -130,7 +129,7 @@ public class MonkeyRunningState extends CommandLineState {
   }
 
   @NotNull
-  private VirtualFile copyPrgTo(String prgOutputPath, String outputPath) throws IOException {
+  protected VirtualFile copyPrgTo(String prgOutputPath, String outputPath) throws IOException {
     LocalFileSystem lfs = LocalFileSystem.getInstance();
     VirtualFile fromOutputPrg = lfs.refreshAndFindFileByPath(prgOutputPath);
     Preconditions.checkNotNull(fromOutputPrg);
@@ -153,7 +152,7 @@ public class MonkeyRunningState extends CommandLineState {
       );
   }
 
-  private GeneralCommandLine createRunSimulatorCmd() throws ExecutionException {
+  protected GeneralCommandLine createRunSimulatorCmd() throws ExecutionException {
     final Sdk sdk = getMonkeyParameters().getSdk();
     String sdkBinPath = MonkeySdkType.getBinPath(sdk);
 
@@ -162,7 +161,7 @@ public class MonkeyRunningState extends CommandLineState {
     return createGeneralCommandLine(sdkBinPath, exePath).withRedirectErrorStream(true);
   }
 
-  private GeneralCommandLine createRunInSimulatorCmd() throws ExecutionException {
+  protected GeneralCommandLine createRunInSimulatorCmd() throws ExecutionException {
     MonkeyParameters monkeyParameters = getMonkeyParameters();
     String prgPath = monkeyParameters.getOutputPath().findChild(getPrgName()).getPath();
 
@@ -172,13 +171,11 @@ public class MonkeyRunningState extends CommandLineState {
       .withParameters(prgPath, getConfiguration().getTargetDeviceId());
   }
 
-  public String getPrgName() {
+  protected String getPrgName() {
     return getEnvironment().getProject().getName() + ".prg";
   }
 
-
-  private static class DummyProcessHandler extends ProcessHandler {
-
+  protected static class DummyProcessHandler extends ProcessHandler {
     @Override
     protected void destroyProcessImpl() {
       notifyProcessTerminated(0);

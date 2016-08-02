@@ -28,29 +28,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfiguration> implements PanelWithAnchor {
-
-  // TODO: populate from sdk devices.xml
-  /*
-  public static final List<TargetDevice> ALL_DEVICES = new ImmutableList.Builder<TargetDevice>()
-    .add(TargetDevice.SQUARE_WATCH)
-    .add(TargetDevice.ROUND_WATCH)
-    .add(TargetDevice.SEMI_ROUND_WATCH)
-    .add(TargetDevice.TALL_WATCH)
-    .add(new TargetDevice("d2bravo", "D2™ Bravo"))
-    .add(new TargetDevice("d2bravo_titanium", "D2™ Bravo Titanium"))
-    .add(new TargetDevice("edge_520", "Edge 520"))
-    .add(new TargetDevice("edge_1000", "Edge 1000 / Explore"))
-    .add(new TargetDevice("epix", "epix®"))
-    .add(new TargetDevice("fenix3", "fēnix™ 3 / tactix™ Bravo / quatix™ 3"))
-    .add(new TargetDevice("fenix3_hr", "fēnix™ 3 HR"))
-    .add(new TargetDevice("fr230", "Forerunner® 230"))
-    .add(new TargetDevice("fr630", "Forerunner® 630"))
-    .add(new TargetDevice("fr920xt", "Forerunner® 920XT"))
-    .add(new TargetDevice("vivoactive", "vívoactive"))
-    .add(new TargetDevice("vivoactive_hr", "vívoactive HR"))
-    .build();
-*/
+public class MonkeySettingsEditor extends SettingsEditor<AbstractMonkeyModuleBasedConfiguration> implements PanelWithAnchor {
   private final Project project;
   private LabeledComponent<JComboBox<TargetDevice>> targetDevice;
   private LabeledComponent<JComboBox<DeploymentTarget>> deploymentTarget;
@@ -161,7 +139,7 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
   }
 
   @Override
-  protected void resetEditorFrom(MonkeyModuleBasedConfiguration configuration) {
+  protected void resetEditorFrom(AbstractMonkeyModuleBasedConfiguration configuration) {
     commonProgramParameters.reset(configuration);
     moduleComponent.getComponent().setSelectedModule(configuration.getConfigurationModule().getModule());
 
@@ -189,7 +167,7 @@ public class MonkeySettingsEditor extends SettingsEditor<MonkeyModuleBasedConfig
   }
 
   @Override
-  protected void applyEditorTo(MonkeyModuleBasedConfiguration configuration) throws ConfigurationException {
+  protected void applyEditorTo(AbstractMonkeyModuleBasedConfiguration configuration) throws ConfigurationException {
     commonProgramParameters.applyTo(configuration);
     configuration.setModule(moduleComponent.getComponent().getSelectedModule());
 

@@ -26,12 +26,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MonkeyModuleBasedConfiguration extends ModuleBasedConfiguration<MonkeyRunConfigurationModule> implements CommonProgramRunConfigurationParameters {
+public abstract class AbstractMonkeyModuleBasedConfiguration extends ModuleBasedConfiguration<AbstractMonkeyRunConfigurationModule> implements CommonProgramRunConfigurationParameters {
   private static final SkipDefaultValuesSerializationFilters SERIALIZATION_FILTERS = new SkipDefaultValuesSerializationFilters();
-  private MonkeyModuleBasedConfigurationBean bean = new MonkeyModuleBasedConfigurationBean();
+  private AbstractMonkeyModuleBasedConfiguration.MonkeyModuleBasedConfigurationBean bean = new AbstractMonkeyModuleBasedConfiguration.MonkeyModuleBasedConfigurationBean();
   private final Map<String, String> envs = new LinkedHashMap<>();
 
-  public MonkeyModuleBasedConfiguration(String name, @NotNull MonkeyRunConfigurationModule configurationModule, @NotNull ConfigurationFactory factory) {
+  public AbstractMonkeyModuleBasedConfiguration(String name, @NotNull AbstractMonkeyRunConfigurationModule configurationModule, @NotNull ConfigurationFactory factory) {
     super(name, configurationModule, factory);
   }
 
@@ -44,18 +44,13 @@ public class MonkeyModuleBasedConfiguration extends ModuleBasedConfiguration<Mon
   @NotNull
   @Override
   public SettingsEditor<? extends RunConfiguration> getConfigurationEditor() {
-    SettingsEditorGroup<MonkeyModuleBasedConfiguration> group = new SettingsEditorGroup<>();
+    SettingsEditorGroup<AbstractMonkeyModuleBasedConfiguration> group = new SettingsEditorGroup<>();
     Module module = getConfigurationModule().getModule();
     group.addEditor(ExecutionBundle.message("run.configuration.configuration.tab.title"), new MonkeySettingsEditor(getProject(), module));
     group.addEditor(ExecutionBundle.message("logs.tab.title"), new LogConfigurationPanel<>());
     return group;
   }
 
-  @Nullable
-  @Override
-  public RunProfileState getState(@NotNull Executor executor, @NotNull ExecutionEnvironment environment) throws ExecutionException {
-    return new MonkeyRunningState(environment);
-  }
 
   @Override
   public void setProgramParameters(@Nullable String value) {
@@ -103,7 +98,7 @@ public class MonkeyModuleBasedConfiguration extends ModuleBasedConfiguration<Mon
 
   @Override
   public void checkConfiguration() throws RuntimeConfigurationException {
-    final MonkeyRunConfigurationModule configurationModule = getConfigurationModule();
+    final AbstractMonkeyRunConfigurationModule configurationModule = getConfigurationModule();
     ProgramParametersUtil.checkWorkingDirectoryExist(this, getProject(), configurationModule.getModule());
   }
 
@@ -157,3 +152,5 @@ public class MonkeyModuleBasedConfiguration extends ModuleBasedConfiguration<Mon
     public String DEVICE_DIRECTORY = "";
   }
 }
+
+

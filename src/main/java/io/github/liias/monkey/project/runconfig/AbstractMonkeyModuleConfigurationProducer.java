@@ -3,20 +3,19 @@ package io.github.liias.monkey.project.runconfig;
 import com.intellij.execution.Location;
 import com.intellij.execution.actions.ConfigurationContext;
 import com.intellij.execution.actions.RunConfigurationProducer;
+import com.intellij.execution.configurations.ConfigurationType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.Ref;
 import com.intellij.psi.PsiElement;
 
-public class MonkeyModuleConfigurationProducer extends RunConfigurationProducer<MonkeyModuleBasedConfiguration> {
-  public MonkeyModuleConfigurationProducer() {
-    super(MonkeyConfigurationType.getInstance());
+public abstract class AbstractMonkeyModuleConfigurationProducer extends RunConfigurationProducer<AbstractMonkeyModuleBasedConfiguration> {
+  protected AbstractMonkeyModuleConfigurationProducer(ConfigurationType configurationType) {
+    super(configurationType);
   }
 
   @Override
-  protected boolean setupConfigurationFromContext(MonkeyModuleBasedConfiguration configuration,
-                                                  ConfigurationContext context,
-                                                  Ref<PsiElement> sourceElement) {
+  protected boolean setupConfigurationFromContext(AbstractMonkeyModuleBasedConfiguration configuration, ConfigurationContext context, Ref<PsiElement> sourceElement) {
     final Location location = context.getLocation();
 
     if (location == null) {
@@ -34,8 +33,7 @@ public class MonkeyModuleConfigurationProducer extends RunConfigurationProducer<
   }
 
   @Override
-  public boolean isConfigurationFromContext(MonkeyModuleBasedConfiguration configuration,
-                                            ConfigurationContext context) {
+  public boolean isConfigurationFromContext(AbstractMonkeyModuleBasedConfiguration configuration, ConfigurationContext context) {
     final Module contextModule = context.getModule();
     if (contextModule == null) {
       return false;
@@ -44,4 +42,6 @@ public class MonkeyModuleConfigurationProducer extends RunConfigurationProducer<
 
     return Comparing.equal(contextModule, confModule);
   }
+
+
 }
