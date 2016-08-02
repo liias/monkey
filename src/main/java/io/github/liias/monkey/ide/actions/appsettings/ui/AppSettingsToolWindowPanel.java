@@ -14,8 +14,6 @@ import javax.swing.border.EmptyBorder;
 public class AppSettingsToolWindowPanel extends SimpleToolWindowPanel {
   private final Project project;
   private final AppSettingsForm appSettingsForm;
-  private SendAction sendAction;
-  private ReceiveAction receiveAction;
 
   public AppSettingsToolWindowPanel(Project project) {
     super(true, true);
@@ -30,10 +28,8 @@ public class AppSettingsToolWindowPanel extends SimpleToolWindowPanel {
 
   private JPanel createToolbarPanel() {
     final DefaultActionGroup group = new DefaultActionGroup();
-    sendAction = new SendAction();
-    receiveAction = new ReceiveAction();
-    group.add(sendAction);
-    group.add(receiveAction);
+    group.add(new SendAction());
+    group.add(new ReceiveAction());
 
     final ActionToolbar actionToolBar = ActionManager.getInstance().createActionToolbar("AppSettingsToolWindowPanel", group, true);
     return JBUI.Panels.simplePanel(actionToolBar.getComponent());
