@@ -93,6 +93,10 @@ public class MonkeySdkType extends SdkType {
   private String detectCompilerVersion(@NotNull String homePath) {
     final File compilerInfoXml = new File(homePath, "bin/compilerInfo.xml");
 
+    if (!compilerInfoXml.exists()) {
+      return null;
+    }
+
     String version = null;
     try {
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
