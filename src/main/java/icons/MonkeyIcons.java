@@ -1,5 +1,6 @@
 package icons;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
@@ -17,4 +18,7 @@ public class MonkeyIcons {
   public static final Icon MODULE16 = load("/icons/sdk.png"); // 16
 
   public static final Icon APP_SETTINGS13 = load("/icons/app_settings_13.png"); // 13
+
+  public static final Icon SAVE16 = AllIcons.RunConfigurations.SaveTempConfig;
+  public static final Icon REFRESH16 = AllIcons.Actions.Refresh;
 }

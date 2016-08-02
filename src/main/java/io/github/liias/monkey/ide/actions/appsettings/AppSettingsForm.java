@@ -29,14 +29,22 @@ public class AppSettingsForm {
 
   @Nullable
   private final Project project;
-  private DialogWrapper appSettingsDialog;
+
+  @Nullable
   private AppSettingsManager appSettingsManager;
 
   private Map<String, FieldModel> fieldsBySettingKey;
 
+  @Nullable
+  private DialogWrapper appSettingsDialog;
+
   public AppSettingsForm(@Nullable Project project, @Nullable DialogWrapper appSettingsDialog) {
-    this.project = project;
+    this(project);
     this.appSettingsDialog = appSettingsDialog;
+  }
+
+  public AppSettingsForm(@Nullable Project project) {
+    this.project = project;
     this.fieldsBySettingKey = new HashMap<>();
   }
 
@@ -48,8 +56,16 @@ public class AppSettingsForm {
     }
 
     modulesComboBox.addActionListener(e -> {
-      receiveSettings();
+      selectModule(modulesComboBox.getSelectedModule());
     });
+  }
+
+  private void selectModule(@Nullable Module selectedModule) {
+    if (selectedModule != null) {
+      receiveSettings();
+    } else {
+      removeSettings();
+    }
   }
 
   @Nullable
@@ -62,6 +78,10 @@ public class AppSettingsForm {
     String projectName = module.getProject().getName();
     String settingsFilename = projectName + "-settings.json";
     return moduleOutputDir.findChild(settingsFilename);
+  }
+
+  public boolean isModuleSelected() {
+    return modulesComboBox.getSelectedModule() != null;
   }
 
   public void receiveSettings() {
