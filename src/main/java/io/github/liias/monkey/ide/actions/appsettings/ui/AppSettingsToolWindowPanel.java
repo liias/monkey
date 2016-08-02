@@ -9,6 +9,7 @@ import icons.MonkeyIcons;
 import io.github.liias.monkey.ide.actions.appsettings.AppSettingsForm;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 public class AppSettingsToolWindowPanel extends SimpleToolWindowPanel {
   private final Project project;
@@ -23,6 +24,7 @@ public class AppSettingsToolWindowPanel extends SimpleToolWindowPanel {
     setToolbar(createToolbarPanel());
     appSettingsForm = new AppSettingsForm(project);
     JPanel panel = appSettingsForm.getPanel();
+    panel.setBorder(new EmptyBorder(0, 10, 0, 0));
     setContent(ScrollPaneFactory.createScrollPane(panel));
   }
 
