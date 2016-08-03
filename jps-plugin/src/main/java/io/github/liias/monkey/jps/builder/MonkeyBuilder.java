@@ -64,7 +64,10 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
   public void build(@NotNull MonkeyBuildTarget target, @NotNull DirtyFilesHolder<MonkeySourceRootDescriptor, MonkeyBuildTarget> holder,
                     @NotNull BuildOutputConsumer outputConsumer, @NotNull CompileContext context) throws ProjectBuildException, IOException {
     LOG.debug(target.getPresentableName());
-    if (!holder.hasDirtyFiles() && !holder.hasRemovedFiles()) return;
+    // TODO(mliia): after for-production is built, for-tests says files are not dirty
+    if (!target.isTests() && !holder.hasDirtyFiles() && !holder.hasRemovedFiles()) {
+      return;
+    }
 
     JpsModule jpsModule = target.getModule();
     if (jpsModule.getModuleType() != JpsMonkeyModuleType.INSTANCE) return;
@@ -99,7 +102,7 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     String outputPath = outputDirectory.getAbsolutePath() + File.separator + projectName + ".prg";
 
     String contentRootPath = VfsUtilCore.urlToPath(contentRootUrl);
-    final GeneralCommandLine buildCmd = createBuildCmd(contentRootPath, outputPath, sdk, monkeyModuleProperties, releaseBuild);
+    final GeneralCommandLine buildCmd = createBuildCmd(contentRootPath, outputPath, sdk, monkeyModuleProperties, target.isTests(), releaseBuild);
     runBuildProcess(context, buildCmd, contentRootPath);
     return outputPath;
   }
@@ -173,7 +176,10 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
 
   // TODO: paths that contain spaces should be quoted?
   public GeneralCommandLine createBuildCmd(String projectRootPath, String outputPath,
-                                           JpsSdk<JpsDummyElement> sdk, JpsMonkeyModuleProperties monkeyModuleProperties, boolean releaseBuild) throws ProjectBuildException {
+                                           JpsSdk<JpsDummyElement> sdk,
+                                           JpsMonkeyModuleProperties monkeyModuleProperties,
+                                           boolean tests,
+                                           boolean releaseBuild) throws ProjectBuildException {
 
     final File projectRoot = new File(FileUtil.toSystemIndependentName(projectRootPath));
 
@@ -248,6 +254,10 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     parameters.add("-d", deviceSim);
     //}
 
+    if (tests) {
+      parameters.add("--unit-test");
+      // I think this alias also works (but let's use the documented one): parameters.add("-t");
+    }
     if (releaseBuild) {
       parameters.add("-r");
     }

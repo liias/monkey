@@ -38,4 +38,12 @@ public class MonkeySourceRootDescriptor extends BuildRootDescriptor {
   public FileFilter createFileFilter() {
     return file -> FileUtilRt.extensionEquals(file.getName(), "mc");
   }
+
+  @Override
+  public String toString() {
+    return "MonkeySourceRootDescriptor{" +
+      "root=" + root +
+      ", monkeyBuildTarget=" + monkeyBuildTarget +
+      '}';
+  }
 }
