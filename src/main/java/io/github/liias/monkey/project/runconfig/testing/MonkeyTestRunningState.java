@@ -25,6 +25,8 @@ public class MonkeyTestRunningState extends AbstractMonkeyRunningState {
 
     runSimulator(console);
 
-    return runOnSimulator(console, executor);
+    RunParameters runParameters = new RunParameters();
+    runParameters.tests = true;
+    return runOnSimulator(runParameters, console, executor);
   }
 }

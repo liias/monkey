@@ -59,6 +59,7 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
     return monkeyParameters;
   }
 
+  //TODO: tests only
   protected MonkeyParameters createMonkeyParameters() throws ExecutionException {
     final MonkeyParameters params = new MonkeyParameters();
     final AbstractMonkeyModuleBasedConfiguration runConfig = getConfiguration();
@@ -80,8 +81,12 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
     return (AbstractMonkeyModuleBasedConfiguration) configuration;
   }
 
-  protected ExecutionResult runOnSimulator(ConsoleView console, Executor executor) throws ExecutionException {
-    GeneralCommandLine runInSimulatorCmd = createRunInSimulatorCmd();
+  public static class RunParameters {
+    public boolean tests;
+  }
+
+  protected ExecutionResult runOnSimulator(RunParameters runParameters, ConsoleView console, Executor executor) throws ExecutionException {
+    GeneralCommandLine runInSimulatorCmd = createRunInSimulatorCmd(runParameters);
     ProcessHandler runInSimHandler = new KillableColoredProcessHandler(runInSimulatorCmd);
     if (console != null) {
       console.attachToProcess(runInSimHandler);
@@ -161,14 +166,23 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
     return createGeneralCommandLine(sdkBinPath, exePath).withRedirectErrorStream(true);
   }
 
-  protected GeneralCommandLine createRunInSimulatorCmd() throws ExecutionException {
+  protected GeneralCommandLine createRunInSimulatorCmd(RunParameters runParameters) throws ExecutionException {
     MonkeyParameters monkeyParameters = getMonkeyParameters();
     String prgPath = monkeyParameters.getOutputPath().findChild(getPrgName()).getPath();
 
     Sdk sdk = monkeyParameters.getSdk();
 
-    return createGeneralCommandLine(MonkeySdkType.getBinPath(sdk), MonkeySdkType.getMonkeydoBatPath(sdk))
+    GeneralCommandLine generalCommandLine = createGeneralCommandLine(MonkeySdkType.getBinPath(sdk), MonkeySdkType.getMonkeydoBatPath(sdk))
       .withParameters(prgPath, getConfiguration().getTargetDeviceId());
+
+    if (runParameters.tests) {
+      generalCommandLine.addParameter(getForWinLinOrMac("/t", "-t"));
+      //if (testId != null) {
+      //  generalCommandLine.addParameter(testId);
+      //}
+    }
+
+    return generalCommandLine;
   }
 
   protected String getPrgName() {
