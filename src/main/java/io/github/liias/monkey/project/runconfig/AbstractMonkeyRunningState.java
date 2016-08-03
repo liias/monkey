@@ -36,9 +36,15 @@ import static io.github.liias.monkey.Utils.getForWinLinOrMac;
 
 public abstract class AbstractMonkeyRunningState extends CommandLineState {
   private MonkeyParameters monkeyParameters;
+  private boolean forTests;
 
-  protected AbstractMonkeyRunningState(ExecutionEnvironment environment) {
+  protected AbstractMonkeyRunningState(ExecutionEnvironment environment, boolean forTests) {
     super(environment);
+    this.forTests = forTests;
+  }
+
+  public boolean isForTests() {
+    return forTests;
   }
 
   @Override
@@ -65,7 +71,7 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
     final AbstractMonkeyModuleBasedConfiguration runConfig = getConfiguration();
     final AbstractMonkeyRunConfigurationModule configurationModule = runConfig.getConfigurationModule();
     final int classPathType = MonkeyParameters.SDK_AND_CLASSES;
-    params.configureByModule(configurationModule.getModule(), classPathType);
+    params.configureByModule(configurationModule.getModule(), classPathType, isForTests());
     ProgramParametersUtil.configureConfiguration(params, runConfig);
     return params;
   }
@@ -81,12 +87,8 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
     return (AbstractMonkeyModuleBasedConfiguration) configuration;
   }
 
-  public static class RunParameters {
-    public boolean tests;
-  }
-
-  protected ExecutionResult runOnSimulator(RunParameters runParameters, ConsoleView console, Executor executor) throws ExecutionException {
-    GeneralCommandLine runInSimulatorCmd = createRunInSimulatorCmd(runParameters);
+  protected ExecutionResult runOnSimulator(ConsoleView console, Executor executor) throws ExecutionException {
+    GeneralCommandLine runInSimulatorCmd = createRunInSimulatorCmd();
     ProcessHandler runInSimHandler = new KillableColoredProcessHandler(runInSimulatorCmd);
     if (console != null) {
       console.attachToProcess(runInSimHandler);
@@ -166,7 +168,7 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
     return createGeneralCommandLine(sdkBinPath, exePath).withRedirectErrorStream(true);
   }
 
-  protected GeneralCommandLine createRunInSimulatorCmd(RunParameters runParameters) throws ExecutionException {
+  protected GeneralCommandLine createRunInSimulatorCmd() throws ExecutionException {
     MonkeyParameters monkeyParameters = getMonkeyParameters();
     String prgPath = monkeyParameters.getOutputPath().findChild(getPrgName()).getPath();
 
@@ -175,7 +177,7 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
     GeneralCommandLine generalCommandLine = createGeneralCommandLine(MonkeySdkType.getBinPath(sdk), MonkeySdkType.getMonkeydoBatPath(sdk))
       .withParameters(prgPath, getConfiguration().getTargetDeviceId());
 
-    if (runParameters.tests) {
+    if (isForTests()) {
       generalCommandLine.addParameter(getForWinLinOrMac("/t", "-t"));
       //if (testId != null) {
       //  generalCommandLine.addParameter(testId);

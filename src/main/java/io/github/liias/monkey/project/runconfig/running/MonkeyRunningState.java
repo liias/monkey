@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 // Starts app in simulatorHelper
 public class MonkeyRunningState extends AbstractMonkeyRunningState {
   public MonkeyRunningState(ExecutionEnvironment environment) {
-    super(environment);
+    super(environment, false);
   }
 
   @Override
@@ -27,8 +27,6 @@ public class MonkeyRunningState extends AbstractMonkeyRunningState {
 
     runSimulator(console);
 
-    RunParameters runParameters = new RunParameters();
-    runParameters.tests = false;
-    return runOnSimulator(runParameters, console, executor);
+    return runOnSimulator(console, executor);
   }
 }

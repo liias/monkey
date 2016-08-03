@@ -48,11 +48,12 @@ public class MonkeyParameters extends SimpleProgramParameters {
   }
 
   public void configureByModule(final Module module,
-                                @MagicConstant(valuesFromClass = MonkeyParameters.class) final int classPathType) throws CantRunException {
+                                @MagicConstant(valuesFromClass = MonkeyParameters.class) final int classPathType,
+                                boolean forTests) throws CantRunException {
 
     CompilerModuleExtension extension = CompilerModuleExtension.getInstance(module);
     if (extension != null) {
-      outputPath = extension.getCompilerOutputPath();
+      outputPath = forTests ? extension.getCompilerOutputPathForTests() : extension.getCompilerOutputPath();
     }
 
     final Sdk moduleSdk = getModuleSdk(module);

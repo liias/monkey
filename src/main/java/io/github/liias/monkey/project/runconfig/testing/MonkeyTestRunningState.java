@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class MonkeyTestRunningState extends AbstractMonkeyRunningState {
   protected MonkeyTestRunningState(ExecutionEnvironment environment) {
-    super(environment);
+    super(environment, true);
   }
 
   @Override
@@ -25,8 +25,6 @@ public class MonkeyTestRunningState extends AbstractMonkeyRunningState {
 
     runSimulator(console);
 
-    RunParameters runParameters = new RunParameters();
-    runParameters.tests = true;
-    return runOnSimulator(runParameters, console, executor);
+    return runOnSimulator(console, executor);
   }
 }
