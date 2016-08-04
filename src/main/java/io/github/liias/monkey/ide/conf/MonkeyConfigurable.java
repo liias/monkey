@@ -1,5 +1,6 @@
 package io.github.liias.monkey.ide.conf;
 
+import com.google.common.base.Strings;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.options.Configurable;
@@ -38,6 +39,9 @@ public class MonkeyConfigurable implements SearchableConfigurable, Configurable.
 
     generateKeyButton.addActionListener(e -> {
       String keyPathStr = keyPathField.getText();
+      if (Strings.isNullOrEmpty(keyPathStr)) {
+        throw new IllegalArgumentException("Please set key output path first (including filename)");
+      }
       Path path = FileSystems.getDefault().getPath(keyPathStr);
       KeyGenerator.generate(path);
     });

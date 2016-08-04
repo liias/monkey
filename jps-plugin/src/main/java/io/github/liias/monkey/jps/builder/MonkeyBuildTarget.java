@@ -98,6 +98,7 @@ public class MonkeyBuildTarget extends ModuleBasedTarget<MonkeySourceRootDescrip
   public JpsMonkeyGlobalProperties getMonkeyGlobalProperties() {
     JpsModel jpsModel = getModule().getProject().getModel();
     JpsGlobal jpsGlobal = jpsModel.getGlobal();
-    return jpsGlobal.getContainer().getChild(JpsMonkeyModelSerializerExtension.MONKEY_GLOBAL_CONFIG_ROLE);
+    JpsMonkeyGlobalProperties jpsMonkeyGlobalProperties = jpsGlobal.getContainer().getChild(JpsMonkeyModelSerializerExtension.MONKEY_GLOBAL_CONFIG_ROLE);
+    return jpsMonkeyGlobalProperties != null ? jpsMonkeyGlobalProperties : new JpsMonkeyGlobalProperties(null);
   }
 }
