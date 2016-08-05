@@ -153,7 +153,11 @@ usingDeclaration ::= USING fullyQualifiedReferenceExpression (AS componentName)?
 
 // module
 // TODO: can a module have static/hidden modifiers?
-moduleDeclaration ::= modifiers MODULE componentName moduleBody
+moduleDeclaration ::= modifiers MODULE componentName moduleBody {
+pin=2
+mixin="io.github.liias.monkey.lang.psi.impl.AbstractMonkeyComponentImpl"
+implements="io.github.liias.monkey.lang.psi.MonkeyComponent"
+}
 
 moduleBody ::= LBRACE moduleBodyMembers RBRACE {pin=1}
 moduleBodyMembers ::= moduleBodyMember* {implements="io.github.liias.monkey.lang.psi.MonkeyExecutionScope"}

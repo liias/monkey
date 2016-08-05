@@ -49,6 +49,10 @@
                             implementationClass="io.github.liias.monkey.lang.ide.completion.MonkeyCompletionContributor"/>
 
     <!-- Nice to have stuff -->
+    <gotoClassContributor implementation="io.github.liias.monkey.lang.ide.navigation.MonkeyGoToClassContributor"/>
+
+    <gotoSymbolContributor implementation="io.github.liias.monkey.lang.ide.navigation.MonkeyGoToSymbolContributor"/>
+
     <codeInsight.parameterInfo language="MonkeyC"
                                implementationClass="io.github.liias.monkey.lang.ide.parameterInfo.MonkeyParameterInfoHandler"/>
 

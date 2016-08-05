@@ -191,7 +191,7 @@ public class MonkeyVisitor extends PsiElementVisitor {
   }
 
   public void visitModuleDeclaration(@NotNull MonkeyModuleDeclaration o) {
-    visitPsiCompositeElement(o);
+    visitComponent(o);
   }
 
   public void visitMultiplicativeExpression(@NotNull MonkeyMultiplicativeExpression o) {

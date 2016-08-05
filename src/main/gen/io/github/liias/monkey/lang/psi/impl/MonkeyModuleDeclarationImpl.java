@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static io.github.liias.monkey.lang.psi.MonkeyTypes.*;
 import io.github.liias.monkey.lang.psi.*;
 
-public class MonkeyModuleDeclarationImpl extends MonkeyPsiCompositeElementImpl implements MonkeyModuleDeclaration {
+public class MonkeyModuleDeclarationImpl extends AbstractMonkeyComponentImpl implements MonkeyModuleDeclaration {
 
   public MonkeyModuleDeclarationImpl(ASTNode node) {
     super(node);
@@ -26,9 +26,9 @@ public class MonkeyModuleDeclarationImpl extends MonkeyPsiCompositeElementImpl i
   }
 
   @Override
-  @NotNull
+  @Nullable
   public MonkeyComponentName getComponentName() {
-    return findNotNullChildByClass(MonkeyComponentName.class);
+    return findChildByClass(MonkeyComponentName.class);
   }
 
   @Override
@@ -38,9 +38,9 @@ public class MonkeyModuleDeclarationImpl extends MonkeyPsiCompositeElementImpl i
   }
 
   @Override
-  @NotNull
+  @Nullable
   public MonkeyModuleBody getModuleBody() {
-    return findNotNullChildByClass(MonkeyModuleBody.class);
+    return findChildByClass(MonkeyModuleBody.class);
   }
 
 }

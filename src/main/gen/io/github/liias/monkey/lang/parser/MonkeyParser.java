@@ -1826,14 +1826,15 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   // modifiers MODULE componentName moduleBody
   public static boolean moduleDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "moduleDeclaration")) return false;
-    boolean r;
+    boolean r, p;
     Marker m = enter_section_(b, l, _NONE_, MODULE_DECLARATION, "<module declaration>");
     r = modifiers(b, l + 1);
     r = r && consumeToken(b, MODULE);
-    r = r && componentName(b, l + 1);
-    r = r && moduleBody(b, l + 1);
-    exit_section_(b, l, m, r, false, null);
-    return r;
+    p = r; // pin = 2
+    r = r && report_error_(b, componentName(b, l + 1));
+    r = p && moduleBody(b, l + 1) && r;
+    exit_section_(b, l, m, r, p, null);
+    return r || p;
   }
 
   /* ********************************************************** */
