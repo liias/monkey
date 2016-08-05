@@ -7,7 +7,31 @@
   <vendor email="madisliias@gmail.com" url="https://liias.github.io">Madis Liias</vendor>
 
   <description><![CDATA[
-      Unofficial support for Monkey C language and Garmin Connect IQ SDK
+      <p>Unofficial support for <a href="https://developer.garmin.com/connect-iq/programmers-guide/monkey-c/">Monkey C language</a>
+       and <a href="https://developer.garmin.com/connect-iq/overview/">Garmin Connect IQ SDK</a>.
+      </p>
+
+      <p>Features:</p>
+
+      <ul>
+        <li>Monkey C grammar validation</li>
+        <li>Syntax highlighting</li>
+        <li>(WIP) Completion suggestions</li>
+        <li>(WIP) Find usages / Go to declaration</li>
+        <li>(WIP) Find by class or symbol name</li>
+        <li>(WIP) API documentation provider</li>
+        <li>(WIP) Method parameters info</li>
+        <li>(WIP) Integration with compiler</li>
+        <li>(WIP) Integration with simulator runner</li>
+        <li>(WIP) Run unit tests</li>
+        <li>(WIP) New project generation</li>
+        <li>(WIP) App Settings support</li>
+        <li>(WIP) Linux support (needs wine installed)</li>
+      </ul>
+
+      <p>
+        <a href="https://github.com/liias/monkey/blob/master/README.md">Read more...</a>
+      </p>
     ]]></description>
 
   <change-notes><![CDATA[
