@@ -1,5 +1,10 @@
 # Changelog
 
+#### 0.2.6
+
+* Support Run No Evil test framework (you need to manually create test configuration)
+* Add Go to class and module (Ctrl+N) and Go to symbol (Ctrl+Alt+Shift+N) support
+
 #### 0.2.5
 
 * Support developer key introduced in Connect IQ SDK 1.3 and 2.1
