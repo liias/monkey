@@ -223,7 +223,7 @@ public class YardDecompiler {
 
     String h1 = moduleDocument.select("h1").first().text();
     boolean isModule = h1.startsWith("Module:");
-    boolean isClass = h1.startsWith("Class:");
+    boolean isClass = h1.startsWith("Class:") || h1.startsWith("Exception:");
 
     SdkModuleOrClass moduleOrClass;
     if (isModule) {
