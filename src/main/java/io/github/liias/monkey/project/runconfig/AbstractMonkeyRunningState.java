@@ -88,14 +88,18 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
   }
 
   protected ExecutionResult runOnSimulator(ConsoleView console, Executor executor) throws ExecutionException {
-    GeneralCommandLine runInSimulatorCmd = createRunInSimulatorCmd();
-    ProcessHandler runInSimHandler = new KillableColoredProcessHandler(runInSimulatorCmd);
+    ProcessHandler runInSimHandler = startInSimulator();
     if (console != null) {
       console.attachToProcess(runInSimHandler);
     }
 
     AnAction[] actions = createActions(console, runInSimHandler, executor);
     return new DefaultExecutionResult(console, runInSimHandler, actions);
+  }
+
+  protected ProcessHandler startInSimulator() throws ExecutionException {
+    GeneralCommandLine runInSimulatorCmd = createRunInSimulatorCmd();
+    return new KillableColoredProcessHandler(runInSimulatorCmd);
   }
 
   protected void runSimulator(ConsoleView console) throws ExecutionException {

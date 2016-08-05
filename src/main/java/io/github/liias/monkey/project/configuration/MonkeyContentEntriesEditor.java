@@ -5,7 +5,6 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ui.configuration.CommonContentEntriesEditor;
 import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
-import io.github.liias.monkey.project.module.MonkeyModuleType;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.model.java.JavaResourceRootType;
@@ -13,8 +12,6 @@ import org.jetbrains.jps.model.java.JavaSourceRootType;
 
 import javax.swing.*;
 import java.awt.*;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class MonkeyContentEntriesEditor extends CommonContentEntriesEditor {
   private TargetDeviceConfigurable myTargetDeviceConfigurable;
@@ -36,8 +33,11 @@ public class MonkeyContentEntriesEditor extends CommonContentEntriesEditor {
 
   @Override
   protected void addAdditionalSettingsToPanel(JPanel mainPanel) {
-
-    Sdk sdk = checkNotNull(ModuleRootManager.getInstance(getModule()).getSdk());
+    Sdk sdk = ModuleRootManager.getInstance(getModule()).getSdk();
+    if (sdk == null) {
+      return;
+    }
+    //checkNotNull(sdk);
     String binPath = MonkeySdkType.getBinPath(sdk);
 
     myTargetDeviceConfigurable = new TargetDeviceConfigurable(myProject, binPath) {

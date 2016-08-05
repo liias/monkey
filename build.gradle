@@ -55,6 +55,6 @@ idea {
 // Additionally you have to, in running IDEA, go to Find Action (Ctrl+Shift+A) and enable "Debug Build Process".
 afterEvaluate {
   task("debugIdea", type: RunIdeaTask, group: 'intellij', dependsOn: 'prepareSandbox') {
-    jvmArgs += ["-Dcompiler.process.debug.port=9128"]
+    jvmArgs += ["-Dcompiler.process.debug.port=9128", "-Didea.smrunner.debug=true"]
   }
 }
