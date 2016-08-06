@@ -174,7 +174,12 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
 
   protected GeneralCommandLine createRunInSimulatorCmd() throws ExecutionException {
     MonkeyParameters monkeyParameters = getMonkeyParameters();
-    String prgPath = monkeyParameters.getOutputPath().findChild(getPrgName()).getPath();
+    VirtualFile child = monkeyParameters.getOutputPath().findChild(getPrgName());
+    if (child == null) {
+      throw new ExecutionException("No .prg file was built, so nothing to run, searched path was " +
+        monkeyParameters.getOutputPath() + " and prg name " + getPrgName());
+    }
+    String prgPath = child.getPath();
 
     Sdk sdk = monkeyParameters.getSdk();
 
