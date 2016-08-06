@@ -51,6 +51,14 @@ public class JpsMonkeySdkType extends JpsSdkType<JpsDummyElement> implements Jps
   }
 
 
+  public static boolean hasUnitTestsSupport(SdkVersion sdkVersion) {
+    if (sdkVersion == null) {
+      return false;
+    }
+
+    return hasAppSigningSupport(sdkVersion);
+  }
+
   public static boolean hasAppSigningSupport(SdkVersion sdkVersion) {
     if (sdkVersion == null) {
       return false;

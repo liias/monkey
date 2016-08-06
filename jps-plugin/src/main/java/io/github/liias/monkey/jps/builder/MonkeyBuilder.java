@@ -78,6 +78,12 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     JpsMonkeyModuleProperties monkeyModuleProperties = getModuleProperties(target);
     JpsSdk<JpsDummyElement> sdk = getSdk(context, jpsModule);
 
+    JpsMonkeySdkType.SdkVersion sdkVersion = JpsMonkeySdkType.getSdkVersion(sdk);
+
+    if (target.isTests() && !JpsMonkeySdkType.hasUnitTestsSupport(sdkVersion)) {
+      return;
+    }
+
     for (String contentRootUrl : jpsModule.getContentRootsList().getUrls()) {
       String outputPrg = buildPrgForSimulator(target, context, contentRootUrl, sdk, false, monkeyModuleProperties);
       File outputPrgFile = new File(outputPrg);
