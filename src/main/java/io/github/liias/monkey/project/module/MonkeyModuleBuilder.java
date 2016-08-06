@@ -38,9 +38,9 @@ import io.github.liias.monkey.project.dom.sdk.projectinfo.NewProjectFileMap;
 import io.github.liias.monkey.project.dom.sdk.projectinfo.ProjectInfo;
 import io.github.liias.monkey.project.module.util.ExternalTemplateUtil;
 import io.github.liias.monkey.project.module.util.MonkeyModuleUtil;
+import io.github.liias.monkey.project.runconfig.TargetDevice;
 import io.github.liias.monkey.project.runconfig.running.MonkeyConfigurationType;
 import io.github.liias.monkey.project.runconfig.running.MonkeyModuleBasedConfiguration;
-import io.github.liias.monkey.project.runconfig.TargetDevice;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import io.github.liias.monkey.project.ui.module.MonkeyModuleWizardStep;
 import io.github.liias.monkey.project.ui.module.newProject.MonkeyApplicationModifiedSettingsStep;
@@ -50,14 +50,14 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.context.Context;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.jps.model.java.JavaResourceRootType;
-import org.jetbrains.jps.model.java.JavaSourceRootType;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static io.github.liias.monkey.jps.model.JpsMonkeyModuleType.MONKEY_RESOURCE_ROOT_TYPE;
+import static io.github.liias.monkey.jps.model.JpsMonkeyModuleType.MONKEY_SOURCE_ROOT_TYPE;
 import static io.github.liias.monkey.project.module.util.MonkeyModuleUtil.MANIFEST_XML;
 
 public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderListener {
@@ -65,6 +65,7 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
   public static final String PROJECT_INFO_XML = "projectInfo.xml";
   public static final String FILE_TYPE_SOURCE = "source";
   public static final TargetDevice DEFAULT_TARGET_DEVICE = TargetDevice.SQUARE_WATCH;
+
 
   // Not null only if new project where we need to generate content based on this type
   @Nullable
@@ -87,8 +88,8 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     compilerModuleExtension.setExcludeOutput(true);
     compilerModuleExtension.inheritCompilerOutputPath(true);
 
-    if (myJdk != null) {
-      rootModel.setSdk(myJdk);
+    if (getModuleJdk() != null) {
+      rootModel.setSdk(getModuleJdk());
     } else {
       rootModel.inheritSdk();
     }
@@ -98,19 +99,19 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     if (existingContentEntry.isPresent()) {
       // assume sources are already set
       ContentEntry contentEntry = existingContentEntry.get();
-      List<VirtualFile> resourceDirs = findResourceDirs(contentEntry.getFile());
-      for (VirtualFile resourceDir : resourceDirs) {
-        contentEntry.addSourceFolder(resourceDir, JavaResourceRootType.RESOURCE);
+      List<VirtualFile> resourcePaths = findResourcePaths(contentEntry.getFile());
+      for (VirtualFile resourcePath : resourcePaths) {
+        contentEntry.addSourceFolder(resourcePath, MONKEY_RESOURCE_ROOT_TYPE);
       }
     } else {
       ContentEntry contentEntry = doAddContentEntry(rootModel);
       if (contentEntry != null) {
-        VirtualFile sourceRoot = createSourcePath("source");
-        contentEntry.addSourceFolder(sourceRoot, JavaSourceRootType.SOURCE);
+        VirtualFile sourcePath = createSourcePath("source");
+        contentEntry.addSourceFolder(sourcePath, MONKEY_SOURCE_ROOT_TYPE);
 
         // TODO: there can be many resource folders, e.g based on language or device that come from SDK's example project definitions
-        VirtualFile resourcesRoot = createSourcePath("resources");
-        contentEntry.addSourceFolder(resourcesRoot, JavaResourceRootType.RESOURCE);
+        VirtualFile resourcePath = createSourcePath("resources");
+        contentEntry.addSourceFolder(resourcePath, MONKEY_RESOURCE_ROOT_TYPE);
       }
     }
 
@@ -133,7 +134,7 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     }
   }
 
-  private static List<VirtualFile> findResourceDirs(VirtualFile contentRoot) {
+  private static List<VirtualFile> findResourcePaths(VirtualFile contentRoot) {
     ArrayList<VirtualFile> resourceDirs = Lists.newArrayList();
 
     VirtualFile[] children = contentRoot.getChildren();

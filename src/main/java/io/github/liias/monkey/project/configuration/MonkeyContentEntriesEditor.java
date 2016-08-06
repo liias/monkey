@@ -7,17 +7,17 @@ import com.intellij.openapi.roots.ui.configuration.CommonContentEntriesEditor;
 import com.intellij.openapi.roots.ui.configuration.ModuleConfigurationState;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.jps.model.java.JavaResourceRootType;
-import org.jetbrains.jps.model.java.JavaSourceRootType;
 
 import javax.swing.*;
 import java.awt.*;
+
+import static io.github.liias.monkey.jps.model.JpsMonkeyModuleType.*;
 
 public class MonkeyContentEntriesEditor extends CommonContentEntriesEditor {
   private TargetDeviceConfigurable myTargetDeviceConfigurable;
 
   public MonkeyContentEntriesEditor(String moduleName, ModuleConfigurationState state) {
-    super(moduleName, state, JavaSourceRootType.SOURCE, JavaSourceRootType.TEST_SOURCE, JavaResourceRootType.RESOURCE, JavaResourceRootType.TEST_RESOURCE);
+    super(moduleName, state, MONKEY_SOURCE_ROOT_TYPE, MONKEY_TEST_SOURCE_ROOT_TYPE, MONKEY_RESOURCE_ROOT_TYPE, MONKEY_TEST_RESOURCE_ROOT_TYPE);
   }
 
   @Override

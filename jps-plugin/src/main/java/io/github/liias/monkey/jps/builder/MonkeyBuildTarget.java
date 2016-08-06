@@ -23,6 +23,9 @@ import org.jetbrains.jps.model.module.JpsTypedModuleSourceRoot;
 import java.io.File;
 import java.util.*;
 
+import static io.github.liias.monkey.jps.model.JpsMonkeyModuleType.MONKEY_SOURCE_ROOT_TYPE;
+import static io.github.liias.monkey.jps.model.JpsMonkeyModuleType.MONKEY_TEST_SOURCE_ROOT_TYPE;
+
 public class MonkeyBuildTarget extends ModuleBasedTarget<MonkeySourceRootDescriptor> {
   public MonkeyBuildTarget(MonkeyBuildTargetType targetType, @NotNull JpsModule module) {
     super(targetType, module);
@@ -59,7 +62,7 @@ public class MonkeyBuildTarget extends ModuleBasedTarget<MonkeySourceRootDescrip
   @Override
   public List<MonkeySourceRootDescriptor> computeRootDescriptors(JpsModel model, ModuleExcludeIndex index, IgnoredFileIndex ignoredFileIndex, BuildDataPaths dataPaths) {
     List<MonkeySourceRootDescriptor> result = new ArrayList<>();
-    JavaSourceRootType type = isTests() ? JavaSourceRootType.TEST_SOURCE : JavaSourceRootType.SOURCE;
+    JavaSourceRootType type = isTests() ? MONKEY_TEST_SOURCE_ROOT_TYPE : MONKEY_SOURCE_ROOT_TYPE;
     for (JpsTypedModuleSourceRoot<JavaSourceRootProperties> root : myModule.getSourceRoots(type)) {
       result.add(new MonkeySourceRootDescriptor(root.getFile(), this));
     }

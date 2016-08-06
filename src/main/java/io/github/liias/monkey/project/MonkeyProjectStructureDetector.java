@@ -34,20 +34,20 @@ import static java.util.stream.Collectors.*;
  */
 public class MonkeyProjectStructureDetector extends ProjectStructureDetector {
 
+  public static final String MONKEY_SOURCE_FILE_EXTENSION = MonkeyFileType.INSTANCE.getDefaultExtension();
+
   /*
-  Detects source roots instead of module content root.
-  see com.intellij.ide.util.importProject.RootDetectionProcessor.mergeContentRoots(), content root is ignored if there are source roots
-   */
+      Detects source roots instead of module content root.
+      see com.intellij.ide.util.importProject.RootDetectionProcessor.mergeContentRoots(), content root is ignored if there are source roots
+       */
   @NotNull
   @Override
   public DirectoryProcessingResult detectRoots(@NotNull File dir,
                                                @NotNull File[] children,
                                                @NotNull File base,
                                                @NotNull List<DetectedProjectRoot> result) {
-
-    String fileExtension = MonkeyFileType.INSTANCE.getDefaultExtension();
     for (File child : children) {
-      if (child.isFile() && FileUtilRt.extensionEquals(child.getName(), fileExtension)) {
+      if (child.isFile() && FileUtilRt.extensionEquals(child.getName(), MONKEY_SOURCE_FILE_EXTENSION)) {
         result.add(new MonkeyDetectedSourceRoot(dir));
         // alternatively could add one module root instead of many source roots:
         //result.add(new DetectedContentRoot(dir, "MonkeyC", MonkeyModuleType.getInstance(), WebModuleType.getInstance()));
@@ -73,15 +73,15 @@ public class MonkeyProjectStructureDetector extends ProjectStructureDetector {
         List<ModuleDescriptor> modules = projectDescriptor.getModules();
         if (modules.isEmpty()) {
           roots.stream()
-              .filter(r -> r instanceof MonkeyDetectedSourceRoot)
-              .map(r -> (MonkeyDetectedSourceRoot) r)
-              .collect(groupingBy(sr -> sr.getDirectory().getParentFile(), mapping(Function.identity(), toSet())))
-              .forEach((moduleContentRoot, moduleSourceRoots) -> {
-                    ModuleDescriptor moduleDescriptor = new ModuleDescriptor(moduleContentRoot, MonkeyModuleType.getInstance(), moduleSourceRoots);
-                    moduleDescriptor.addConfigurationUpdater(new MonkeyModuleConfigurationUpdater());
-                    modules.add(moduleDescriptor);
-                  }
-              );
+            .filter(r -> r instanceof MonkeyDetectedSourceRoot)
+            .map(r -> (MonkeyDetectedSourceRoot) r)
+            .collect(groupingBy(sr -> sr.getDirectory().getParentFile(), mapping(Function.identity(), toSet())))
+            .forEach((moduleContentRoot, moduleSourceRoots) -> {
+                ModuleDescriptor moduleDescriptor = new ModuleDescriptor(moduleContentRoot, MonkeyModuleType.getInstance(), moduleSourceRoots);
+                moduleDescriptor.addConfigurationUpdater(new MonkeyModuleConfigurationUpdater());
+                modules.add(moduleDescriptor);
+              }
+            );
         }
       }
     }
