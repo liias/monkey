@@ -1,0 +1,5 @@
+<idea-plugin url="https://www.jetbrains.com/idea">
+  <extensions defaultExtensionNs="org.jetbrains.idea.eclipse">
+    <natureImporter implementation="io.github.liias.monkey.project.ui.module.newProject.MonkeyEclipseNatureImporter"/>
+  </extensions>
+</idea-plugin>

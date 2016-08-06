@@ -20,6 +20,7 @@ intellij {
   pluginName 'monkey'
   updateSinceUntilBuild false
   downloadSources Boolean.valueOf(downloadIdeaSources)
+  plugins = ['eclipse']
   publish {
     username publishUsername
     password publishPassword

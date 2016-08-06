@@ -51,6 +51,8 @@
        on how to target different products -->
   <depends>com.intellij.modules.lang</depends>
 
+  <depends optional="true" config-file="eclipse.xml">org.jetbrains.idea.eclipse</depends>
+
   <extensions defaultExtensionNs="com.intellij">
     <!-- IDE Configuration -->
     <applicationConfigurable groupId="build" displayName="Connect IQ" id="monkeyc.settings"
