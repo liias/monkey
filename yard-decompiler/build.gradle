@@ -1,5 +1,3 @@
-apply plugin: 'org.jetbrains.intellij'
-
 jar.archiveName = "yard-decompiler.jar"
 
 group 'io.github.liias'

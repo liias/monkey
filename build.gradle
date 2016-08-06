@@ -1,7 +1,7 @@
 import org.jetbrains.intellij.RunIdeaTask
 
 plugins {
-  id "org.jetbrains.intellij" version "0.1.4"
+  id "org.jetbrains.intellij" version "0.1.9"
 }
 
 allprojects {
@@ -9,13 +9,16 @@ allprojects {
   sourceCompatibility = javaVersion
   targetCompatibility = javaVersion
   tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+
+  apply plugin: 'org.jetbrains.intellij'
+  intellij {
+    version ideaVersion
+  }
 }
 
-apply plugin: 'org.jetbrains.intellij'
-
 intellij {
-  version ideaVersion
   pluginName 'monkey'
+  updateSinceUntilBuild false
   downloadSources Boolean.valueOf(downloadIdeaSources)
   publish {
     username publishUsername
