@@ -24,9 +24,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.Optional;
 
 public class MonkeySettingsEditor extends SettingsEditor<AbstractMonkeyModuleBasedConfiguration> implements PanelWithAnchor {
   private final Project project;
@@ -62,7 +62,10 @@ public class MonkeySettingsEditor extends SettingsEditor<AbstractMonkeyModuleBas
   }
 
   public List<TargetDevice> getAllDevices(Module module) {
-    Sdk sdk = checkNotNull(ModuleRootManager.getInstance(module).getSdk());
+    Sdk sdk = ModuleRootManager.getInstance(module).getSdk();
+    if (sdk == null) {
+      return new ArrayList<>();
+    }
     String sdkBinPath = MonkeySdkType.getBinPath(sdk);
 
     DevicesReader devicesReader = new DevicesReader(sdkBinPath);
@@ -172,7 +175,7 @@ public class MonkeySettingsEditor extends SettingsEditor<AbstractMonkeyModuleBas
     configuration.setModule(moduleComponent.getComponent().getSelectedModule());
 
     final TargetDevice selectedTargetDevice = (TargetDevice) this.targetDevice.getComponent().getSelectedItem();
-    configuration.setTargetDeviceId(selectedTargetDevice.getId());
+    configuration.setTargetDeviceId(Optional.ofNullable(selectedTargetDevice).map(TargetDevice::getId).orElse(null));
 
     DeploymentTarget selectedDeploymentTarget = (DeploymentTarget) this.deploymentTarget.getComponent().getSelectedItem();
     configuration.setDeploymentTargetId(selectedDeploymentTarget.getId());
