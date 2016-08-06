@@ -35,10 +35,9 @@
     ]]></description>
 
   <change-notes><![CDATA[
-    <p>0.2.6</p>
+    <p>0.2.7</p>
     <ul>
-      <li>Support Run No Evil test framework (you need to manually create test configuration)</li>
-      <li>Add Go to class and module (Ctrl+N) and Go to symbol (Ctrl+Alt+Shift+N) support</li>
+      <li>Fix compiling if SDK version does not support unit tests</li>
     </ul>
 
     <a href="https://github.com/liias/monkey/blob/master/CHANGELOG.md#changelog">Full change log...</a>
