@@ -4,7 +4,7 @@
 
 This unofficial [Monkey C plugin](https://plugins.jetbrains.com/plugin/8253) adds support for [Monkey C language](https://developer.garmin.com/connect-iq/programmers-guide/monkey-c/) and [Garmin Connect IQ SDK](https://developer.garmin.com/connect-iq/overview/) for IntelliJ IDEA.
 
-Features:
+#### Features:
 
 * (WIP) Monkey C grammar validation
 * Syntax highlighting
@@ -23,3 +23,15 @@ Features:
 
 WIP - work in progress, means that there is some support, but it contains 
 bugs or is incomplete
+
+
+#### Planned features (in random order):
+
+* Support creating publishable artifact
+* Formatting
+* Collapse/expand
+* Resources Rez. support in code
+* Refactoring
+* Showing usage error on unresolved (in scope) references
+* Support Android Studio
+* SDK manager
