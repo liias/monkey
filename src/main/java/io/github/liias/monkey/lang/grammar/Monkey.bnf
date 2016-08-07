@@ -183,6 +183,7 @@ mixin="io.github.liias.monkey.lang.psi.impl.AbstractMonkeyComponentImpl"
 implements="io.github.liias.monkey.lang.psi.MonkeyComponent"
 }
 
+// Constants must be declared at the module or class level; they cannot be declared within a function.
 constDeclaration ::= modifiers CONST componentName (EQ expression)? SEMI {
 pin=2
 mixin="io.github.liias.monkey.lang.psi.impl.AbstractMonkeyComponentImpl"

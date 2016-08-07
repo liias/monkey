@@ -35,3 +35,11 @@ bugs or is incomplete
 * Showing usage error on unresolved (in scope) references
 * Support Android Studio
 * SDK manager
+
+
+#### How to use the plugin
+
+1. Download latest IDEA Community Edition. In Settings>Plugins search for this one and install.
+2. Create new project or open existing one
+3. Setup SDK and apply it to project
+4. Set target device etc

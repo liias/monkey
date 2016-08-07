@@ -1,4 +1,4 @@
-<idea-plugin version="2">
+<idea-plugin version="2" url="https://github.com/liias/monkey">
   <id>io.github.liias.monkey</id>
   <name>Monkey C (Garmin Connect IQ)</name>
   <!-- this version is overridden on gradle building and is
