@@ -122,9 +122,8 @@
     HEX_LITERAL = 'regexp:0[Xx][0-9a-fA-F]*'
 
     // 0 can be omitted before dot
-    // either: x(.y) or (x).y and in the end optionally [fF];
-    // or x[fF]
-    FLOATLITERAL = 'regexp: (((\d+(\.\d+)?)|((\d+)?\.\d+)[fF]?)|\d+[fF])'
+    // either: x[fF] or (x).y and in the end optionally [fF]
+    FLOATLITERAL = 'regexp:(\d+[fF]|(\d+)?\.\d+[fF]?)'
     DOUBLELITERAL = 'regexp:(\d+)?(\.\d+)?[dD]'
 
     string = "regexp:(\"([^\"\\]|\\.)*\")"

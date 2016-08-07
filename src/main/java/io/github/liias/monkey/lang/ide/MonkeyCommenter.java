@@ -55,7 +55,6 @@ public class MonkeyCommenter implements CodeDocumentationAwareCommenterEx {
   @Override
   public IElementType getBlockCommentTokenType() {
     return MonkeyTypes.BLOCK_COMMENT;
-
   }
 
   @Nullable
