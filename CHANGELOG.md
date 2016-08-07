@@ -1,6 +1,11 @@
 # Changelog
 
+#### 0.2.8
+
+* Support importing eclipse project
+
 #### 0.2.7
+
 * Fix compiling if SDK version does not support unit tests
 
 #### 0.2.6

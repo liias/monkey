@@ -35,9 +35,9 @@
     ]]></description>
 
   <change-notes><![CDATA[
-    <p>0.2.7</p>
+    <p>0.2.8</p>
     <ul>
-      <li>Fix compiling if SDK version does not support unit tests</li>
+      <li>Support importing eclipse project</li>
     </ul>
 
     <a href="https://github.com/liias/monkey/blob/master/CHANGELOG.md#changelog">Full change log...</a>
