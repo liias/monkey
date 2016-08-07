@@ -3,6 +3,7 @@
 #### 0.2.8
 
 * Support importing eclipse project
+* Exclude -a, -i, -u, -p compile arguments if using SDK version 2.1+
 
 #### 0.2.7
 

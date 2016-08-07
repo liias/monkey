@@ -38,6 +38,7 @@
     <p>0.2.8</p>
     <ul>
       <li>Support importing eclipse project</li>
+      <li>Exclude -a, -i, -u, -p compile arguments if using SDK version 2.1+</li>
     </ul>
 
     <a href="https://github.com/liias/monkey/blob/master/CHANGELOG.md#changelog">Full change log...</a>
