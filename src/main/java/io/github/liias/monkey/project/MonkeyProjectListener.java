@@ -4,8 +4,10 @@ import com.intellij.ProjectTopics;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.AbstractProjectComponent;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.ModuleAdapter;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -24,21 +26,22 @@ public class MonkeyProjectListener extends AbstractProjectComponent {
 
   @Override
   public void projectOpened() {
-    MessageBusConnection connection = myProject.getMessageBus().connect(myProject);
+    StartupManager.getInstance(myProject).runWhenProjectIsInitialized(() ->
+      DumbService.getInstance(myProject).smartInvokeLater(() -> {
+        MessageBusConnection connection = myProject.getMessageBus().connect(myProject);
+        createOrRemoveToolWindow(myProject);
+        connection.subscribe(ProjectTopics.MODULES, new ModuleAdapter() {
+          @Override
+          public void moduleAdded(@NotNull Project project, @NotNull Module module) {
+            moduleAddedOrRemovedForProject(project);
+          }
 
-    createOrRemoveToolWindow(myProject);
-
-    connection.subscribe(ProjectTopics.MODULES, new ModuleAdapter() {
-      @Override
-      public void moduleAdded(@NotNull Project project, @NotNull Module module) {
-        moduleAddedOrRemovedForProject(project);
-      }
-
-      @Override
-      public void moduleRemoved(@NotNull Project project, @NotNull Module module) {
-        moduleAddedOrRemovedForProject(project);
-      }
-    });
+          @Override
+          public void moduleRemoved(@NotNull Project project, @NotNull Module module) {
+            moduleAddedOrRemovedForProject(project);
+          }
+        });
+      }));
   }
 
   private static void moduleAddedOrRemovedForProject(@NotNull Project project) {
