@@ -96,6 +96,7 @@
 
     <lang.commenter language="MonkeyC" implementationClass="io.github.liias.monkey.lang.ide.MonkeyCommenter"/>
 
+    <runLineMarkerContributor language="MonkeyC" implementationClass="io.github.liias.monkey.runnoevil.MonkeyTestRunLineMarkerContributor"/>
 
     <!-- Module stuff -->
     <sdkType implementation="io.github.liias.monkey.project.sdk.MonkeySdkType"/>
@@ -122,6 +123,8 @@
     <configurationType implementation="io.github.liias.monkey.project.runconfig.running.MonkeyConfigurationType"/>
     <configurationType implementation="io.github.liias.monkey.project.runconfig.testing.MonkeyTestConfigurationType"/>
     <moduleExtension implementation="io.github.liias.monkey.project.configuration.TargetDeviceModuleExtension"/>
+
+    <testFramework implementation="io.github.liias.monkey.runnoevil.MonkeyTestFramework" id="RunNoEvil"/>
 
     <!-- xml file parsers -->
 
@@ -171,6 +174,13 @@
               description="Open API documentation in a browser"/>
 
       <add-to-group group-id="MainMenu" relative-to-action="HelpMenu" anchor="before"/>
+    </group>
+
+    <group id="MonkeyGenerateGroup">
+      <action id="MonkeyGenerateTestMethod" class="io.github.liias.monkey.runnoevil.MonkeyGenerateTestSupportMethodAction"
+              text="Test Method" description="Creates Go test function"/>
+      <!--<separator/>-->
+      <add-to-group group-id="GenerateGroup" anchor="first"/>
     </group>
 
   </actions>
