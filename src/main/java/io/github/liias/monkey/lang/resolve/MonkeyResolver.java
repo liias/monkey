@@ -27,11 +27,16 @@ public class MonkeyResolver implements ResolveCache.AbstractResolver<MonkeyRefer
   @Nullable
   @Override
   public List<? extends PsiElement> resolve(@NotNull MonkeyReference reference, boolean incompleteCode) {
+    // for some reason, aa.bb() reference for bb in param info, has canonical text ".bb" instead of bb
+    // finding the child gives the correct reference
     MonkeyReference[] references = PsiTreeUtil.getChildrenOfType(reference, MonkeyReference.class);
-    if (references == null) {
+
+    if (references != null && references.length > 0) {
+      MonkeyReference reference1 = references[0];
+      return resolveSimpleReference(reference1, reference1.getCanonicalText());
+    } else {
       return resolveSimpleReference(reference, reference.getCanonicalText());
     }
-    return null;
   }
 
   @NotNull
