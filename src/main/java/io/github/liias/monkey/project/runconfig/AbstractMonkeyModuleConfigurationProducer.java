@@ -8,6 +8,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.util.Comparing;
 import com.intellij.openapi.util.Ref;
 import com.intellij.psi.PsiElement;
+import io.github.liias.monkey.lang.MonkeyLanguage;
 
 public abstract class AbstractMonkeyModuleConfigurationProducer extends RunConfigurationProducer<AbstractMonkeyModuleBasedConfiguration> {
   protected AbstractMonkeyModuleConfigurationProducer(ConfigurationType configurationType) {
@@ -19,6 +20,9 @@ public abstract class AbstractMonkeyModuleConfigurationProducer extends RunConfi
     final Location location = context.getLocation();
 
     if (location == null) {
+      return false;
+    }
+    if (!(location.getPsiElement().getLanguage() instanceof MonkeyLanguage)) {
       return false;
     }
     final Module contextModule = context.getModule();
