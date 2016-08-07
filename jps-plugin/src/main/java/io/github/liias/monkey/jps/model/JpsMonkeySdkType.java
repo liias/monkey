@@ -63,14 +63,35 @@ public class JpsMonkeySdkType extends JpsSdkType<JpsDummyElement> implements Jps
     if (sdkVersion == null) {
       return false;
     }
-    if (sdkVersion.major <= 1 && sdkVersion.minor >= 3) {
+    if (sdkVersion.major == 1 && sdkVersion.minor >= 3) {
       return true;
     }
 
     if (sdkVersion.major > 2 ||
-      (sdkVersion.major == 2 && sdkVersion.minor >= 1)) {
+      sdkVersion.major == 2 && sdkVersion.minor >= 1) {
       return true;
     }
+    return false;
+  }
+
+  public static boolean hasCharSupport(SdkVersion sdkVersion) {
+    if (sdkVersion == null) {
+      return false;
+    }
+
+    return hasAppSigningSupport(sdkVersion);
+  }
+
+  public static boolean hasOptionalSdkArgumentsSupport(SdkVersion sdkVersion) {
+    if (sdkVersion == null) {
+      return false;
+    }
+
+    if (sdkVersion.major > 2 ||
+      sdkVersion.major == 2 && sdkVersion.minor >= 1) {
+      return true;
+    }
+
     return false;
   }
 }

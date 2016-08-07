@@ -206,19 +206,25 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     String sdkPath = sdkHomePath + File.separator;
     String sdkBinPath = sdkPath + "bin" + File.separator;
 
-    ImmutableList.Builder<String> parameters = ImmutableList.<String>builder()
-      .add("-a", sdkBinPath + "api.db")
-      .add("-i", sdkBinPath + "api.debug.xml")
-      .add("-o", outputPath)
+    JpsMonkeySdkType.SdkVersion sdkVersion = JpsMonkeySdkType.getSdkVersion(sdk);
+    boolean optionalArgumentsSupport = JpsMonkeySdkType.hasOptionalSdkArgumentsSupport(sdkVersion);
+
+    ImmutableList.Builder<String> parameters = ImmutableList.<String>builder();
+    if (!optionalArgumentsSupport) {
+      parameters.add("-a", sdkBinPath + "api.db")
+        .add("-i", sdkBinPath + "api.debug.xml");
+    }
+
+    parameters.add("-o", outputPath)
       .add("-w"); // Show compilation warnings in the Console
 //        .add("-g") // Print debug output (-g)
+
 
     // TODO: check what -e means
 /*    if(outputPath.endsWith(".iq")) {
       cmdLine.addArgument("-e");
     }*/
 
-    JpsMonkeySdkType.SdkVersion sdkVersion = JpsMonkeySdkType.getSdkVersion(sdk);
     if (JpsMonkeySdkType.hasAppSigningSupport(sdkVersion)) {
       final File developerKeyPath = monkeyModuleProperties.DEVELOPER_KEY_PATH;
       String devKeyPathStr = developerKeyPath != null ? developerKeyPath.getAbsolutePath() : null;
@@ -244,11 +250,14 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     }
 
     String manifestXmlPath = projectRootPath + File.separator + "manifest.xml";
-    String devicesXmlPath = sdkBinPath + "devices.xml";
-    String projectInfoXmlPath = sdkBinPath + "projectInfo.xml"; // todo: is this file optional?
-    parameters.add("-m", manifestXmlPath)
-      .add("-u", devicesXmlPath)
-      .add("-p", projectInfoXmlPath); // optional file?
+    parameters.add("-m", manifestXmlPath);
+
+    if (!optionalArgumentsSupport) {
+      String devicesXmlPath = sdkBinPath + "devices.xml";
+      String projectInfoXmlPath = sdkBinPath + "projectInfo.xml";
+      parameters.add("-u", devicesXmlPath)
+        .add("-p", projectInfoXmlPath);
+    }
 
     // in format: C:\xyz\source\aaApp.mc C:\xyz\source\aaMenuDelegate.mc C:\xyz\source\aaView.mc
     parameters.addAll(sourceFilePaths);
@@ -268,8 +277,6 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
       parameters.add("-r");
     }
 
-    //final String javaHome = SystemProperties.getJavaHome();
-    //String javaPath = javaHome + File.separator + "bin" + File.separator + "java";
     final String jreHome = findJreHome() + File.separator;
     String javaPath = jreHome + "bin" + File.separator + "java";
     GeneralCommandLine commandLine = new GeneralCommandLine();
