@@ -1,5 +1,10 @@
 # Changelog
 
+#### 0.2.9
+
+* Fix block comments syntax error
+* Show parameter info (ctrl+P) for methods declared in other files
+
 #### 0.2.8
 
 * Support importing eclipse project
