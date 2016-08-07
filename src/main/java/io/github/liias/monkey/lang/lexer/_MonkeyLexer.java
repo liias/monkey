@@ -66,23 +66,23 @@ public class _MonkeyLexer implements FlexLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\1\1\1\2\1\3\1\4\1\5\1\6\1\7\2\10"+
-    "\1\11\1\12\1\13\1\14\1\15\1\16\21\7\1\17"+
-    "\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27"+
-    "\1\30\1\31\1\32\1\33\1\34\1\35\1\36\1\37"+
-    "\3\7\1\0\1\40\1\41\1\42\1\43\1\44\1\45"+
-    "\1\0\1\1\1\46\1\47\1\1\1\0\1\50\3\0"+
-    "\1\51\3\7\1\52\15\7\1\53\1\7\1\54\7\7"+
-    "\1\55\4\7\1\56\1\57\1\60\1\61\1\62\1\63"+
-    "\1\64\1\65\1\66\1\67\1\70\3\7\1\71\1\72"+
-    "\1\73\1\0\4\7\1\74\5\7\1\75\3\7\1\76"+
-    "\1\7\1\77\7\7\1\100\2\7\1\101\5\7\1\73"+
-    "\1\7\1\102\12\7\1\103\1\104\3\7\1\105\1\106"+
-    "\7\7\1\107\1\7\1\110\1\111\1\112\3\7\1\113"+
-    "\2\7\1\114\1\7\1\115\3\7\1\116\3\7\1\117"+
-    "\1\120\1\121\1\7\1\122\1\123\2\7\1\124\1\7"+
-    "\1\125\1\7\1\126\1\7\1\127\2\7\1\130\1\7"+
-    "\1\131\1\132\1\133\1\134\2\7\1\135";
+    "\1\0\1\1\1\2\1\3\1\4\1\5\1\6\2\7"+
+    "\1\10\1\11\1\12\1\13\1\14\1\15\21\6\1\16"+
+    "\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26"+
+    "\1\27\1\30\1\31\1\32\1\33\1\34\1\35\1\36"+
+    "\3\6\1\0\1\37\1\40\1\41\1\42\1\43\1\44"+
+    "\1\0\1\45\1\46\1\47\1\45\1\0\1\50\3\0"+
+    "\1\51\3\6\1\52\15\6\1\53\1\6\1\54\7\6"+
+    "\1\55\4\6\1\56\1\57\1\60\1\61\1\62\1\63"+
+    "\1\64\1\65\1\66\1\67\1\70\3\6\1\71\1\72"+
+    "\1\73\1\0\4\6\1\74\5\6\1\75\3\6\1\76"+
+    "\1\6\1\77\7\6\1\100\2\6\1\101\5\6\1\73"+
+    "\1\6\1\102\12\6\1\103\1\104\3\6\1\105\1\106"+
+    "\7\6\1\107\1\6\1\110\1\111\1\112\3\6\1\113"+
+    "\2\6\1\114\1\6\1\115\3\6\1\116\3\6\1\117"+
+    "\1\120\1\121\1\6\1\122\1\123\2\6\1\124\1\6"+
+    "\1\125\1\6\1\126\1\6\1\127\2\6\1\130\1\6"+
+    "\1\131\1\132\1\133\1\134\2\6\1\135";
 
   private static int [] zzUnpackAction() {
     int [] result = new int[227];
@@ -387,7 +387,7 @@ public class _MonkeyLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\1\1\1\11\12\1\3\11\21\1\7\11\1\1\2\11"+
+    "\1\0\1\11\12\1\3\11\21\1\7\11\1\1\2\11"+
     "\5\1\2\11\3\1\1\0\1\1\5\11\1\0\2\11"+
     "\2\1\1\0\1\11\3\0\1\11\40\1\13\11\6\1"+
     "\1\0\41\1\1\11\111\1";
@@ -699,151 +699,151 @@ public class _MonkeyLexer implements FlexLexer {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
-            { return FLOATLITERAL;
+            { return com.intellij.psi.TokenType.BAD_CHARACTER;
             }
           case 94: break;
           case 2: 
-            { return com.intellij.psi.TokenType.BAD_CHARACTER;
+            { return com.intellij.psi.TokenType.WHITE_SPACE;
             }
           case 95: break;
           case 3: 
-            { return com.intellij.psi.TokenType.WHITE_SPACE;
+            { return SLASH;
             }
           case 96: break;
           case 4: 
-            { return SLASH;
+            { return BANG;
             }
           case 97: break;
           case 5: 
-            { return BANG;
+            { return STAR;
             }
           case 98: break;
           case 6: 
-            { return STAR;
+            { return IDENTIFIER;
             }
           case 99: break;
           case 7: 
-            { return IDENTIFIER;
+            { return INTLITERAL;
             }
           case 100: break;
           case 8: 
-            { return INTLITERAL;
+            { return DOT;
             }
           case 101: break;
           case 9: 
-            { return DOT;
+            { return STRING_A;
             }
           case 102: break;
           case 10: 
-            { return STRING_A;
+            { return STRING_B;
             }
           case 103: break;
           case 11: 
-            { return STRING_B;
+            { return SEMI;
             }
           case 104: break;
           case 12: 
-            { return SEMI;
+            { return QUES;
             }
           case 105: break;
           case 13: 
-            { return QUES;
+            { return COLON;
             }
           case 106: break;
           case 14: 
-            { return COLON;
+            { return LBRACE;
             }
           case 107: break;
           case 15: 
-            { return LBRACE;
+            { return RBRACE;
             }
           case 108: break;
           case 16: 
-            { return RBRACE;
+            { return LBRACKET;
             }
           case 109: break;
           case 17: 
-            { return LBRACKET;
+            { return RBRACKET;
             }
           case 110: break;
           case 18: 
-            { return RBRACKET;
+            { return LPAREN;
             }
           case 111: break;
           case 19: 
-            { return LPAREN;
+            { return RPAREN;
             }
           case 112: break;
           case 20: 
-            { return RPAREN;
+            { return COMMA;
             }
           case 113: break;
           case 21: 
-            { return COMMA;
+            { return BAR;
             }
           case 114: break;
           case 22: 
-            { return BAR;
+            { return LT;
             }
           case 115: break;
           case 23: 
-            { return LT;
+            { return GT;
             }
           case 116: break;
           case 24: 
-            { return GT;
+            { return EQ;
             }
           case 117: break;
           case 25: 
-            { return EQ;
+            { return AMP;
             }
           case 118: break;
           case 26: 
-            { return AMP;
+            { return PLUS;
             }
           case 119: break;
           case 27: 
-            { return PLUS;
+            { return SUB;
             }
           case 120: break;
           case 28: 
-            { return SUB;
+            { return PERCENT;
             }
           case 121: break;
           case 29: 
-            { return PERCENT;
+            { return CARET;
             }
           case 122: break;
           case 30: 
-            { return CARET;
+            { return TILDE;
             }
           case 123: break;
           case 31: 
-            { return TILDE;
+            { return MULTI_LINE_COMMENT_START;
             }
           case 124: break;
           case 32: 
-            { return MULTI_LINE_COMMENT_START;
+            { return SLASHEQ;
             }
           case 125: break;
           case 33: 
-            { return SLASHEQ;
+            { return BANGEQ;
             }
           case 126: break;
           case 34: 
-            { return BANGEQ;
+            { return MULTI_LINE_COMMENT_END;
             }
           case 127: break;
           case 35: 
-            { return MULTI_LINE_COMMENT_END;
+            { return STAREQ;
             }
           case 128: break;
           case 36: 
-            { return STAREQ;
+            { return LONGLITERAL;
             }
           case 129: break;
           case 37: 
-            { return LONGLITERAL;
+            { return FLOATLITERAL;
             }
           case 130: break;
           case 38: 
