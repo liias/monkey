@@ -1,6 +1,8 @@
 package io.github.liias.monkey.project.sdk.devices;
 
+import com.intellij.openapi.diagnostic.Logger;
 import io.github.liias.monkey.project.runconfig.TargetDevice;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -16,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DevicesReader {
+  protected static final Logger LOG = Logger.getInstance("#" + DevicesReader.class.getName());
+
   public static final String DEVICES_XML = "devices.xml";
 
   private static String TAG_DEVICES = "devices";
@@ -24,24 +28,35 @@ public class DevicesReader {
   public static final String DEVICE_ATTRIBUTE_ID = "id";
   public static final String DEVICE_ATTRIBUTE_NAME = "name";
 
+  @Nullable
   private final String sdkBinPath;
   private List<TargetDevice> devices;
 
-  public DevicesReader(String sdkBinPath) {
+  public DevicesReader(@Nullable String sdkBinPath) {
     this.sdkBinPath = sdkBinPath;
   }
 
   public List<TargetDevice> parseDevicesXml() {
+    this.devices = new ArrayList<>();
+
+    if (sdkBinPath == null) {
+      return this.devices;
+    }
     String devicesXmlPath = sdkBinPath + DEVICES_XML;
+    File devicesXml = new File(devicesXmlPath);
+    if (!devicesXml.exists()) {
+      return this.devices;
+    }
 
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = factory.newDocumentBuilder();
-      Document doc = builder.parse(new File(devicesXmlPath));
+      Document doc = builder.parse(devicesXml);
       this.devices = importDevices(doc);
 
     } catch (SAXException | IOException | ParserConfigurationException e) {
-      e.printStackTrace();
+      // this could be if some wrong SDK is set
+      LOG.warn("could not find " + devicesXmlPath + "or some other problem: " + e.getMessage());
     }
     return this.devices;
   }

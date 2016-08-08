@@ -18,10 +18,9 @@ public abstract class TargetDeviceConfigurable implements UnnamedConfigurable {
   private JComboBox myComboBox;
   private JPanel myPanel = new JPanel(new GridBagLayout());
 
-  public TargetDeviceConfigurable(Project project, String sdkBinPath) {
+  public TargetDeviceConfigurable(Project project, @Nullable String sdkBinPath) {
     myProject = project;
     myComboBox = new ComboBox();
-
 
     DevicesReader devicesReader = new DevicesReader(sdkBinPath);
     List<TargetDevice> targetDevices = devicesReader.parseDevicesXml();

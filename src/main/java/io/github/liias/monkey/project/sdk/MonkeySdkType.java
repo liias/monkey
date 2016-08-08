@@ -26,6 +26,8 @@ import java.util.Map;
 import static io.github.liias.monkey.Utils.getForWinLinOrMac;
 
 public class MonkeySdkType extends SdkType {
+  public static String COMPILER_INFO_XML = "compilerInfo.xml";
+
   public MonkeySdkType() {
     super(MonkeyConstants.SDK_TYPE_ID);
   }
@@ -63,7 +65,17 @@ public class MonkeySdkType extends SdkType {
 
   @Override
   public boolean isValidSdkHome(String path) {
-    return true;
+    File homePath = new File(path);
+    if (!homePath.isDirectory()) {
+      return false;
+    }
+
+    File binPath = new File(homePath, "bin");
+    if (!binPath.exists()) {
+      return false;
+    }
+
+    return new File(binPath, COMPILER_INFO_XML).exists();
   }
 
   @Override
@@ -91,7 +103,7 @@ public class MonkeySdkType extends SdkType {
   }
 
   private String detectCompilerVersion(@NotNull String homePath) {
-    final File compilerInfoXml = new File(homePath, "bin/compilerInfo.xml");
+    final File compilerInfoXml = new File(homePath, "bin/" + COMPILER_INFO_XML);
 
     if (!compilerInfoXml.exists()) {
       return null;

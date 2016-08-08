@@ -34,11 +34,7 @@ public class MonkeyContentEntriesEditor extends CommonContentEntriesEditor {
   @Override
   protected void addAdditionalSettingsToPanel(JPanel mainPanel) {
     Sdk sdk = ModuleRootManager.getInstance(getModule()).getSdk();
-    if (sdk == null) {
-      return;
-    }
-    //checkNotNull(sdk);
-    String binPath = MonkeySdkType.getBinPath(sdk);
+    String binPath = sdk == null ? null : MonkeySdkType.getBinPath(sdk);
 
     myTargetDeviceConfigurable = new TargetDeviceConfigurable(myProject, binPath) {
       // overriding is needed because it would fail when Applying changes in module settings
