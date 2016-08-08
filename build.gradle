@@ -21,6 +21,9 @@ intellij {
   updateSinceUntilBuild false
   downloadSources Boolean.valueOf(downloadIdeaSources)
   plugins = ['eclipse']
+  // default sandboxDirectory is $project.buildDir/idea-sandbox, but it removes plugins
+  // on rerun, so moved out of buildDir
+  sandboxDirectory = project.rootDir.canonicalPath + "/.sandbox"
   publish {
     username publishUsername
     password publishPassword
@@ -51,6 +54,7 @@ idea {
   }
   module {
     generatedSourceDirs += file('src/main/gen')
+    excludeDirs += file('.sandbox')
   }
 }
 
