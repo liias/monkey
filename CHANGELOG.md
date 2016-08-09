@@ -1,9 +1,10 @@
 # Changelog
 
-#### 0.3.0 (in development)
+#### 0.3.0
 
-* Highlight keywords this, self, $, also annotations
-* Highlight chars and add some validations (length 1)
+* Highlight keywords: this, self, $
+* Highlight elements: symbols and annotations
+* Highlight char literals and add some validations (length 1)
 * Add run test icon for methods (will just generate module-wide test run configuration atm)
 * Add generate new test method action (i.e alt+insert)
 

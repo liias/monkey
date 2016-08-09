@@ -35,10 +35,12 @@
     ]]></description>
 
   <change-notes><![CDATA[
-    <p>0.2.9</p>
+    <p>0.3.0</p>
     <ul>
-      <li>Fix block comments syntax error</li>
-      <li>Show parameter info (ctrl+P) for methods declared in other files</li>
+      <li>Highlight keywords this, self, $, also annotations</li>
+      <li>Highlight chars and add some validations (length 1)</li>
+      <li>Add run test icon for methods (will just generate module-wide test run configuration atm)</li>
+      <li>Add generate new test method action (i.e alt+insert)</li>
     </ul>
 
     <a href="https://github.com/liias/monkey/blob/master/CHANGELOG.md#changelog">Full change log...</a>
