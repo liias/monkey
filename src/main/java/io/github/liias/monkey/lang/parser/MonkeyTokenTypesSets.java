@@ -5,7 +5,7 @@ import com.intellij.psi.tree.TokenSet;
 import io.github.liias.monkey.lang.psi.MonkeyTypes;
 
 public interface MonkeyTokenTypesSets {
-  TokenSet STRINGS = TokenSet.create(MonkeyTypes.STRING);
+  TokenSet STRINGS = TokenSet.create(MonkeyTypes.STRING, MonkeyTypes.CHARLITERAL);
   TokenSet COMMENTS = TokenSet.create(MonkeyTypes.SINGLE_LINE_COMMENT, MonkeyTypes.SINGLE_LINE_DOC_COMMENT, MonkeyTypes.BLOCK_COMMENT);
   TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
 

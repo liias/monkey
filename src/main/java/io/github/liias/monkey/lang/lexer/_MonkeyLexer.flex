@@ -33,7 +33,7 @@ HEX_LITERAL=0[Xx][0-9a-fA-F]*
 FLOATLITERAL=([0-9]+[fF]|([0-9]+)?\.[0-9]+[fF]?)
 DOUBLELITERAL=([0-9]+)?(\.[0-9]+)?[dD]
 STRING=(\"([^\"\\]|\\.)*\")
-CHARLITERAL=('([^'\\]|\\.)*')
+CHARLITERAL='[^']*'
 
 %%
 <YYINITIAL> {

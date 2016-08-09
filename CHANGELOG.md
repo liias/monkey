@@ -2,7 +2,8 @@
 
 #### 0.3.0 (in development)
 
-* Highlight keywords this, self, $ and symbol names (including annotations)
+* Highlight keywords this, self, $, also annotations
+* Highlight chars and add some validations (length 1)
 * Add run test icon for methods (will just generate module-wide test run configuration atm)
 * Add generate new test method action (i.e alt+insert)
 

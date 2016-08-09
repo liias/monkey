@@ -136,7 +136,7 @@
     DOUBLELITERAL = 'regexp:(\d+)?(\.\d+)?[dD]'
 
     string = "regexp:(\"([^\"\\]|\\.)*\")"
-    CHARLITERAL = "regexp:('([^'\\]|\\.)*')"
+    CHARLITERAL = "regexp:'[^']*'"
   ]
 
   extends(".*Expression")="expression"
@@ -299,6 +299,7 @@ assignmentOperator ::= EQ
                      | GT GT GT EQ
                      | GT GT EQ
 
+// optional ternary operator in the end
 conditionalExpression ::= conditionalOrExpression (QUES expression COLON conditionalExpression)?
 
 conditionalOrExpression ::= conditionalAndExpression ((BARBAR | OR) conditionalAndExpression)*
