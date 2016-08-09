@@ -25,6 +25,7 @@ import org.jetbrains.jps.builders.BuildOutputConsumer;
 import org.jetbrains.jps.builders.DirtyFilesHolder;
 import org.jetbrains.jps.incremental.CompileContext;
 import org.jetbrains.jps.incremental.ProjectBuildException;
+import org.jetbrains.jps.incremental.StopBuildException;
 import org.jetbrains.jps.incremental.TargetBuilder;
 import org.jetbrains.jps.incremental.messages.BuildMessage;
 import org.jetbrains.jps.incremental.messages.CompilerMessage;
@@ -108,7 +109,7 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     String outputPath = outputDirectory.getAbsolutePath() + File.separator + projectName + ".prg";
 
     String contentRootPath = VfsUtilCore.urlToPath(contentRootUrl);
-    final GeneralCommandLine buildCmd = createBuildCmd(contentRootPath, outputPath, sdk, monkeyModuleProperties, target.isTests(), releaseBuild);
+    final GeneralCommandLine buildCmd = createBuildCmd(context, contentRootPath, outputPath, sdk, monkeyModuleProperties, target.isTests(), releaseBuild);
     runBuildProcess(context, buildCmd, contentRootPath);
     return outputPath;
   }
@@ -181,7 +182,7 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
   }
 
   // TODO: paths that contain spaces should be quoted?
-  public GeneralCommandLine createBuildCmd(String projectRootPath, String outputPath,
+  public GeneralCommandLine createBuildCmd(CompileContext context, String projectRootPath, String outputPath,
                                            JpsSdk<JpsDummyElement> sdk,
                                            JpsMonkeyModuleProperties monkeyModuleProperties,
                                            boolean tests,
@@ -230,7 +231,9 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
       String devKeyPathStr = developerKeyPath != null ? developerKeyPath.getAbsolutePath() : null;
 
       if (Strings.isNullOrEmpty(devKeyPathStr)) {
-        throw new ProjectBuildException("Developer Key is not set. Go to Settings; Build; Connect IQ");
+        context.processMessage(new CompilerMessage(
+          NAME, BuildMessage.Kind.ERROR, "Developer Key is not set. Go to Settings; Build; Connect IQ"));
+        throw new StopBuildException();
       }
 
       parameters.add("-y", devKeyPathStr);
