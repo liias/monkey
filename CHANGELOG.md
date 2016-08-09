@@ -1,5 +1,11 @@
 # Changelog
 
+#### 0.3.0 (in development)
+
+* Highlight keywords this, self, $ and symbol names (including annotations)
+* Add run test icon for methods (will just generate module-wide test run configuration atm)
+* Add generate new test method action (i.e alt+insert)
+
 #### 0.2.9
 
 * Fix block comments syntax error
