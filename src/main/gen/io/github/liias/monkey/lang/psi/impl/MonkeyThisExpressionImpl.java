@@ -10,37 +10,19 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static io.github.liias.monkey.lang.psi.MonkeyTypes.*;
 import io.github.liias.monkey.lang.psi.*;
 
-public class MonkeyObjectCreatorImpl extends MonkeyPsiCompositeElementImpl implements MonkeyObjectCreator {
+public class MonkeyThisExpressionImpl extends MonkeyReferenceImpl implements MonkeyThisExpression {
 
-  public MonkeyObjectCreatorImpl(ASTNode node) {
+  public MonkeyThisExpressionImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull MonkeyVisitor visitor) {
-    visitor.visitObjectCreator(this);
+    visitor.visitThisExpression(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
     if (visitor instanceof MonkeyVisitor) accept((MonkeyVisitor)visitor);
     else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public MonkeyArguments getArguments() {
-    return findChildByClass(MonkeyArguments.class);
-  }
-
-  @Override
-  @Nullable
-  public MonkeyClassBody getClassBody() {
-    return findChildByClass(MonkeyClassBody.class);
-  }
-
-  @Override
-  @NotNull
-  public List<MonkeyExpression> getExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
   }
 
 }

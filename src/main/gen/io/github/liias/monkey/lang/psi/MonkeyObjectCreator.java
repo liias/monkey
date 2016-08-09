@@ -14,6 +14,6 @@ public interface MonkeyObjectCreator extends MonkeyPsiCompositeElement {
   MonkeyClassBody getClassBody();
 
   @NotNull
-  List<MonkeyReferenceExpression> getReferenceExpressionList();
+  List<MonkeyExpression> getExpressionList();
 
 }

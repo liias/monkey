@@ -12,6 +12,7 @@ public interface MonkeyTokenTypesSets {
   TokenSet BUILT_IN_IDENTIFIERS = TokenSet.create(
     MonkeyTypes.AND,
     MonkeyTypes.AS,
+    MonkeyTypes.BLING,
     MonkeyTypes.CLASS,
     MonkeyTypes.CONST,
     MonkeyTypes.DO,
@@ -31,7 +32,9 @@ public interface MonkeyTokenTypesSets {
     MonkeyTypes.NULL,
     MonkeyTypes.OR,
     MonkeyTypes.RETURN,
+    MonkeyTypes.SELF,
     MonkeyTypes.STATIC,
+    MonkeyTypes.THIS,
     MonkeyTypes.TRUE,
     MonkeyTypes.USING,
     MonkeyTypes.VAR,

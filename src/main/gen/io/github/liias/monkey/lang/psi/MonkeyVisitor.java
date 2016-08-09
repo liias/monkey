@@ -42,6 +42,11 @@ public class MonkeyVisitor extends PsiElementVisitor {
     visitPsiCompositeElement(o);
   }
 
+  public void visitBlingExpression(@NotNull MonkeyBlingExpression o) {
+    visitExpression(o);
+    // visitReference(o);
+  }
+
   public void visitBlock(@NotNull MonkeyBlock o) {
     visitPsiCompositeElement(o);
   }
@@ -253,6 +258,11 @@ public class MonkeyVisitor extends PsiElementVisitor {
 
   public void visitSymbol(@NotNull MonkeySymbol o) {
     visitPsiCompositeElement(o);
+  }
+
+  public void visitThisExpression(@NotNull MonkeyThisExpression o) {
+    visitExpression(o);
+    // visitReference(o);
   }
 
   public void visitTryStatement(@NotNull MonkeyTryStatement o) {

@@ -50,6 +50,9 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     else if (t == BITWISE_OPERATOR) {
       r = bitwiseOperator(b, 0);
     }
+    else if (t == BLING_EXPRESSION) {
+      r = blingExpression(b, 0);
+    }
     else if (t == BLOCK) {
       r = block(b, 0);
     }
@@ -209,6 +212,9 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     else if (t == SYMBOL) {
       r = symbol(b, 0);
     }
+    else if (t == THIS_EXPRESSION) {
+      r = thisExpression(b, 0);
+    }
     else if (t == TRY_STATEMENT) {
       r = tryStatement(b, 0);
     }
@@ -238,11 +244,11 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   public static final TokenSet[] EXTENDS_SETS_ = new TokenSet[] {
-    create_token_set_(ADDITIVE_EXPRESSION, AND_EXPRESSION, BITWISE_EXPRESSION, CONDITIONAL_AND_EXPRESSION,
-      CONDITIONAL_EXPRESSION, CONDITIONAL_OR_EXPRESSION, EQUALITY_EXPRESSION, EXCLUSIVE_OR_EXPRESSION,
-      EXPRESSION, HAS_EXPRESSION, INCLUSIVE_OR_EXPRESSION, INSTANCE_OF_EXPRESSION,
-      MULTIPLICATIVE_EXPRESSION, PAR_EXPRESSION, REFERENCE_EXPRESSION, RELATIONAL_EXPRESSION,
-      SHIFT_EXPRESSION, UNARY_EXPRESSION),
+    create_token_set_(ADDITIVE_EXPRESSION, AND_EXPRESSION, BITWISE_EXPRESSION, BLING_EXPRESSION,
+      CONDITIONAL_AND_EXPRESSION, CONDITIONAL_EXPRESSION, CONDITIONAL_OR_EXPRESSION, EQUALITY_EXPRESSION,
+      EXCLUSIVE_OR_EXPRESSION, EXPRESSION, HAS_EXPRESSION, INCLUSIVE_OR_EXPRESSION,
+      INSTANCE_OF_EXPRESSION, MULTIPLICATIVE_EXPRESSION, PAR_EXPRESSION, REFERENCE_EXPRESSION,
+      RELATIONAL_EXPRESSION, SHIFT_EXPRESSION, THIS_EXPRESSION, UNARY_EXPRESSION),
   };
 
   /* ********************************************************** */
@@ -630,6 +636,18 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, CARET);
     if (!r) r = consumeToken(b, BAR);
     exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // BLING
+  public static boolean blingExpression(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "blingExpression")) return false;
+    if (!nextTokenIs(b, BLING)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, BLING);
+    exit_section_(b, m, BLING_EXPRESSION, r);
     return r;
   }
 
@@ -1474,13 +1492,12 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // referenceExpression qualifiedReferenceExpression*
+  // referenceOrThisExpression qualifiedReferenceExpression*
   static boolean fullyQualifiedReferenceExpression(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "fullyQualifiedReferenceExpression")) return false;
-    if (!nextTokenIs(b, IDENTIFIER)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = referenceExpression(b, l + 1);
+    r = referenceOrThisExpression(b, l + 1);
     r = r && fullyQualifiedReferenceExpression_1(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -2035,6 +2052,21 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // referenceExpression
+  //                                     | thisExpression
+  //                                     | blingExpression
+  static boolean referenceOrThisExpression(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "referenceOrThisExpression")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = referenceExpression(b, l + 1);
+    if (!r) r = thisExpression(b, l + 1);
+    if (!r) r = blingExpression(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // shiftExpression (relationalOp shiftExpression)*
   public static boolean relationalExpression(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "relationalExpression")) return false;
@@ -2473,6 +2505,19 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     r = r && referenceExpression(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
+  }
+
+  /* ********************************************************** */
+  // THIS | SELF
+  public static boolean thisExpression(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "thisExpression")) return false;
+    if (!nextTokenIs(b, "<this expression>", SELF, THIS)) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, THIS_EXPRESSION, "<this expression>");
+    r = consumeToken(b, THIS);
+    if (!r) r = consumeToken(b, SELF);
+    exit_section_(b, l, m, r, false, null);
+    return r;
   }
 
   /* ********************************************************** */

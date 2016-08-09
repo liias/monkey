@@ -78,6 +78,9 @@ CHARLITERAL=('([^'\\]|\\.)*')
   "or"                           { return OR; }
   "true"                         { return TRUE; }
   "false"                        { return FALSE; }
+  "this"                         { return THIS; }
+  "self"                         { return SELF; }
+  "$"                            { return BLING; }
   "/*"                           { return MULTI_LINE_COMMENT_START; }
   "*/"                           { return MULTI_LINE_COMMENT_END; }
   "\""                           { return STRING_A; }

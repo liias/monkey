@@ -33,8 +33,8 @@ public class MonkeyUsingDeclarationImpl extends MonkeyPsiCompositeElementImpl im
 
   @Override
   @NotNull
-  public List<MonkeyReferenceExpression> getReferenceExpressionList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyReferenceExpression.class);
+  public List<MonkeyExpression> getExpressionList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, MonkeyExpression.class);
   }
 
 }

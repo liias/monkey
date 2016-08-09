@@ -14,9 +14,9 @@ public interface MonkeyClassDeclaration extends MonkeyClass {
   MonkeyComponentName getComponentName();
 
   @NotNull
-  MonkeyModifiers getModifiers();
+  List<MonkeyExpression> getExpressionList();
 
   @NotNull
-  List<MonkeyReferenceExpression> getReferenceExpressionList();
+  MonkeyModifiers getModifiers();
 
 }

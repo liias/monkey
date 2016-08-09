@@ -17,6 +17,7 @@ public interface MonkeyTypes {
   IElementType ASSIGNMENT_OPERATOR = new MonkeyElementType("ASSIGNMENT_OPERATOR");
   IElementType BITWISE_EXPRESSION = new MonkeyElementType("BITWISE_EXPRESSION");
   IElementType BITWISE_OPERATOR = new MonkeyElementType("BITWISE_OPERATOR");
+  IElementType BLING_EXPRESSION = new MonkeyElementType("BLING_EXPRESSION");
   IElementType BLOCK = new MonkeyElementType("BLOCK");
   IElementType BLOCK_STATEMENT = new MonkeyElementType("BLOCK_STATEMENT");
   IElementType CATCHES = new MonkeyElementType("CATCHES");
@@ -70,6 +71,7 @@ public interface MonkeyTypes {
   IElementType SWITCH_BLOCK_STATEMENT_GROUPS = new MonkeyElementType("SWITCH_BLOCK_STATEMENT_GROUPS");
   IElementType SWITCH_LABEL = new MonkeyElementType("SWITCH_LABEL");
   IElementType SYMBOL = new MonkeyElementType("SYMBOL");
+  IElementType THIS_EXPRESSION = new MonkeyElementType("THIS_EXPRESSION");
   IElementType TRY_STATEMENT = new MonkeyElementType("TRY_STATEMENT");
   IElementType UNARY_EXPRESSION = new MonkeyElementType("UNARY_EXPRESSION");
   IElementType USING_DECLARATION = new MonkeyElementType("USING_DECLARATION");
@@ -87,6 +89,7 @@ public interface MonkeyTypes {
   IElementType BAR = new MonkeyTokenType("|");
   IElementType BARBAR = new MonkeyTokenType("||");
   IElementType BAREQ = new MonkeyTokenType("BAREQ");
+  IElementType BLING = new MonkeyTokenType("$");
   IElementType BLOCK_COMMENT = new MonkeyTokenType("BLOCK_COMMENT");
   IElementType BREAK = new MonkeyTokenType("break");
   IElementType CARET = new MonkeyTokenType("^");
@@ -144,6 +147,7 @@ public interface MonkeyTypes {
   IElementType RBRACKET = new MonkeyTokenType("]");
   IElementType RETURN = new MonkeyTokenType("return");
   IElementType RPAREN = new MonkeyTokenType(")");
+  IElementType SELF = new MonkeyTokenType("self");
   IElementType SEMI = new MonkeyTokenType(";");
   IElementType SINGLE_LINE_COMMENT = new MonkeyTokenType("SINGLE_LINE_COMMENT");
   IElementType SINGLE_LINE_DOC_COMMENT = new MonkeyTokenType("SINGLE_LINE_DOC_COMMENT");
@@ -160,6 +164,7 @@ public interface MonkeyTypes {
   IElementType SUBSUB = new MonkeyTokenType("--");
   IElementType SUPER = new MonkeyTokenType("SUPER");
   IElementType SWITCH = new MonkeyTokenType("switch");
+  IElementType THIS = new MonkeyTokenType("this");
   IElementType THROW = new MonkeyTokenType("throw");
   IElementType TILDE = new MonkeyTokenType("~");
   IElementType TRUE = new MonkeyTokenType("true");
@@ -198,6 +203,9 @@ public interface MonkeyTypes {
       }
       else if (type == BITWISE_OPERATOR) {
         return new MonkeyBitwiseOperatorImpl(node);
+      }
+      else if (type == BLING_EXPRESSION) {
+        return new MonkeyBlingExpressionImpl(node);
       }
       else if (type == BLOCK) {
         return new MonkeyBlockImpl(node);
@@ -357,6 +365,9 @@ public interface MonkeyTypes {
       }
       else if (type == SYMBOL) {
         return new MonkeySymbolImpl(node);
+      }
+      else if (type == THIS_EXPRESSION) {
+        return new MonkeyThisExpressionImpl(node);
       }
       else if (type == TRY_STATEMENT) {
         return new MonkeyTryStatementImpl(node);

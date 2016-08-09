@@ -56,6 +56,15 @@
     OR = "or"
     TRUE = "true"
     FALSE = "false"
+
+    // https://forums.garmin.com/showthread.php?180989-Monkey-C-grammar-questions
+    //  Both 'self' and 'me' both refer to 'this'. 'me' is just a holdover and might be removed in the future.
+    THIS = "this"
+    SELF = "self"
+
+    // reference to the global scope
+    BLING="$"
+
     //SINGLE_LINE_COMMENT = "//"
     MULTI_LINE_COMMENT_START = "/*"
     MULTI_LINE_COMMENT_END = "*/"
@@ -164,7 +173,7 @@ moduleBody ::= LBRACE moduleBodyMembers RBRACE {pin=1}
 moduleBodyMembers ::= moduleBodyMember* {implements="io.github.liias.monkey.lang.psi.MonkeyExecutionScope"}
 private moduleBodyMember ::= constDeclaration | fieldDeclarationList | functionDeclaration | classDeclaration | enumDeclaration | moduleDeclaration
 
-private fullyQualifiedReferenceExpression ::= referenceExpression qualifiedReferenceExpression*
+private fullyQualifiedReferenceExpression ::= referenceOrThisExpression qualifiedReferenceExpression*
 
 // class
 classDeclaration ::= modifiers CLASS componentName (EXTENDS fullyQualifiedReferenceExpression)? classBody
@@ -260,6 +269,20 @@ forInit ::= variableDeclarationList
 expressionList ::= expression (COMMA expression)*
 
 parExpression ::= LPAREN expression RPAREN
+
+thisExpression ::= THIS | SELF {
+mixin="io.github.liias.monkey.lang.psi.impl.MonkeyReferenceImpl"
+implements="io.github.liias.monkey.lang.psi.MonkeyReference"
+}
+
+blingExpression ::= BLING {
+mixin="io.github.liias.monkey.lang.psi.impl.MonkeyReferenceImpl"
+implements="io.github.liias.monkey.lang.psi.MonkeyReference"
+}
+
+private referenceOrThisExpression ::= referenceExpression
+                                    | thisExpression
+                                    | blingExpression
 
 expression ::= conditionalExpression (assignmentOperator expression)?
 
