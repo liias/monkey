@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class MonkeyTestFramework implements TestFramework {
+
+  public static final String TEST_ANNOTATION_NAME = "test";
+
   @NotNull
   @Override
   public String getName() {
@@ -148,12 +151,12 @@ public class MonkeyTestFramework implements TestFramework {
       return false;
     }
 
-    MonkeyId id = annotation.getSymbol().getId();
-    if (id != null && "test".equals(id.getIdentifier().getText())) {
-      return true;
-    }
+    String symbolName = Optional.ofNullable(annotation.getSymbol().getReferenceExpression())
+      .map(MonkeyReferenceExpression::getId)
+      .map(MonkeyId::getIdentifier)
+      .map(PsiElement::getText).orElse(null);
 
-    return false;
+    return TEST_ANNOTATION_NAME.equals(symbolName);
   }
 
   @NotNull

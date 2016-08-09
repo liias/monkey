@@ -2462,7 +2462,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // COLON id
+  // COLON referenceExpression
   public static boolean symbol(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "symbol")) return false;
     if (!nextTokenIs(b, COLON)) return false;
@@ -2470,7 +2470,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, SYMBOL, null);
     r = consumeToken(b, COLON);
     p = r; // pin = 1
-    r = r && id(b, l + 1);
+    r = r && referenceExpression(b, l + 1);
     exit_section_(b, l, m, r, p, null);
     return r || p;
   }

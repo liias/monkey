@@ -27,8 +27,8 @@ public class MonkeySymbolImpl extends MonkeyPsiCompositeElementImpl implements M
 
   @Override
   @Nullable
-  public MonkeyId getId() {
-    return findChildByClass(MonkeyId.class);
+  public MonkeyReferenceExpression getReferenceExpression() {
+    return findChildByClass(MonkeyReferenceExpression.class);
   }
 
 }

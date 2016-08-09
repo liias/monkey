@@ -27,20 +27,21 @@ public class MonkeySyntaxHighlighter extends SyntaxHighlighterBase {
   public static final TextAttributesKey MC_OPERATOR = createTextAttributesKey("MC.OPERATOR", OPERATION_SIGN);
   public static final TextAttributesKey MC_STRING = createTextAttributesKey("MC.STRING", STRING);
   public static final TextAttributesKey MC_NUMBER = createTextAttributesKey("MC.NUMBER", NUMBER);
+  public static final TextAttributesKey MC_ANNOTATION = createTextAttributesKey("MC.ANNOTATION", METADATA);
 
   private static final TokenSet OPERATOR_TOKENS = TokenSet.create(
-      MonkeyTypes.PLUS,
-      MonkeyTypes.SUB,
-      MonkeyTypes.STAR,
-      MonkeyTypes.SLASH
+    MonkeyTypes.PLUS,
+    MonkeyTypes.SUB,
+    MonkeyTypes.STAR,
+    MonkeyTypes.SLASH
   );
 
   private static final TokenSet NUMBER_LITERALS = TokenSet.create(
-      MonkeyTypes.INTLITERAL,
-      MonkeyTypes.LONGLITERAL,
-      MonkeyTypes.FLOATLITERAL,
-      MonkeyTypes.DOUBLELITERAL,
-      MonkeyTypes.HEX_LITERAL
+    MonkeyTypes.INTLITERAL,
+    MonkeyTypes.LONGLITERAL,
+    MonkeyTypes.FLOATLITERAL,
+    MonkeyTypes.DOUBLELITERAL,
+    MonkeyTypes.HEX_LITERAL
   );
 
   private static final Map<IElementType, TextAttributesKey> TYPE_KEY_MAP = createTypeKeyMap();

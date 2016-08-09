@@ -375,7 +375,7 @@ modifiers ::= annotation? STATIC? HIDDEN?
 
 annotation ::= LPAREN symbol RPAREN {pin=2}
 
-symbol ::= COLON id {pin=1}
+symbol ::= COLON referenceExpression {pin=1}
 
 qualifiedName ::= componentName (DOT componentName)*
 

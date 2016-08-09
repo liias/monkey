@@ -75,6 +75,8 @@
     <completion.contributor language="MonkeyC"
                             implementationClass="io.github.liias.monkey.lang.ide.completion.MonkeyCompletionContributor"/>
 
+    <annotator language="MonkeyC" implementationClass="io.github.liias.monkey.lang.highlighting.MonkeySyntaxAnnotator"/>
+
     <!-- Nice to have stuff -->
     <gotoClassContributor implementation="io.github.liias.monkey.lang.ide.navigation.MonkeyGoToClassContributor"/>
 
@@ -96,7 +98,8 @@
 
     <lang.commenter language="MonkeyC" implementationClass="io.github.liias.monkey.lang.ide.MonkeyCommenter"/>
 
-    <runLineMarkerContributor language="MonkeyC" implementationClass="io.github.liias.monkey.runnoevil.MonkeyTestRunLineMarkerContributor"/>
+    <runLineMarkerContributor language="MonkeyC"
+                              implementationClass="io.github.liias.monkey.runnoevil.MonkeyTestRunLineMarkerContributor"/>
 
     <!-- Module stuff -->
     <sdkType implementation="io.github.liias.monkey.project.sdk.MonkeySdkType"/>
@@ -177,7 +180,8 @@
     </group>
 
     <group id="MonkeyGenerateGroup">
-      <action id="MonkeyGenerateTestMethod" class="io.github.liias.monkey.runnoevil.MonkeyGenerateTestSupportMethodAction"
+      <action id="MonkeyGenerateTestMethod"
+              class="io.github.liias.monkey.runnoevil.MonkeyGenerateTestSupportMethodAction"
               text="Test Method" description="Creates Go test function"/>
       <!--<separator/>-->
       <add-to-group group-id="GenerateGroup" anchor="first"/>

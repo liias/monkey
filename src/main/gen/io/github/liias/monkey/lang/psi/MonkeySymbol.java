@@ -8,6 +8,6 @@ import com.intellij.psi.PsiElement;
 public interface MonkeySymbol extends MonkeyPsiCompositeElement {
 
   @Nullable
-  MonkeyId getId();
+  MonkeyReferenceExpression getReferenceExpression();
 
 }
