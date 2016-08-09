@@ -16,6 +16,7 @@ import io.github.liias.monkey.ide.actions.appsettings.json.SettingsAndLanguages;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class AppSettingsManager {
   }
 
   private static SettingsAndLanguages parseSettingsJson(VirtualFile settingsFile) throws IOException {
-    InputStreamReader reader = new InputStreamReader(settingsFile.getInputStream(), settingsFile.getCharset());
+    InputStreamReader reader = new InputStreamReader(settingsFile.getInputStream(), StandardCharsets.UTF_8);
 
     GsonBuilder gsonBuilder = new GsonBuilder();
     gsonBuilder.registerTypeAdapter(Setting.class, new SettingDeserializer());
