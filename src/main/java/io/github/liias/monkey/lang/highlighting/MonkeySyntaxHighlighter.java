@@ -27,7 +27,7 @@ public class MonkeySyntaxHighlighter extends SyntaxHighlighterBase {
   public static final TextAttributesKey MC_OPERATOR = createTextAttributesKey("MC.OPERATOR", OPERATION_SIGN);
   public static final TextAttributesKey MC_STRING = createTextAttributesKey("MC.STRING", STRING);
   public static final TextAttributesKey MC_NUMBER = createTextAttributesKey("MC.NUMBER", NUMBER);
-  public static final TextAttributesKey MC_ANNOTATION = createTextAttributesKey("MC.ANNOTATION", METADATA);
+  public static final TextAttributesKey MC_SYMBOL = createTextAttributesKey("MC.MC_SYMBOL", METADATA);
 
   private static final TokenSet OPERATOR_TOKENS = TokenSet.create(
     MonkeyTypes.PLUS,

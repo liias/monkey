@@ -11,6 +11,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import io.github.liias.monkey.lang.psi.MonkeyAnnotation;
 import io.github.liias.monkey.lang.psi.MonkeyLiteral;
+import io.github.liias.monkey.lang.psi.MonkeySymbol;
 import org.jetbrains.annotations.NotNull;
 
 public class MonkeySyntaxAnnotator implements Annotator, DumbAware {
@@ -21,6 +22,8 @@ public class MonkeySyntaxAnnotator implements Annotator, DumbAware {
       public void visitElement(PsiElement element) {
         if (element instanceof MonkeyAnnotation) {
           annotateAnnotation(element, holder);
+        } else if (element instanceof MonkeySymbol) {
+          annotateSymbol(element, holder);
         } else if (element instanceof MonkeyLiteral) {
           MonkeyLiteral monkeyLiteral = (MonkeyLiteral) element;
           annotateLiteral(monkeyLiteral, holder);
@@ -30,7 +33,13 @@ public class MonkeySyntaxAnnotator implements Annotator, DumbAware {
   }
 
   private static void annotateAnnotation(PsiElement element, @NotNull AnnotationHolder holder) {
-    TextAttributes enforcedTextAttributes = EditorColorsManager.getInstance().getGlobalScheme().getAttributes(MonkeySyntaxHighlighter.MC_ANNOTATION);
+    TextAttributes enforcedTextAttributes = EditorColorsManager.getInstance().getGlobalScheme().getAttributes(MonkeySyntaxHighlighter.MC_SYMBOL);
+    holder.createInfoAnnotation(element, null)
+      .setEnforcedTextAttributes(enforcedTextAttributes);
+  }
+
+  private static void annotateSymbol(PsiElement element, @NotNull AnnotationHolder holder) {
+    TextAttributes enforcedTextAttributes = EditorColorsManager.getInstance().getGlobalScheme().getAttributes(MonkeySyntaxHighlighter.MC_SYMBOL);
     holder.createInfoAnnotation(element, null)
       .setEnforcedTextAttributes(enforcedTextAttributes);
   }
