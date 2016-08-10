@@ -37,8 +37,9 @@
   <change-notes><![CDATA[
     <p>0.3.0</p>
     <ul>
-      <li>Highlight keywords this, self, $, also annotations</li>
-      <li>Highlight chars and add some validations (length 1)</li>
+      <li>Highlight keywords: this, self, $</li>
+      <li>Highlight elements: symbols and annotations</li>
+      <li>Highlight char literals and add some validations (length 1)</li>
       <li>Add run test icon for methods (will just generate module-wide test run configuration atm)</li>
       <li>Add generate new test method action (i.e alt+insert)</li>
     </ul>
