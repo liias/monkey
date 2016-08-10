@@ -14,6 +14,11 @@ public interface Application extends ManifestDomElement {
   @Attribute("launcherIcon")
   GenericAttributeValue<String> getLauncherIcon();
 
+  // actually, if the attribute is not set, then some default is used,
+  // but can't be empty. Makes sense to set anyway
+  @Required
+  GenericAttributeValue<String> getMinSdkVersion();
+
   @NameValue
   GenericAttributeValue<String> getName();
 

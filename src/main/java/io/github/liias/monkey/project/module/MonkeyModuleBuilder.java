@@ -1,5 +1,6 @@
 package io.github.liias.monkey.project.module;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.intellij.compiler.CompilerWorkspaceConfiguration;
 import com.intellij.execution.RunManager;
@@ -267,7 +268,8 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
         final Manifest manifest = MonkeyModuleUtil.getManifest(project, contentRoot);
         if (manifest != null) {
           StartupManager.getInstance(project).runWhenProjectIsInitialized(() -> FileDocumentManager.getInstance().saveAllDocuments());
-          configureManifest(manifest, module, appType);
+          ManifestData manifestData = new ManifestData(appType, "2.1.1", DEFAULT_TARGET_DEVICE.getId());
+          configureManifest(manifest, module, manifestData);
         }
       };
 
@@ -276,10 +278,29 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
 
   }
 
-  private static void configureManifest(Manifest manifest, Module module, String appType) {
-    if (appType == null) {
-      throw new RuntimeException("app type is null");
+  private static class ManifestData {
+    @NotNull
+    String appType;
+
+    @NotNull
+    String minSdkVersion;
+
+    @NotNull
+    String targetDeviceId;
+
+    public ManifestData(@NotNull String appType, @NotNull String minSdkVersion, @NotNull String targetDeviceId) {
+      this.appType = appType;
+      this.minSdkVersion = minSdkVersion;
+      this.targetDeviceId = targetDeviceId;
     }
+  }
+
+  private static void configureManifest(Manifest manifest, Module module, ManifestData manifestData) {
+    Preconditions.checkNotNull(manifestData, "manifestData is null");
+    Preconditions.checkNotNull(manifestData.appType, "appType is null");
+    Preconditions.checkNotNull(manifestData.minSdkVersion, "minSdkVersion is null");
+    Preconditions.checkNotNull(manifestData.targetDeviceId, "targetDeviceId is null");
+
     final PsiFile manifestFile = getValidatedPsiFile(manifest);
     if (manifestFile == null) {
       return;
@@ -289,17 +310,18 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     String entryClassName = WordUtils.capitalize(module.getName()) + "App";
 
     manifest.getApplication().getId().setValue(applicationId);
-    manifest.getApplication().getType().setValue(appType);
+    manifest.getApplication().getType().setValue(manifestData.appType);
     manifest.getApplication().getName().setValue("@Strings.AppName");
     // entry is a class which extends Toybox.Application.AppBase
     manifest.getApplication().getEntry().setValue(entryClassName);
     manifest.getApplication().getLauncherIcon().setValue("@Drawables.LauncherIcon");
+    manifest.getApplication().getMinSdkVersion().setValue(manifestData.minSdkVersion);
 
     Products products = manifest.getApplication().getProducts();
     XmlTag productsRootTag = products.getXmlTag();
     XmlTag productTag = productsRootTag.createChildTag("product", productsRootTag.getNamespace(), "", false);
     productTag = productsRootTag.addSubTag(productTag, true);
-    productTag.setAttribute("id", null, DEFAULT_TARGET_DEVICE.getId());
+    productTag.setAttribute("id", null, manifestData.targetDeviceId);
     productTag.collapseIfEmpty();
 
     CodeStyleManager.getInstance(manifestFile.getProject()).reformat(manifestFile);
