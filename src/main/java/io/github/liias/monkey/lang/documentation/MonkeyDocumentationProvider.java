@@ -7,7 +7,6 @@ import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.util.containers.ContainerUtil;
-import com.intellij.util.ui.UIUtil;
 import io.github.liias.monkey.lang.psi.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,34 +20,62 @@ public class MonkeyDocumentationProvider extends AbstractDocumentationProvider {
   public String generateDoc(PsiElement element, @Nullable PsiElement originalElement) {
     String quickNavigateInfo = getQuickNavigateInfo(element, originalElement);
 
-    String docText = "";
+    StringBuilder docTextBuilder = new StringBuilder();
     if (element.getParent() instanceof MonkeyComponent) {
       MonkeyComponent monkeyComponent = (MonkeyComponent) element.getParent();
       List<PsiComment> commentsForElement = getCommentsForElement(monkeyComponent);
 
       List<String> parameters = MonkeyDocParser.getParameters(commentsForElement);
+      List<String> parameterOptions = MonkeyDocParser.getOptions(commentsForElement);
+      List<String> funcReturn = MonkeyDocParser.getTagValues(commentsForElement, MonkeyDocParser.RETURN_TAG);
+      List<String> appTypes = MonkeyDocParser.getTagValues(commentsForElement, MonkeyDocParser.APPTYPE_TAG);
+      List<String> since = MonkeyDocParser.getTagValues(commentsForElement, MonkeyDocParser.SINCE_TAG);
+      List<String> devices = MonkeyDocParser.getTagValues(commentsForElement, MonkeyDocParser.DEVICE_TAG);
+      List<String> permissions = MonkeyDocParser.getTagValues(commentsForElement, MonkeyDocParser.PERMISSION_TAG);
+      List<String> seealso = MonkeyDocParser.getTagValues(commentsForElement, MonkeyDocParser.SEE_TAG);
 
-      docText = commentsForElement.stream()
+      String docTextStart = commentsForElement.stream()
         .filter(c -> c.getText().startsWith("//!"))
         .map(c -> StringUtil.trimStart(c.getText(), "//!").trim())
-        .filter(line -> !line.startsWith("@param"))
+        .filter(line -> !line.startsWith(MonkeyDocParser.PARAM_TAG))
+        .filter(line -> !line.startsWith(MonkeyDocParser.OPTION_TAG))
+        .filter(line -> !line.startsWith(MonkeyDocParser.RETURN_TAG))
+        .filter(line -> !line.startsWith(MonkeyDocParser.APPTYPE_TAG))
+        .filter(line -> !line.startsWith(MonkeyDocParser.SINCE_TAG))
+        .filter(line -> !line.startsWith(MonkeyDocParser.DEVICE_TAG))
+        .filter(line -> !line.startsWith(MonkeyDocParser.PERMISSION_TAG))
+        .filter(line -> !line.startsWith(MonkeyDocParser.SEE_TAG))
         .collect(Collectors.joining("<br>"));
-      docText += "<br>";
+      docTextBuilder.append(docTextStart).append("<br>");
 
-      if (!parameters.isEmpty()) {
-        docText += "<b>Parameters</b>:<br>";
-        String params = parameters.stream().collect(Collectors.joining("<br>"));
-        docText += params + "<br>";
-      }
-
+      appendItems("Parameters", parameters, docTextBuilder);
+      appendItems("Parameter Options", parameterOptions, docTextBuilder);
+      appendItems("Returns", funcReturn, docTextBuilder);
+      appendItems("Application Types", appTypes, docTextBuilder);
+      appendItems("Since", since, docTextBuilder);
+      appendItems("Devices", devices, docTextBuilder);
+      appendItems("Permissions", permissions, docTextBuilder);
+      appendItems("See Also", seealso, docTextBuilder);
       //docText = commentsForElement.stream().map(PsiElement::getText).collect(Collectors.joining("\n"));
       //docText = getDocumentationText(monkeyComponent);
     }
 
+    String docText = docTextBuilder.toString();
     if (quickNavigateInfo != null) {
-      return quickNavigateInfo + "<br>" + docText;
+      return "<pre>" + quickNavigateInfo + "</pre>" + docText;
     }
     return Strings.nullToEmpty(docText);
+  }
+
+  private static void appendItems(String title, List<String> items, StringBuilder docTextBuilder) {
+    if (!items.isEmpty()) {
+      docTextBuilder.append("<dl>");
+      docTextBuilder.append("<dt><b>").append(title).append(":</b></dt>");
+      for (String item : items) {
+        docTextBuilder.append("<dd>").append(item).append("</dd>");
+      }
+      docTextBuilder.append("</dl>");
+    }
   }
 
   @NotNull
@@ -176,9 +203,6 @@ public class MonkeyDocumentationProvider extends AbstractDocumentationProvider {
     //builder.append(StringUtil.escapeXml(
     //    DartPresentableUtil.getPresentableParameterList(function, new DartGenericSpecialization(), true, true, false)));
     builder.append(')');
-
-    builder.append(' ');
-    builder.append(UIUtil.rightArrow());
     builder.append(' ');
   }
 
