@@ -143,9 +143,9 @@ public class YardDecompiler {
         skeletonBuilder.append("\n");
       }
 
-      for (SdkMethod.SdkMethodParameter option : sdkMethod.getOptions()) {
+      for (SdkMethod.SdkMethodParameterOption option : sdkMethod.getOptions()) {
         skeletonBuilder.append(commentPrefix).append("@option ");
-        skeletonBuilder.append(paramAsDocString(option));
+        skeletonBuilder.append(optionAsDocString(option));
         skeletonBuilder.append("\n");
       }
 
@@ -171,6 +171,11 @@ public class YardDecompiler {
         skeletonBuilder.append(stepPrefix).append("//! @return ").append(returnType).append("\n");
       }
     }
+  }
+
+  private static String optionAsDocString(SdkMethod.SdkMethodParameterOption option) {
+    // @option options [Drawable] :title the title for the Picker. Required.
+    return option.getParameterName() + " " + paramAsDocString(option);
   }
 
   private static String paramAsDocString(SdkMethod.SdkMethodParameter param) {
@@ -316,20 +321,43 @@ public class YardDecompiler {
       if (!validParamNames.contains(paramName) &&
         !paramName.equals("...")// "..." is special case and will be printed as "args" instead
         ) {
-        sdkMethod.addOption(param); // Some options are marked as mistakenly parameters in SDK API doc
+        SdkMethod.SdkMethodParameterOption option = paramToOption(param, param.getName());
+        sdkMethod.addOption(option); // Some options are marked as mistakenly parameters in SDK API doc
         continue;
       }
       sdkMethod.addParameter(param);
     }
 
-    for (Element paramOptionEl : tagsEl.select("ul.option li")) {
-      SdkMethod.SdkMethodParameter param = parseParam(paramOptionEl);
-      sdkMethod.addOption(param);
+    for (Element optionsList : tagsEl.select("ul.option")) {
+      Element optionsTagTitle = optionsList.previousElementSibling();
+      String optionsParameterName = "";
+      if (optionsTagTitle != null) {
+        Elements optionsParameterNameEl = optionsTagTitle.select("tt");
+        if (optionsParameterNameEl != null) {
+          optionsParameterName = optionsParameterNameEl.text().trim();
+        }
+      }
+
+      for (Element paramOptionEl : optionsList.select("li")) {
+        SdkMethod.SdkMethodParameterOption option = parseParamOption(optionsParameterName, paramOptionEl);
+        sdkMethod.addOption(option);
+      }
     }
 
     findAndSetDocCommentParams(methodEl, sdkMethod);
 
     moduleOrClass.addChildMethod(sdkMethod);
+  }
+
+  private static SdkMethod.SdkMethodParameterOption paramToOption(SdkMethod.SdkMethodParameter parameter, String parameterName) {
+    SdkMethod.SdkMethodParameterOption option = new SdkMethod.SdkMethodParameterOption(parameter.getName(), parameter.getType(), parameterName);
+    option.setDocumentation(parameter.getDocumentation());
+    return option;
+  }
+
+  private static SdkMethod.SdkMethodParameterOption parseParamOption(String parameterName, Element methodParamOptionEl) {
+    SdkMethod.SdkMethodParameter template = parseParam(methodParamOptionEl);
+    return paramToOption(template, parameterName);
   }
 
   private static SdkMethod.SdkMethodParameter parseParam(Element methodParamEl) {
@@ -698,7 +726,7 @@ public class YardDecompiler {
     private String returnComment;
 
     public List<SdkMethodParameter> parameters = new ArrayList<>();
-    public List<SdkMethodParameter> options = new ArrayList<>();
+    public List<SdkMethodParameterOption> options = new ArrayList<>();
 
     public SdkMethod(String name) {
       super(name);
@@ -727,7 +755,7 @@ public class YardDecompiler {
     }
 
     // would be more correct to set options under parameter
-    public List<SdkMethodParameter> getOptions() {
+    public List<SdkMethodParameterOption> getOptions() {
       return options;
     }
 
@@ -735,8 +763,21 @@ public class YardDecompiler {
       parameters.add(parameter);
     }
 
-    public void addOption(SdkMethodParameter option) {
+    public void addOption(SdkMethodParameterOption option) {
       options.add(option);
+    }
+
+    private static class SdkMethodParameterOption extends SdkMethodParameter {
+      private String parameterName;
+
+      public SdkMethodParameterOption(String name, String type, String parameterName) {
+        super(name, type);
+        this.parameterName = parameterName;
+      }
+
+      public String getParameterName() {
+        return parameterName;
+      }
     }
 
     private static class SdkMethodParameter extends SdkEntity {
