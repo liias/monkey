@@ -717,36 +717,32 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IDENTIFIER (LBRACKET RBRACKET)*
+  // id (INSTANCEOF qualifiedName)?
   public static boolean catchParameter(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "catchParameter")) return false;
     if (!nextTokenIs(b, IDENTIFIER)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, IDENTIFIER);
+    r = id(b, l + 1);
     r = r && catchParameter_1(b, l + 1);
     exit_section_(b, m, CATCH_PARAMETER, r);
     return r;
   }
 
-  // (LBRACKET RBRACKET)*
+  // (INSTANCEOF qualifiedName)?
   private static boolean catchParameter_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "catchParameter_1")) return false;
-    int c = current_position_(b);
-    while (true) {
-      if (!catchParameter_1_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "catchParameter_1", c)) break;
-      c = current_position_(b);
-    }
+    catchParameter_1_0(b, l + 1);
     return true;
   }
 
-  // LBRACKET RBRACKET
+  // INSTANCEOF qualifiedName
   private static boolean catchParameter_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "catchParameter_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, LBRACKET, RBRACKET);
+    r = consumeToken(b, INSTANCEOF);
+    r = r && qualifiedName(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -873,6 +869,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   //                           | constDeclaration
   //                           | fieldDeclarationList
   //                           | functionDeclaration
+  //                           | blockStatement
   static boolean compilationUnit(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "compilationUnit")) return false;
     boolean r;
@@ -884,6 +881,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     if (!r) r = constDeclaration(b, l + 1);
     if (!r) r = fieldDeclarationList(b, l + 1);
     if (!r) r = functionDeclaration(b, l + 1);
+    if (!r) r = blockStatement(b, l + 1);
     exit_section_(b, l, m, r, false, compilationUnit_auto_recover_);
     return r;
   }
@@ -2868,8 +2866,14 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   };
   final static Parser compilationUnit_auto_recover_ = new Parser() {
     public boolean parse(PsiBuilder b, int l) {
-      return !nextTokenIsFast(b, CLASS, CONST,
-        ENUM, FUNCTION, HIDDEN, LPAREN, MODULE, STATIC, USING, VAR);
+      return !nextTokenIsFast(b, BANG, BLING,
+        BREAK, CHARLITERAL, CLASS, COLON, CONST, CONTINUE,
+        DO, DOUBLELITERAL, ENUM, FALSE, FLOATLITERAL, FOR,
+        FUNCTION, HEX_LITERAL, HIDDEN, IDENTIFIER, IF, INTLITERAL,
+        LBRACE, LBRACKET, LONGLITERAL, LPAREN, MODULE, NEW,
+        NULL, PLUS, PLUSPLUS, RETURN, SELF, SEMI,
+        STATIC, SUB, SUBSUB, SWITCH, THIS, THROW,
+        TILDE, TRUE, TRY, USING, VAR, VOID, WHILE, STRING);
     }
   };
 }

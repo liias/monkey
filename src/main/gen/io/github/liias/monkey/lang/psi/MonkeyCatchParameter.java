@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface MonkeyCatchParameter extends MonkeyPsiCompositeElement {
 
   @NotNull
-  PsiElement getIdentifier();
+  MonkeyId getId();
+
+  @Nullable
+  MonkeyQualifiedName getQualifiedName();
 
 }

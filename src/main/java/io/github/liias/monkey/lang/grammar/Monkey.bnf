@@ -151,6 +151,7 @@ private compilationUnit ::= usingDeclaration
                           | constDeclaration
                           | fieldDeclarationList
                           | functionDeclaration
+                          | blockStatement
 {recoverWhile="#auto"}
 
 // {recoverWhile="compilationUnitRecover"}
@@ -258,7 +259,7 @@ catches ::= catchClause (catchClause)*
 
 catchClause ::= CATCH LPAREN catchParameter RPAREN block
 
-catchParameter ::= IDENTIFIER (LBRACKET RBRACKET)*
+catchParameter ::= id (INSTANCEOF qualifiedName)?
 
 forStatement ::= FOR LPAREN forInit? SEMI expression? SEMI expressionList? RPAREN statement
 

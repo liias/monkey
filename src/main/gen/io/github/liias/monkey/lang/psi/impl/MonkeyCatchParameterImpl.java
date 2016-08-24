@@ -27,8 +27,14 @@ public class MonkeyCatchParameterImpl extends MonkeyPsiCompositeElementImpl impl
 
   @Override
   @NotNull
-  public PsiElement getIdentifier() {
-    return findNotNullChildByType(IDENTIFIER);
+  public MonkeyId getId() {
+    return findNotNullChildByClass(MonkeyId.class);
+  }
+
+  @Override
+  @Nullable
+  public MonkeyQualifiedName getQualifiedName() {
+    return findChildByClass(MonkeyQualifiedName.class);
   }
 
 }
