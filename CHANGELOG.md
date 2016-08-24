@@ -1,5 +1,10 @@
 # Changelog
 
+#### 0.3.1 (in development)
+* Grammar: Allow statements on top (global) level
+* Grammar: Allow catch (ex instanceof Y) 
+* Grammar: Allow enum value to be a signed integer
+
 #### 0.3.0
 
 * Highlight keywords: this, self, $
