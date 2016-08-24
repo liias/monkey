@@ -1136,7 +1136,7 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // componentName (EQ INTLITERAL)?
+  // componentName (EQ maybeSignedInteger)?
   public static boolean enumConstant(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "enumConstant")) return false;
     if (!nextTokenIs(b, IDENTIFIER)) return false;
@@ -1149,19 +1149,20 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     return r || p;
   }
 
-  // (EQ INTLITERAL)?
+  // (EQ maybeSignedInteger)?
   private static boolean enumConstant_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "enumConstant_1")) return false;
     enumConstant_1_0(b, l + 1);
     return true;
   }
 
-  // EQ INTLITERAL
+  // EQ maybeSignedInteger
   private static boolean enumConstant_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "enumConstant_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, EQ, INTLITERAL);
+    r = consumeToken(b, EQ);
+    r = r && maybeSignedInteger(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -1754,6 +1755,36 @@ public class MonkeyParser implements PsiParser, LightPsiParser {
     if (!r) r = consumeToken(b, FALSE);
     if (!r) r = consumeToken(b, NULL);
     exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // (PLUS|SUB)? INTLITERAL
+  static boolean maybeSignedInteger(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "maybeSignedInteger")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = maybeSignedInteger_0(b, l + 1);
+    r = r && consumeToken(b, INTLITERAL);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // (PLUS|SUB)?
+  private static boolean maybeSignedInteger_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "maybeSignedInteger_0")) return false;
+    maybeSignedInteger_0_0(b, l + 1);
+    return true;
+  }
+
+  // PLUS|SUB
+  private static boolean maybeSignedInteger_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "maybeSignedInteger_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, PLUS);
+    if (!r) r = consumeToken(b, SUB);
+    exit_section_(b, m, null, r);
     return r;
   }
 

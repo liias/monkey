@@ -187,7 +187,10 @@ private classBodyMember ::= constDeclaration | fieldDeclarationList | functionDe
 
 // Enums must be declared at the module or class level; they cannot be declared within a function.
 enumDeclaration ::= modifiers ENUM LBRACE enumConstant (COMMA enumConstant)* RBRACE
-enumConstant ::= componentName (EQ INTLITERAL)? {
+
+private maybeSignedInteger ::= (PLUS|SUB)? INTLITERAL
+
+enumConstant ::= componentName (EQ maybeSignedInteger)? {
 pin=1
 mixin="io.github.liias.monkey.lang.psi.impl.AbstractMonkeyComponentImpl"
 implements="io.github.liias.monkey.lang.psi.MonkeyComponent"
