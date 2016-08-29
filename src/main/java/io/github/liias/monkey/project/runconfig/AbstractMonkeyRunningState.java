@@ -7,6 +7,7 @@ import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.Executor;
 import com.intellij.execution.configurations.CommandLineState;
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.execution.configurations.ParametersList;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.process.KillableColoredProcessHandler;
 import com.intellij.execution.process.ProcessHandler;
@@ -191,6 +192,12 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
       //if (testId != null) {
       //  generalCommandLine.addParameter(testId);
       //}
+    }
+
+    if (getConfiguration().getProgramParameters() != null) {
+      ParametersList parametersList = new ParametersList();
+      parametersList.addParametersString(getConfiguration().getProgramParameters());
+      generalCommandLine.addParameters(parametersList.getParameters());
     }
 
     return generalCommandLine;
