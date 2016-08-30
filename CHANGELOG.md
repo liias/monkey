@@ -1,9 +1,12 @@
 # Changelog
 
-#### 0.3.1 (in development)
+#### 0.3.1
 * Grammar: Allow statements on top (global) level
 * Grammar: Allow catch (ex instanceof Y) 
 * Grammar: Allow enum value to be a signed integer
+* Parse more doc tags on doc comment (Ctrl+Q)
+* Allow additional run parameters
+* Fix running on Linux (use "wine cmd /c" instead of "wine" to run .bat), though not very reliable
 
 #### 0.3.0
 
