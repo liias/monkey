@@ -55,22 +55,15 @@ public class JpsMonkeySdkType extends JpsSdkType<JpsDummyElement> implements Jps
       return false;
     }
 
-    return hasAppSigningSupport(sdkVersion);
+    return versionSince(sdkVersion, 1, 3, 0);
   }
 
   public static boolean hasAppSigningSupport(SdkVersion sdkVersion) {
     if (sdkVersion == null) {
       return false;
     }
-    if (sdkVersion.major == 1 && sdkVersion.minor >= 3) {
-      return true;
-    }
 
-    if (sdkVersion.major > 2 ||
-      sdkVersion.major == 2 && sdkVersion.minor >= 1) {
-      return true;
-    }
-    return false;
+    return versionSince(sdkVersion, 1, 3, 0);
   }
 
   public static boolean hasCharSupport(SdkVersion sdkVersion) {
@@ -78,7 +71,7 @@ public class JpsMonkeySdkType extends JpsSdkType<JpsDummyElement> implements Jps
       return false;
     }
 
-    return hasAppSigningSupport(sdkVersion);
+    return versionSince(sdkVersion, 1, 3, 0);
   }
 
   public static boolean hasOptionalSdkArgumentsSupport(SdkVersion sdkVersion) {
@@ -86,12 +79,7 @@ public class JpsMonkeySdkType extends JpsSdkType<JpsDummyElement> implements Jps
       return false;
     }
 
-    if (sdkVersion.major > 2 ||
-      sdkVersion.major == 2 && sdkVersion.minor >= 1) {
-      return true;
-    }
-
-    return false;
+    return versionSince(sdkVersion, 2, 1, 0);
   }
 
   public static boolean hasMinSdkVersionSupport(SdkVersion sdkVersion) {
@@ -99,16 +87,7 @@ public class JpsMonkeySdkType extends JpsSdkType<JpsDummyElement> implements Jps
       return false;
     }
 
-    if (sdkVersion.major == 1 && sdkVersion.minor >= 3) {
-      return true;
-    }
-
-    if (sdkVersion.major > 2 ||
-      sdkVersion.major == 2 && sdkVersion.minor >= 1) {
-      return true;
-    }
-
-    return false;
+    return versionSince(sdkVersion, 1, 3, 0);
   }
 
   public static boolean hasSdkVersionBuildOptionSupport(SdkVersion sdkVersion) {
@@ -116,11 +95,34 @@ public class JpsMonkeySdkType extends JpsSdkType<JpsDummyElement> implements Jps
       return false;
     }
 
-    if (sdkVersion.major > 2 ||
-      sdkVersion.major == 2 && (sdkVersion.minor > 1 || (sdkVersion.minor == 1 && sdkVersion.micro >= 3))) {
-      return true;
+    return versionSince(sdkVersion, 2, 1, 3);
+  }
+
+  // if any part (in order major, minor, micro) is more than wanted, then returns true
+  private static boolean versionSince(SdkVersion sdkVersion, int major, int minor, int micro) {
+    if (sdkVersion == null) {
+      return false;
     }
 
-    return false;
+    if (sdkVersion.major > major) {
+      return true;
+    } else if (sdkVersion.major < major) {
+      return false;
+    }
+
+    if (sdkVersion.minor > minor) {
+      return true;
+    } else if (sdkVersion.minor < minor) {
+      return false;
+    }
+
+    if (sdkVersion.micro > micro) {
+      return true;
+    } else if (sdkVersion.micro < micro) {
+      return false;
+    }
+
+    // all version parts are equal
+    return true;
   }
 }
