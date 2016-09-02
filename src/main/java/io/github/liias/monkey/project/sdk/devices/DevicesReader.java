@@ -1,7 +1,9 @@
 package io.github.liias.monkey.project.sdk.devices;
 
+import com.google.common.collect.ImmutableList;
 import com.intellij.openapi.diagnostic.Logger;
 import io.github.liias.monkey.project.runconfig.TargetDevice;
+import io.github.liias.monkey.project.runconfig.TargetSdkVersion;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -34,6 +36,14 @@ public class DevicesReader {
 
   public DevicesReader(@Nullable String sdkBinPath) {
     this.sdkBinPath = sdkBinPath;
+  }
+
+  public List<TargetSdkVersion> getTargetSdkVersions() {
+    return ImmutableList.<TargetSdkVersion>builder()
+      .add(TargetSdkVersion.VERSION_1_2_X)
+      .add(TargetSdkVersion.VERSION_1_3_X)
+      .add(TargetSdkVersion.VERSION_2_1_X)
+      .build();
   }
 
   public List<TargetDevice> parseDevicesXml() {

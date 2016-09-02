@@ -40,6 +40,7 @@ import io.github.liias.monkey.project.dom.sdk.projectinfo.ProjectInfo;
 import io.github.liias.monkey.project.module.util.ExternalTemplateUtil;
 import io.github.liias.monkey.project.module.util.MonkeyModuleUtil;
 import io.github.liias.monkey.project.runconfig.TargetDevice;
+import io.github.liias.monkey.project.runconfig.TargetSdkVersion;
 import io.github.liias.monkey.project.runconfig.running.MonkeyConfigurationType;
 import io.github.liias.monkey.project.runconfig.running.MonkeyModuleBasedConfiguration;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
@@ -66,7 +67,7 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
   public static final String PROJECT_INFO_XML = "projectInfo.xml";
   public static final String FILE_TYPE_SOURCE = "source";
   public static final TargetDevice DEFAULT_TARGET_DEVICE = TargetDevice.SQUARE_WATCH;
-
+  public static final TargetSdkVersion DEFAULT_TARGET_SDK_VERSION = TargetSdkVersion.VERSION_2_1_X;
 
   // Not null only if new project where we need to generate content based on this type
   @Nullable
@@ -118,6 +119,7 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
 
     final TargetDeviceModuleExtension targetDeviceModuleExtension = rootModel.getModuleExtension(TargetDeviceModuleExtension.class);
     targetDeviceModuleExtension.setTargetDevice(DEFAULT_TARGET_DEVICE);
+    targetDeviceModuleExtension.setTargetSdkVersion(DEFAULT_TARGET_SDK_VERSION);
 
     final Project project = rootModel.getProject();
 

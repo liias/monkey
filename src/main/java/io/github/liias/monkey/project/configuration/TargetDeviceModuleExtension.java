@@ -7,6 +7,7 @@ import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import io.github.liias.monkey.project.runconfig.TargetDevice;
+import io.github.liias.monkey.project.runconfig.TargetSdkVersion;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,12 +16,14 @@ public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceMod
   // must be same as fields in JpsMonkeyModuleProperties
   //JpsMonkeyModelSerializerExtension.MODULE_TARGET_DEVICE_ID_ATTRIBUTE
   private static final String TARGET_DEVICE_ID_ATTRIBUTE = "target-device";
+  private static final String TARGET_SDK_VERSION_ATTRIBUTE = "target-sdk-version";
 
   private Module module;
   private final boolean writable;
   private static final Logger LOG = Logger.getInstance("#" + TargetDeviceModuleExtension.class.getName());
 
   private TargetDevice targetDevice;
+  private TargetSdkVersion targetSdkVersion;
   private final TargetDeviceModuleExtension source;
 
   public static TargetDeviceModuleExtension getInstance(final Module module) {
@@ -38,6 +41,7 @@ public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceMod
     this.writable = writable;
     this.module = source.module;
     this.targetDevice = source.targetDevice;
+    this.targetSdkVersion = source.targetSdkVersion;
     this.source = source;
   }
 
@@ -49,6 +53,16 @@ public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceMod
   public void setTargetDevice(final TargetDevice targetDevice) {
     LOG.assertTrue(writable, "Writable model can be retrieved from writable ModifiableRootModel");
     this.targetDevice = targetDevice;
+  }
+
+  @Nullable
+  public TargetSdkVersion getTargetSdkVersion() {
+    return targetSdkVersion;
+  }
+
+  public void setTargetSdkVersion(final TargetSdkVersion targetSdkVersion) {
+    LOG.assertTrue(writable, "Writable model can be retrieved from writable ModifiableRootModel");
+    this.targetSdkVersion = targetSdkVersion;
   }
 
   @Override
@@ -63,12 +77,26 @@ public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceMod
     } else {
       targetDevice = null;
     }
+
+    final String targetSdkVersionId = element.getAttributeValue(TARGET_SDK_VERSION_ATTRIBUTE);
+    if (targetSdkVersionId != null) {
+      try {
+        targetSdkVersion = TargetSdkVersion.fromId(targetSdkVersionId);
+      } catch (IllegalArgumentException e) {
+        //bad value was stored
+      }
+    } else {
+      targetSdkVersion = null;
+    }
   }
 
   @Override
   public void writeExternal(final Element element) throws WriteExternalException {
     if (targetDevice != null) {
       element.setAttribute(TARGET_DEVICE_ID_ATTRIBUTE, targetDevice.getId());
+    }
+    if (targetSdkVersion != null) {
+      element.setAttribute(TARGET_SDK_VERSION_ATTRIBUTE, targetSdkVersion.getId());
     }
   }
 
@@ -79,19 +107,25 @@ public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceMod
 
   @Override
   public void commit() {
-    if (source != null && source.targetDevice != targetDevice) {
+    if (source.targetDevice != targetDevice) {
       source.targetDevice = targetDevice;
+    }
+    if (source.targetSdkVersion != targetSdkVersion) {
+      source.targetSdkVersion = targetSdkVersion;
     }
   }
 
   @Override
   public boolean isChanged() {
-    return source != null && source.targetDevice != targetDevice;
+    return source.targetDevice != targetDevice ||
+      source.targetSdkVersion != targetSdkVersion;
   }
 
   @Override
   public void dispose() {
     module = null;
     targetDevice = null;
+    targetSdkVersion = null;
   }
+
 }
