@@ -16,38 +16,39 @@ public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceMod
   //JpsMonkeyModelSerializerExtension.MODULE_TARGET_DEVICE_ID_ATTRIBUTE
   private static final String TARGET_DEVICE_ID_ATTRIBUTE = "target-device";
 
-  private Module myModule;
-  private final boolean myWritable;
+  private Module module;
+  private final boolean writable;
   private static final Logger LOG = Logger.getInstance("#" + TargetDeviceModuleExtension.class.getName());
 
-  private TargetDevice myTargetDevice;
-  private final TargetDeviceModuleExtension mySource;
+  private TargetDevice targetDevice;
+  private final TargetDeviceModuleExtension source;
 
   public static TargetDeviceModuleExtension getInstance(final Module module) {
     return ModuleRootManager.getInstance(module).getModuleExtension(TargetDeviceModuleExtension.class);
   }
 
+  @SuppressWarnings("unused")
   public TargetDeviceModuleExtension(Module module) {
-    myModule = module;
-    mySource = null;
-    myWritable = false;
+    this.module = module;
+    this.source = null;
+    this.writable = false;
   }
 
   public TargetDeviceModuleExtension(final TargetDeviceModuleExtension source, boolean writable) {
-    myWritable = writable;
-    myModule = source.myModule;
-    myTargetDevice = source.myTargetDevice;
-    mySource = source;
+    this.writable = writable;
+    this.module = source.module;
+    this.targetDevice = source.targetDevice;
+    this.source = source;
   }
 
   @Nullable
   public TargetDevice getTargetDevice() {
-    return myTargetDevice;
+    return targetDevice;
   }
 
   public void setTargetDevice(final TargetDevice targetDevice) {
-    LOG.assertTrue(myWritable, "Writable model can be retrieved from writable ModifiableRootModel");
-    myTargetDevice = targetDevice;
+    LOG.assertTrue(writable, "Writable model can be retrieved from writable ModifiableRootModel");
+    this.targetDevice = targetDevice;
   }
 
   @Override
@@ -55,19 +56,19 @@ public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceMod
     final String targetDeviceId = element.getAttributeValue(TARGET_DEVICE_ID_ATTRIBUTE);
     if (targetDeviceId != null) {
       try {
-        myTargetDevice = TargetDevice.fromId(targetDeviceId);
+        targetDevice = TargetDevice.fromId(targetDeviceId);
       } catch (IllegalArgumentException e) {
         //bad value was stored
       }
     } else {
-      myTargetDevice = null;
+      targetDevice = null;
     }
   }
 
   @Override
   public void writeExternal(final Element element) throws WriteExternalException {
-    if (myTargetDevice != null) {
-      element.setAttribute(TARGET_DEVICE_ID_ATTRIBUTE, myTargetDevice.getId());
+    if (targetDevice != null) {
+      element.setAttribute(TARGET_DEVICE_ID_ATTRIBUTE, targetDevice.getId());
     }
   }
 
@@ -78,19 +79,19 @@ public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceMod
 
   @Override
   public void commit() {
-    if (mySource != null && mySource.myTargetDevice != myTargetDevice) {
-      mySource.myTargetDevice = myTargetDevice;
+    if (source != null && source.targetDevice != targetDevice) {
+      source.targetDevice = targetDevice;
     }
   }
 
   @Override
   public boolean isChanged() {
-    return mySource != null && mySource.myTargetDevice != myTargetDevice;
+    return source != null && source.targetDevice != targetDevice;
   }
 
   @Override
   public void dispose() {
-    myModule = null;
-    myTargetDevice = null;
+    module = null;
+    targetDevice = null;
   }
 }

@@ -14,7 +14,7 @@ import java.awt.*;
 import static io.github.liias.monkey.jps.model.JpsMonkeyModuleType.*;
 
 public class MonkeyContentEntriesEditor extends CommonContentEntriesEditor {
-  private TargetDeviceConfigurable myTargetDeviceConfigurable;
+  private TargetDeviceConfigurable targetDeviceConfigurable;
 
   public MonkeyContentEntriesEditor(String moduleName, ModuleConfigurationState state) {
     super(moduleName, state, MONKEY_SOURCE_ROOT_TYPE, MONKEY_TEST_SOURCE_ROOT_TYPE, MONKEY_RESOURCE_ROOT_TYPE, MONKEY_TEST_RESOURCE_ROOT_TYPE);
@@ -22,13 +22,13 @@ public class MonkeyContentEntriesEditor extends CommonContentEntriesEditor {
 
   @Override
   public void disposeUIResources() {
-    if (myTargetDeviceConfigurable != null) myTargetDeviceConfigurable.disposeUIResources();
+    if (targetDeviceConfigurable != null) targetDeviceConfigurable.disposeUIResources();
     super.disposeUIResources();
   }
 
   @Override
   public boolean isModified() {
-    return super.isModified() || myTargetDeviceConfigurable != null && myTargetDeviceConfigurable.isModified();
+    return super.isModified() || targetDeviceConfigurable != null && targetDeviceConfigurable.isModified();
   }
 
   @Override
@@ -36,7 +36,7 @@ public class MonkeyContentEntriesEditor extends CommonContentEntriesEditor {
     Sdk sdk = ModuleRootManager.getInstance(getModule()).getSdk();
     String binPath = sdk == null ? null : MonkeySdkType.getBinPath(sdk);
 
-    myTargetDeviceConfigurable = new TargetDeviceConfigurable(myProject, binPath) {
+    targetDeviceConfigurable = new TargetDeviceConfigurable(myProject, binPath) {
       // overriding is needed because it would fail when Applying changes in module settings
       // though I guess I could give 'this' to TargetDeviceConfigurable so I could have getModule() reference instead of value
       @NotNull
@@ -45,13 +45,13 @@ public class MonkeyContentEntriesEditor extends CommonContentEntriesEditor {
         return getModel().getModuleExtension(TargetDeviceModuleExtension.class);
       }
     };
-    mainPanel.add(myTargetDeviceConfigurable.createComponent(), BorderLayout.NORTH);
-    myTargetDeviceConfigurable.reset();
+    mainPanel.add(targetDeviceConfigurable.createComponent(), BorderLayout.NORTH);
+    targetDeviceConfigurable.reset();
   }
 
   @Override
   public void apply() throws ConfigurationException {
-    myTargetDeviceConfigurable.apply();
+    targetDeviceConfigurable.apply();
     super.apply();
   }
 }

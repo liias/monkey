@@ -14,40 +14,38 @@ import java.awt.*;
 import java.util.List;
 
 public abstract class TargetDeviceConfigurable implements UnnamedConfigurable {
-  private final Project myProject;
-  private JComboBox myComboBox;
-  private JPanel myPanel = new JPanel(new GridBagLayout());
+  private JComboBox targetDeviceComboBox;
+  private JPanel panel = new JPanel(new GridBagLayout());
 
   public TargetDeviceConfigurable(Project project, @Nullable String sdkBinPath) {
-    myProject = project;
-    myComboBox = new ComboBox();
+    targetDeviceComboBox = new ComboBox();
 
     DevicesReader devicesReader = new DevicesReader(sdkBinPath);
     List<TargetDevice> targetDevices = devicesReader.parseDevicesXml();
 
     for (TargetDevice device : targetDevices) {
       //noinspection unchecked
-      myComboBox.addItem(device);
+      targetDeviceComboBox.addItem(device);
     }
 
-    myComboBox.addActionListener(e -> {
-      final Object selectedItem = myComboBox.getSelectedItem();
+    targetDeviceComboBox.addActionListener(e -> {
+      final Object selectedItem = targetDeviceComboBox.getSelectedItem();
       final TargetDevice targetDevice = selectedItem instanceof TargetDevice ? (TargetDevice) selectedItem : null;
       getTargetDeviceModuleExtension().setTargetDevice(targetDevice);
     });
 
     JLabel label = new JLabel("Target Device");
-    label.setLabelFor(myComboBox);
-    myPanel.add(label,
+    label.setLabelFor(targetDeviceComboBox);
+    panel.add(label,
       new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(12, 6, 12, 0), 0, 0));
-    myPanel.add(myComboBox,
+    panel.add(targetDeviceComboBox,
       new GridBagConstraints(1, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(6, 6, 12, 0), 0, 0));
   }
 
   @Nullable
   @Override
   public JComponent createComponent() {
-    return myPanel;
+    return panel;
   }
 
   @Override
@@ -62,13 +60,13 @@ public abstract class TargetDeviceConfigurable implements UnnamedConfigurable {
 
   @Override
   public void reset() {
-    myComboBox.setSelectedItem(getTargetDeviceModuleExtension().getTargetDevice());
+    targetDeviceComboBox.setSelectedItem(getTargetDeviceModuleExtension().getTargetDevice());
   }
 
   @Override
   public void disposeUIResources() {
-    myPanel = null;
-    myComboBox = null;
+    panel = null;
+    targetDeviceComboBox = null;
   }
 
   @NotNull
