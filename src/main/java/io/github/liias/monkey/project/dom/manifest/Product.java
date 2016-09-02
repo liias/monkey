@@ -1,7 +1,6 @@
 package io.github.liias.monkey.project.dom.manifest;
 
 import com.intellij.spellchecker.xml.NoSpellchecking;
-import com.intellij.util.xml.GenericAttributeValue;
 import com.intellij.util.xml.NameValue;
 import com.intellij.util.xml.Required;
 
@@ -9,18 +8,18 @@ public interface Product extends ManifestDomElement {
   @NameValue
   @NoSpellchecking
   @Required
-  GenericAttributeValue<String> getId();
+  NoNamespaceAttributeValue<String> getId();
 
   // pattern "[0-9a-zA-Z]{3}-[0-9a-zA-Z]{5}-[0-9a-zA-Z]{2}"
-  GenericAttributeValue<String> getPartNumber();
+  NoNamespaceAttributeValue<String> getPartNumber();
 
-  GenericAttributeValue<String> getFilename();
+  NoNamespaceAttributeValue<String> getFilename();
 
-  GenericAttributeValue<Integer> getMinFirmwareVersion();
+  NoNamespaceAttributeValue<Integer> getMinFirmwareVersion();
 
-  GenericAttributeValue<Integer> getMaxFirmwareVersion();
+  NoNamespaceAttributeValue<Integer> getMaxFirmwareVersion();
 
-  GenericAttributeValue<String> getSig();
+  NoNamespaceAttributeValue<String> getSig();
 
-  GenericAttributeValue<String> getSigFormat();
+  NoNamespaceAttributeValue<String> getSigFormat();
 }
