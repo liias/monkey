@@ -265,12 +265,18 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     // in format: C:\xyz\source\aaApp.mc C:\xyz\source\aaMenuDelegate.mc C:\xyz\source\aaView.mc
     parameters.addAll(sourceFilePaths);
 
+    final String targetSdkVersion = monkeyModuleProperties.TARGET_SDK_VERSION != null ? monkeyModuleProperties.TARGET_SDK_VERSION : null;
+
     final String deviceId = monkeyModuleProperties.TARGET_DEVICE_ID != null ? monkeyModuleProperties.TARGET_DEVICE_ID : "round_watch";
     final String deviceSim = deviceId + "_sim";
 
     //if (deviceSim != null) {
     parameters.add("-d", deviceSim);
     //}
+
+    if (targetSdkVersion != null) {
+      parameters.add("-s", targetSdkVersion);
+    }
 
     if (tests) {
       parameters.add("--unit-test");

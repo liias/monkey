@@ -6,6 +6,7 @@ import com.intellij.openapi.roots.ModuleExtension;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
+import io.github.liias.monkey.jps.model.JpsMonkeyModelSerializerExtension;
 import io.github.liias.monkey.project.runconfig.TargetDevice;
 import io.github.liias.monkey.project.runconfig.TargetSdkVersion;
 import org.jdom.Element;
@@ -15,8 +16,8 @@ import org.jetbrains.annotations.Nullable;
 public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceModuleExtension> {
   // must be same as fields in JpsMonkeyModuleProperties
   //JpsMonkeyModelSerializerExtension.MODULE_TARGET_DEVICE_ID_ATTRIBUTE
-  private static final String TARGET_DEVICE_ID_ATTRIBUTE = "target-device";
-  private static final String TARGET_SDK_VERSION_ATTRIBUTE = "target-sdk-version";
+  private static final String TARGET_DEVICE_ID_ATTRIBUTE = JpsMonkeyModelSerializerExtension.MODULE_TARGET_DEVICE_ID_ATTRIBUTE;
+  private static final String TARGET_SDK_VERSION_ATTRIBUTE = JpsMonkeyModelSerializerExtension.MODULE_TARGET_SDK_VERSION_ATTRIBUTE;
 
   private Module module;
   private final boolean writable;

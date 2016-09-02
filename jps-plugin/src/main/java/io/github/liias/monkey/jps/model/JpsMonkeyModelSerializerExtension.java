@@ -25,6 +25,7 @@ public class JpsMonkeyModelSerializerExtension extends JpsModelSerializerExtensi
     JpsElementChildRoleBase.create("monkey global config");
 
   public static final String MODULE_TARGET_DEVICE_ID_ATTRIBUTE = "target-device";
+  public static final String MODULE_TARGET_SDK_VERSION_ATTRIBUTE = "target-sdk-version";
 
   @Override
   public void loadRootModel(@NotNull JpsModule module, @NotNull Element rootModel) {
@@ -35,6 +36,7 @@ public class JpsMonkeyModelSerializerExtension extends JpsModelSerializerExtensi
     final JpsSimpleElement modulePropertiesElement = (JpsSimpleElement) module.getProperties();
     final JpsMonkeyModuleProperties moduleProperties = (JpsMonkeyModuleProperties) modulePropertiesElement.getData();
     moduleProperties.TARGET_DEVICE_ID = rootModel.getAttributeValue(MODULE_TARGET_DEVICE_ID_ATTRIBUTE);
+    moduleProperties.TARGET_SDK_VERSION = rootModel.getAttributeValue(MODULE_TARGET_SDK_VERSION_ATTRIBUTE);
   }
 
   @NotNull
