@@ -1,5 +1,8 @@
 # Changelog
 
+#### 0.3.2 (in development)
+* Allow to set minimum target SDK version for module, used when compiling
+
 #### 0.3.1
 * Grammar: Allow statements on top (global) level
 * Grammar: Allow catch (ex instanceof Y) 
