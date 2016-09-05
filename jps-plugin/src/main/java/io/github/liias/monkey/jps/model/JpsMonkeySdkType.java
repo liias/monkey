@@ -1,6 +1,7 @@
 package io.github.liias.monkey.jps.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.jps.model.JpsDummyElement;
 import org.jetbrains.jps.model.JpsElementFactory;
 import org.jetbrains.jps.model.JpsElementTypeWithDefaultProperties;
@@ -26,29 +27,31 @@ public class JpsMonkeySdkType extends JpsSdkType<JpsDummyElement> implements Jps
       this.minor = minor;
       this.micro = micro;
     }
+
+    public static SdkVersion fromVersionString(@Nullable String versionString) {
+      if (versionString == null) {
+        System.out.println("Can't parse SDK version. Try setting SDK for the whole project instead of only module");
+        return null;
+      }
+
+      String version = versionString.split("-")[0];
+
+      if (!version.matches("\\d+[.]\\d{1,2}[.]\\d{1,2}")) {
+        throw new IllegalArgumentException("weird version string format for version: " + version);
+      }
+
+      String[] number = version.split("\\.");
+      int major = Short.parseShort(number[0]);
+      int minor = Short.parseShort(number[1]);
+      int micro = Short.parseShort(number[2]);
+
+      return new SdkVersion(major, minor, micro);
+    }
   }
 
   public static SdkVersion getSdkVersion(@NotNull JpsSdk sdk) {
-    String versionString = sdk.getVersionString();
-    if (versionString == null) {
-      System.out.println("Can't parse SDK version. Try setting SDK for the whole project instead of only module");
-      return null;
-    }
-
-    String version = versionString.split("-")[0];
-
-    if (!version.matches("\\d+[.]\\d{1,2}[.]\\d{1,2}")) {
-      throw new IllegalArgumentException("weird version string format for version: " + version);
-    }
-
-    String[] number = version.split("\\.");
-    int major = Short.parseShort(number[0]);
-    int minor = Short.parseShort(number[1]);
-    int micro = Short.parseShort(number[2]);
-
-    return new SdkVersion(major, minor, micro);
+    return SdkVersion.fromVersionString(sdk.getVersionString());
   }
-
 
   public static boolean hasUnitTestsSupport(SdkVersion sdkVersion) {
     if (sdkVersion == null) {

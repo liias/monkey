@@ -32,6 +32,7 @@ import com.intellij.psi.xml.XmlTag;
 import com.intellij.util.DocumentUtil;
 import com.intellij.util.xml.DomElement;
 import com.intellij.util.xml.GenericAttributeValue;
+import io.github.liias.monkey.jps.model.JpsMonkeySdkType;
 import io.github.liias.monkey.project.configuration.TargetDeviceModuleExtension;
 import io.github.liias.monkey.project.dom.manifest.Manifest;
 import io.github.liias.monkey.project.dom.manifest.Products;
@@ -60,6 +61,7 @@ import java.util.*;
 
 import static io.github.liias.monkey.jps.model.JpsMonkeyModuleType.MONKEY_RESOURCE_ROOT_TYPE;
 import static io.github.liias.monkey.jps.model.JpsMonkeyModuleType.MONKEY_SOURCE_ROOT_TYPE;
+import static io.github.liias.monkey.jps.model.JpsMonkeySdkType.hasMinSdkVersionSupport;
 import static io.github.liias.monkey.project.module.util.MonkeyModuleUtil.MANIFEST_XML;
 
 public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderListener {
@@ -67,7 +69,8 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
   public static final String PROJECT_INFO_XML = "projectInfo.xml";
   public static final String FILE_TYPE_SOURCE = "source";
   public static final TargetDevice DEFAULT_TARGET_DEVICE = TargetDevice.SQUARE_WATCH;
-  public static final TargetSdkVersion DEFAULT_TARGET_SDK_VERSION = TargetSdkVersion.VERSION_2_1_X;
+  public static final TargetSdkVersion DEFAULT_TARGET_SDK_VERSION = TargetSdkVersion.VERSION_1_2_X;
+  public static final String DEFAULT_MIN_SDK_VERSION = "1.2.1";
 
   // Not null only if new project where we need to generate content based on this type
   @Nullable
@@ -75,6 +78,12 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
 
   public MonkeyModuleBuilder(@Nullable String appType) {
     this.appType = appType;
+  }
+
+  // Not null only if new project where we need to generate content based on this type
+  @Nullable
+  public String getAppType() {
+    return appType;
   }
 
   @Override
@@ -160,6 +169,11 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     return 100;
   }
 
+  @Override
+  public boolean isTemplateBased() {
+    return true;
+  }
+
   private VirtualFile createSourcePath(String dirname) {
     String path = getContentEntryPath() + File.separator + dirname;
     new File(path).mkdirs();
@@ -178,8 +192,8 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
       VirtualFile sdkBinDir = sdkType.getBinDir(sdk);
       // add new files only if manifest file does not exist already
       if (contentRoot.findChild(MANIFEST_XML) == null) {
-        createResourcesAndLibs(module, contentRoot, sdkBinDir);
-        fillTemplates(module, contentRoot);
+        createFromTemplate(module, contentRoot, sdkBinDir);
+        fillManifestXml(sdk, module, contentRoot);
       }
       setupRunConfiguration(module);
     }
@@ -205,7 +219,7 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     return sdk;
   }
 
-  private void createResourcesAndLibs(final Module module, final VirtualFile rootDir, VirtualFile sdkBinDir) {
+  private void createFromTemplate(final Module module, final VirtualFile rootDir, VirtualFile sdkBinDir) {
     final Project project = module.getProject();
     ProjectInfo sdkProjectInfo = getSdkProjectInfo(project, sdkBinDir);
     List<NewProjectFileMap> newProjectFileMaps = sdkProjectInfo.getNewProjectFilesMaps().getNewProjectFileMaps();
@@ -214,21 +228,20 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     final NewProjectFileMap newProjectFileMap = newProjectFileMaps.stream()
       .filter(fileMap -> fileMap != null && appType.equals(fileMap.getAppType().getStringValue())
       )
-      .findFirst().get();
+      .findFirst()
+      .get();
+
+    writeTemplateFiles(module, sdkBinDir, rootDir, newProjectFileMap);
+  }
+
+  private static void writeTemplateFiles(Module module, VirtualFile sdkBinDir, VirtualFile rootDir, NewProjectFileMap newProjectFileMap) {
     final GenericAttributeValue<String> baseDir = newProjectFileMap.getBaseDir(); // e.g templates/watch-app/simple
 
     String appName = module.getName(); // used in resources.xml to set freeform app name
+    final Project project = module.getProject();
+
+    VelocityContext templateSubstitutionContext = getTemplateSubstitutionContext(appName);
     String sanitizedName = WordUtils.capitalize(appName);
-    Map<String, String> substitutions = new HashMap<>();
-    substitutions.put("appName", appName);
-    substitutions.put("appClassName", sanitizedName + "App");
-    substitutions.put("viewClassName", sanitizedName + "View");
-    substitutions.put("delegateClassName", sanitizedName + "Delegate");
-    substitutions.put("menuDelegateClassName", sanitizedName + "MenuDelegate");
-    VelocityContext context = new VelocityContext();
-    for (Map.Entry<String, String> substitution : substitutions.entrySet()) {
-      context.put(substitution.getKey(), substitution.getValue());
-    }
 
     try {
       for (io.github.liias.monkey.project.dom.sdk.projectinfo.File file : newProjectFileMap.getFiles()) {
@@ -246,7 +259,7 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
         VirtualFile newFile = VfsUtil.copyFileRelative(project, templateFile, rootDir, toRelativeFilePath);
 
         if (!newFile.getFileType().isBinary()) {
-          String content = getParsedFileContent(context, newFile);
+          String content = getParsedFileContent(templateSubstitutionContext, newFile);
           VfsUtil.saveText(newFile, content);
         }
       }
@@ -255,7 +268,22 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     }
   }
 
-  private String getParsedFileContent(Context context, VirtualFile file) throws FileNotFoundException {
+  private static VelocityContext getTemplateSubstitutionContext(String appName) {
+    String sanitizedName = WordUtils.capitalize(appName);
+    Map<String, String> substitutions = new HashMap<>();
+    substitutions.put("appName", appName);
+    substitutions.put("appClassName", sanitizedName + "App");
+    substitutions.put("viewClassName", sanitizedName + "View");
+    substitutions.put("delegateClassName", sanitizedName + "Delegate");
+    substitutions.put("menuDelegateClassName", sanitizedName + "MenuDelegate");
+    VelocityContext context = new VelocityContext();
+    for (Map.Entry<String, String> substitution : substitutions.entrySet()) {
+      context.put(substitution.getKey(), substitution.getValue());
+    }
+    return context;
+  }
+
+  private static String getParsedFileContent(Context context, VirtualFile file) throws FileNotFoundException {
     FileReader fileReader = new FileReader(VfsUtil.virtualToIoFile(file));
     final VelocityEngine velocityEngine = ExternalTemplateUtil.getEngine();
     StringWriter writer = new StringWriter();
@@ -263,14 +291,14 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     return writer.toString();
   }
 
-  private void fillTemplates(final Module module, final VirtualFile contentRoot) {
+  private void fillManifestXml(Sdk sdk, final Module module, final VirtualFile contentRoot) {
     final Project project = module.getProject();
     CommandProcessor.getInstance().executeCommand(project, () -> {
       Runnable action = () -> {
         final Manifest manifest = MonkeyModuleUtil.getManifest(project, contentRoot);
         if (manifest != null) {
           StartupManager.getInstance(project).runWhenProjectIsInitialized(() -> FileDocumentManager.getInstance().saveAllDocuments());
-          ManifestData manifestData = new ManifestData(appType, "2.1.1", DEFAULT_TARGET_DEVICE.getId());
+          ManifestData manifestData = new ManifestData(appType, sdk, DEFAULT_MIN_SDK_VERSION, DEFAULT_TARGET_DEVICE.getId());
           configureManifest(manifest, module, manifestData);
         }
       };
@@ -281,6 +309,8 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
   }
 
   private static class ManifestData {
+    private final Sdk sdk;
+
     @NotNull
     String appType;
 
@@ -290,7 +320,8 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     @NotNull
     String targetDeviceId;
 
-    public ManifestData(@NotNull String appType, @NotNull String minSdkVersion, @NotNull String targetDeviceId) {
+    public ManifestData(@NotNull String appType, Sdk sdk, @NotNull String minSdkVersion, @NotNull String targetDeviceId) {
+      this.sdk = sdk;
       this.appType = appType;
       this.minSdkVersion = minSdkVersion;
       this.targetDeviceId = targetDeviceId;
@@ -317,7 +348,12 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     // entry is a class which extends Toybox.Application.AppBase
     manifest.getApplication().getEntry().setValue(entryClassName);
     manifest.getApplication().getLauncherIcon().setValue("@Drawables.LauncherIcon");
-    manifest.getApplication().getMinSdkVersion().setValue(manifestData.minSdkVersion);
+
+    JpsMonkeySdkType.SdkVersion sdkVersion = JpsMonkeySdkType.SdkVersion
+      .fromVersionString(manifestData.sdk.getVersionString());
+    if (hasMinSdkVersionSupport(sdkVersion)) {
+      manifest.getApplication().getMinSdkVersion().setValue(manifestData.minSdkVersion);
+    }
 
     Products products = manifest.getApplication().getProducts();
     XmlTag productsRootTag = products.getXmlTag();
