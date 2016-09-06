@@ -7,12 +7,12 @@ import io.github.liias.monkey.project.module.MonkeyModuleBuilder;
 import javax.swing.*;
 
 public class MonkeyModuleWizardStep extends ModuleWizardStep {
-  private final MonkeyAppPropertiesEditor myAppPropertiesEditor;
+  private final MonkeyTemplateChooser myAppPropertiesEditor;
 
   private JPanel myPanel;
 
   public MonkeyModuleWizardStep(MonkeyModuleBuilder moduleBuilder, WizardContext context) {
-    myAppPropertiesEditor = new MonkeyAppPropertiesEditor(moduleBuilder.getName(), context.getModulesProvider());
+    myAppPropertiesEditor = new MonkeyTemplateChooser(moduleBuilder, context);
 
     myPanel = new JPanel();
     myPanel.setLayout(new OverlayLayout(myPanel));

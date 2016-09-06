@@ -87,6 +87,19 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
   }
 
   @Override
+  @Nullable
+  public String getBuilderId() {
+    ModuleType moduleType = getModuleType();
+    String builderId = moduleType.getId();
+    // getBuilderId() is (besides other places) called in
+    // com.intellij.ide.util.newProjectWizard.StepSequence.addStepsForBuilder() so it has to be unique per template
+    if (getAppType() != null) {
+      builderId += "_" + getAppType();
+    }
+    return builderId;
+  }
+
+  @Override
   public void setupRootModel(ModifiableRootModel rootModel) throws ConfigurationException {
     addListener(this);
 
@@ -385,7 +398,7 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
     return psiFile;
   }
 
-  private static ProjectInfo getSdkProjectInfo(Project project, VirtualFile sdkBinDir) {
+  public static ProjectInfo getSdkProjectInfo(Project project, VirtualFile sdkBinDir) {
     final VirtualFile projectInfoFile = sdkBinDir.findChild(PROJECT_INFO_XML);
     return projectInfoFile != null ? MonkeyModuleUtil.loadDomElement(project, projectInfoFile, ProjectInfo.class) : null;
   }
