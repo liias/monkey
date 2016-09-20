@@ -42,6 +42,11 @@ public class MonkeyEclipseNatureImporter extends EclipseNatureImporter {
   @Override
   public void doImport(@NotNull Project project, @NotNull List<Module> modules) {
     for (Module module : modules) {
+      if (module.isDisposed()) {
+        // e.g if importing was canceled by user
+        continue;
+      }
+
       final VirtualFile contentRoot = chooseMainContentRoot(module);
 
       if (contentRoot == null) {
