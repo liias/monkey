@@ -1,6 +1,7 @@
 # Changelog
 
-#### 0.3.2 (in development)
+#### 0.3.2
+* Potential fix for issue #2 (running in simulator on mac)
 * Allow to set minimum target SDK version for module, used when compiling
 
 #### 0.3.1
