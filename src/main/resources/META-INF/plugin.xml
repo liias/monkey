@@ -35,14 +35,10 @@
     ]]></description>
 
   <change-notes><![CDATA[
-    <p>0.3.1</p>
+    <p>0.3.2</p>
     <ul>
-      <li>Grammar: Allow statements on top (global) level</li>
-      <li>Grammar: Allow catch (ex instanceof Y)</li>
-      <li>Grammar: Allow enum value to be a signed integer</li>
-      <li>Parse more doc tags on doc comment (Ctrl+Q)</li>
-      <li>Allow additional run parameters</li>
-      <li>Fix running on Linux (use "wine cmd /c" instead of "wine" to run .bat), though not very reliable</li>
+      <li>Potential fix for issue #2 (running in simulator on mac)</li>
+      <li>Allow to set minimum target SDK version for module, used when compiling</li>
     </ul>
 
     <a href="https://github.com/liias/monkey/blob/master/CHANGELOG.md#changelog">Full change log...</a>
