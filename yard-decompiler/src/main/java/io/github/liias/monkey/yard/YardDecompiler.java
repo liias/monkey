@@ -304,12 +304,33 @@ public class YardDecompiler {
     String methodName = signatureEl.select("strong").text();
     SdkMethod sdkMethod = new SdkMethod(methodName);
 
-    String validParamsStr = signatureEl.ownText().substring(4).trim();
+    // pre 2.1.5:
+    // - (<tt>Object</tt>) <strong>switchToView</strong>(view, delegate, transition)
+    // "- () (view, delegate, transition)"
+    // "() (view, delegate, transition)"
+
+    // since 2.1.5:
+    // #<strong>switchToView</strong>(view, delegate, transition)  ⇒ <tt>Object</tt>
+    // "#(view, delegate, transition)  ⇒ "
+    // "(view, delegate, transition)"
+
+    String paramNames = signatureEl.ownText()
+      .replace("-", "")
+      .replace("#", "")
+      .replace("⇒", "")
+      .trim();
+
+    int iLeftP = paramNames.lastIndexOf("(");
+    int iRightP = paramNames.lastIndexOf(")");
     Set<String> validParamNames = new HashSet<>();
-    if (!validParamsStr.isEmpty()) {
-      String[] validParams = validParamsStr.substring(1, validParamsStr.length() - 1).split(",");
-      for (String validParam : validParams) {
-        validParamNames.add(validParam.trim());
+
+    if (iLeftP != -1 && iRightP != -1) {
+      String validParamsStr = paramNames.substring(iLeftP + 1, iRightP);
+      if (!validParamsStr.isEmpty()) {
+        String[] validParams = validParamsStr.split(",");
+        for (String validParam : validParams) {
+          validParamNames.add(validParam.trim());
+        }
       }
     }
 

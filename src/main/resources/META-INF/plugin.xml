@@ -35,10 +35,9 @@
     ]]></description>
 
   <change-notes><![CDATA[
-    <p>0.3.2</p>
+    <p>0.3.3</p>
     <ul>
-      <li>Potential fix for issue #2 (running in simulator on mac)</li>
-      <li>Allow to set minimum target SDK version for module, used when compiling</li>
+      <li>Fix adding SDK 2.1.5 (issue #3)</li>
     </ul>
 
     <a href="https://github.com/liias/monkey/blob/master/CHANGELOG.md#changelog">Full change log...</a>
