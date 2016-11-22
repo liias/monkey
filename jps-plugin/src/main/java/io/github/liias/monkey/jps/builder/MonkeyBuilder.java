@@ -1,7 +1,5 @@
 package io.github.liias.monkey.jps.builder;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.process.BaseOSProcessHandler;
@@ -18,7 +16,6 @@ import io.github.liias.monkey.jps.model.JpsMonkeyGlobalProperties;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleProperties;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleType;
 import io.github.liias.monkey.jps.model.JpsMonkeySdkType;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.builders.BuildOutputConsumer;
 import org.jetbrains.jps.builders.DirtyFilesHolder;
@@ -88,7 +85,7 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     for (String contentRootUrl : jpsModule.getContentRootsList().getUrls()) {
       String outputPrg = buildPrgForSimulator(target, context, contentRootUrl, sdk, false, monkeyModuleProperties);
       File outputPrgFile = new File(outputPrg);
-      Set<String> sourcePaths = ImmutableSet.of(contentRootUrl);
+      Set<String> sourcePaths = Collections.singleton(contentRootUrl);
       outputConsumer.registerOutputFile(outputPrgFile, sourcePaths);
     }
   }
@@ -213,15 +210,16 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     JpsMonkeySdkType.SdkVersion sdkVersion = JpsMonkeySdkType.getSdkVersion(sdk);
     boolean optionalArgumentsSupport = JpsMonkeySdkType.hasOptionalSdkArgumentsSupport(sdkVersion);
 
-    ImmutableList.Builder<String> parametersBuilder = ImmutableList.builder();
+    ArrayList<String> parameters = new ArrayList<>();
+
     if (!optionalArgumentsSupport) {
-      parametersBuilder.add("-a", sdkBinPath + "api.db")
-        .add("-i", sdkBinPath + "api.debug.xml");
+      Collections.addAll(parameters, "-a", sdkBinPath + "api.db");
+      Collections.addAll(parameters, "-i", sdkBinPath + "api.debug.xml");
     }
 
-    parametersBuilder.add("-o", outputPath)
-      .add("-w"); // Show compilation warnings in the Console
-//        .add("-g") // Print debug output (-g)
+    Collections.addAll(parameters, "-o", outputPath);
+    Collections.addAll(parameters, "-w"); // Show compilation warnings in the Console
+    //Collections.addAll(parameters, "-g"); // Print debug output (-g)
 
 
     // TODO: check what -e means
@@ -231,15 +229,14 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
 
     if (JpsMonkeySdkType.hasAppSigningSupport(sdkVersion)) {
       final File developerKeyPath = monkeyModuleProperties.DEVELOPER_KEY_PATH;
-      String devKeyPathStr = developerKeyPath != null ? developerKeyPath.getAbsolutePath() : null;
-
-      if (StringUtils.isEmpty(devKeyPathStr)) {
+      String devKeyPathStr = developerKeyPath != null ? developerKeyPath.getAbsolutePath() : "";
+      if (devKeyPathStr.isEmpty()) {
         context.processMessage(new CompilerMessage(
           NAME, BuildMessage.Kind.ERROR, "Developer Key is not set. Go to Settings; Build; Connect IQ"));
         throw new StopBuildException();
       }
 
-      parametersBuilder.add("-y", devKeyPathStr);
+      Collections.addAll(parameters, "-y", devKeyPathStr);
     }
 
     if (!resourceFilePaths.isEmpty()) {
@@ -252,43 +249,45 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
         }
         builder.append(resourceFilePath);
       }
-      parametersBuilder.add("-z", builder.toString());
+
+      Collections.addAll(parameters, "-z", builder.toString());
     }
 
     String manifestXmlPath = projectRootPath + File.separator + "manifest.xml";
-    parametersBuilder.add("-m", manifestXmlPath);
+    Collections.addAll(parameters, "-m", manifestXmlPath);
 
     if (!optionalArgumentsSupport) {
       String devicesXmlPath = sdkBinPath + "devices.xml";
       String projectInfoXmlPath = sdkBinPath + "projectInfo.xml";
-      parametersBuilder.add("-u", devicesXmlPath)
-        .add("-p", projectInfoXmlPath);
+
+      Collections.addAll(parameters, "-u", devicesXmlPath);
+      Collections.addAll(parameters, "-p", projectInfoXmlPath);
     }
 
     // in format: C:\xyz\source\aaApp.mc C:\xyz\source\aaMenuDelegate.mc C:\xyz\source\aaView.mc
-    parametersBuilder.addAll(sourceFilePaths);
+    parameters.addAll(sourceFilePaths);
 
 
     final String deviceId = monkeyModuleProperties.TARGET_DEVICE_ID != null ? monkeyModuleProperties.TARGET_DEVICE_ID : "round_watch";
     final String deviceSim = deviceId + "_sim";
 
     //if (deviceSim != null) {
-    parametersBuilder.add("-d", deviceSim);
+    Collections.addAll(parameters, "-d", deviceSim);
     //}
 
     if (JpsMonkeySdkType.hasSdkVersionBuildOptionSupport(sdkVersion)) {
       String targetSdkVersion = monkeyModuleProperties.TARGET_SDK_VERSION != null ? monkeyModuleProperties.TARGET_SDK_VERSION : null;
       if (targetSdkVersion != null) {
-        parametersBuilder.add("-s", targetSdkVersion);
+        Collections.addAll(parameters, "-s", targetSdkVersion);
       }
     }
 
     if (tests) {
-      parametersBuilder.add("--unit-test");
+      Collections.addAll(parameters, "--unit-test");
       // I think this alias also works (but let's use the documented one): parameters.add("-t");
     }
     if (releaseBuild) {
-      parametersBuilder.add("-r");
+      Collections.addAll(parameters, "-r");
     }
 
     final String jreHome = findJreHome() + File.separator;
@@ -300,7 +299,7 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     String monkeybrainsJarPath = sdkBinPath + MONKEYBRAINS_JAR_FILENAME;
     commandLine.addParameters("-jar", monkeybrainsJarPath);
 
-    commandLine.addParameters(parametersBuilder.build());
+    commandLine.addParameters(parameters);
 
     return commandLine;
   }
