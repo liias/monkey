@@ -1,7 +1,5 @@
 package io.github.liias.monkey.jps.builder;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.intellij.execution.ExecutionException;
@@ -20,6 +18,7 @@ import io.github.liias.monkey.jps.model.JpsMonkeyGlobalProperties;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleProperties;
 import io.github.liias.monkey.jps.model.JpsMonkeyModuleType;
 import io.github.liias.monkey.jps.model.JpsMonkeySdkType;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.builders.BuildOutputConsumer;
 import org.jetbrains.jps.builders.DirtyFilesHolder;
@@ -44,6 +43,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, MonkeyBuildTarget> {
@@ -193,15 +193,18 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     // TODO: Use module sources functionality instead
     Pattern sourcePattern = Pattern.compile(".*\\.mc");
     final List<File> mcFiles = FileUtil.findFilesByMask(sourcePattern, projectRoot);
-    final ImmutableList<String> sourceFilePaths = FluentIterable.from(mcFiles)
-      .transform(File::getAbsolutePath).toList();
+
+    final List<String> sourceFilePaths = mcFiles.stream()
+      .map(File::getAbsolutePath)
+      .collect(Collectors.toList());
 
     // TODO: Use module resources functionality instead
     Pattern resourcePattern = Pattern.compile(".*\\.xml");
     final List<File> xmlFiles = FileUtil.findFilesByMask(resourcePattern, projectRoot);
-    final ImmutableList<String> resourceFilePaths = FluentIterable.from(xmlFiles)
+    final List<String> resourceFilePaths = xmlFiles.stream()
       .filter(file -> file != null && file.getParentFile().getAbsolutePath().contains("resource"))
-      .transform(File::getAbsolutePath).toList();
+      .map(File::getAbsolutePath)
+      .collect(Collectors.toList());
 
     String sdkHomePath = sdk.getHomePath();
     String sdkPath = sdkHomePath + File.separator;
@@ -210,13 +213,13 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     JpsMonkeySdkType.SdkVersion sdkVersion = JpsMonkeySdkType.getSdkVersion(sdk);
     boolean optionalArgumentsSupport = JpsMonkeySdkType.hasOptionalSdkArgumentsSupport(sdkVersion);
 
-    ImmutableList.Builder<String> parameters = ImmutableList.<String>builder();
+    ImmutableList.Builder<String> parametersBuilder = ImmutableList.builder();
     if (!optionalArgumentsSupport) {
-      parameters.add("-a", sdkBinPath + "api.db")
+      parametersBuilder.add("-a", sdkBinPath + "api.db")
         .add("-i", sdkBinPath + "api.debug.xml");
     }
 
-    parameters.add("-o", outputPath)
+    parametersBuilder.add("-o", outputPath)
       .add("-w"); // Show compilation warnings in the Console
 //        .add("-g") // Print debug output (-g)
 
@@ -230,13 +233,13 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
       final File developerKeyPath = monkeyModuleProperties.DEVELOPER_KEY_PATH;
       String devKeyPathStr = developerKeyPath != null ? developerKeyPath.getAbsolutePath() : null;
 
-      if (Strings.isNullOrEmpty(devKeyPathStr)) {
+      if (StringUtils.isEmpty(devKeyPathStr)) {
         context.processMessage(new CompilerMessage(
           NAME, BuildMessage.Kind.ERROR, "Developer Key is not set. Go to Settings; Build; Connect IQ"));
         throw new StopBuildException();
       }
 
-      parameters.add("-y", devKeyPathStr);
+      parametersBuilder.add("-y", devKeyPathStr);
     }
 
     if (!resourceFilePaths.isEmpty()) {
@@ -249,43 +252,43 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
         }
         builder.append(resourceFilePath);
       }
-      parameters.add("-z", builder.toString());
+      parametersBuilder.add("-z", builder.toString());
     }
 
     String manifestXmlPath = projectRootPath + File.separator + "manifest.xml";
-    parameters.add("-m", manifestXmlPath);
+    parametersBuilder.add("-m", manifestXmlPath);
 
     if (!optionalArgumentsSupport) {
       String devicesXmlPath = sdkBinPath + "devices.xml";
       String projectInfoXmlPath = sdkBinPath + "projectInfo.xml";
-      parameters.add("-u", devicesXmlPath)
+      parametersBuilder.add("-u", devicesXmlPath)
         .add("-p", projectInfoXmlPath);
     }
 
     // in format: C:\xyz\source\aaApp.mc C:\xyz\source\aaMenuDelegate.mc C:\xyz\source\aaView.mc
-    parameters.addAll(sourceFilePaths);
+    parametersBuilder.addAll(sourceFilePaths);
 
 
     final String deviceId = monkeyModuleProperties.TARGET_DEVICE_ID != null ? monkeyModuleProperties.TARGET_DEVICE_ID : "round_watch";
     final String deviceSim = deviceId + "_sim";
 
     //if (deviceSim != null) {
-    parameters.add("-d", deviceSim);
+    parametersBuilder.add("-d", deviceSim);
     //}
 
     if (JpsMonkeySdkType.hasSdkVersionBuildOptionSupport(sdkVersion)) {
       String targetSdkVersion = monkeyModuleProperties.TARGET_SDK_VERSION != null ? monkeyModuleProperties.TARGET_SDK_VERSION : null;
       if (targetSdkVersion != null) {
-        parameters.add("-s", targetSdkVersion);
+        parametersBuilder.add("-s", targetSdkVersion);
       }
     }
 
     if (tests) {
-      parameters.add("--unit-test");
+      parametersBuilder.add("--unit-test");
       // I think this alias also works (but let's use the documented one): parameters.add("-t");
     }
     if (releaseBuild) {
-      parameters.add("-r");
+      parametersBuilder.add("-r");
     }
 
     final String jreHome = findJreHome() + File.separator;
@@ -297,7 +300,7 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
     String monkeybrainsJarPath = sdkBinPath + MONKEYBRAINS_JAR_FILENAME;
     commandLine.addParameters("-jar", monkeybrainsJarPath);
 
-    commandLine.addParameters(parameters.build());
+    commandLine.addParameters(parametersBuilder.build());
 
     return commandLine;
   }

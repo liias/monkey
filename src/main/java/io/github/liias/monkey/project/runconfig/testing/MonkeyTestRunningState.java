@@ -1,7 +1,5 @@
 package io.github.liias.monkey.project.runconfig.testing;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
@@ -25,6 +23,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang.StringUtils.trimToNull;
 
 public class MonkeyTestRunningState extends AbstractMonkeyRunningState {
   public static final Pattern PATTERN_TEST_NAME = Pattern.compile("Executing test (.*)\\.\\.\\.");
@@ -68,7 +69,7 @@ public class MonkeyTestRunningState extends AbstractMonkeyRunningState {
           SuiteNameAndTestName suiteNameAndTestName = new SuiteNameAndTestName(fullyQualifiedTestName);
           String lastSuite = lastSuiteName.get();
 
-          if (!Strings.nullToEmpty(lastSuite).equals(Strings.nullToEmpty(suiteNameAndTestName.suiteName))) {
+          if (!trimToNull(lastSuite).equals(trimToNull(suiteNameAndTestName.suiteName))) {
             lastSuiteName.set(suiteNameAndTestName.suiteName);
 
             if (lastSuite != null) {
@@ -101,7 +102,7 @@ public class MonkeyTestRunningState extends AbstractMonkeyRunningState {
       String[] splitByDot = fullyQualifiedName.split("\\.", 2);
       this.suiteName = splitByDot.length > 1 ? splitByDot[0] : null;
       this.testName = splitByDot.length > 1 ? splitByDot[1] : splitByDot[0];
-      Preconditions.checkNotNull(this.testName);
+      requireNonNull(this.testName);
     }
 
     public boolean inSuite() {

@@ -1,6 +1,5 @@
 package io.github.liias.monkey.project.runconfig;
 
-import com.google.common.base.Preconditions;
 import com.intellij.execution.DefaultExecutionResult;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
@@ -34,6 +33,7 @@ import java.io.OutputStream;
 
 import static io.github.liias.monkey.Utils.createGeneralCommandLine;
 import static io.github.liias.monkey.Utils.getForWinLinOrMac;
+import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractMonkeyRunningState extends CommandLineState {
   private MonkeyParameters monkeyParameters;
@@ -144,10 +144,10 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
   protected VirtualFile copyPrgTo(String prgOutputPath, String outputPath) throws IOException {
     LocalFileSystem lfs = LocalFileSystem.getInstance();
     VirtualFile fromOutputPrg = lfs.refreshAndFindFileByPath(prgOutputPath);
-    Preconditions.checkNotNull(fromOutputPrg);
+    requireNonNull(fromOutputPrg);
 
     VirtualDirectoryImpl toOutputDirectory = (VirtualDirectoryImpl) lfs.refreshAndFindFileByPath(outputPath);
-    Preconditions.checkNotNull(toOutputDirectory);
+    requireNonNull(toOutputDirectory);
 
     String fileName = fromOutputPrg.getName();
 
@@ -156,7 +156,10 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
     return ApplicationManager.getApplication()
       .runWriteAction((ThrowableComputable<VirtualFile, IOException>) () -> {
           if (existingPrg != null) {
-            Preconditions.checkState(!existingPrg.isDirectory()); // just in case to catch mistakes
+            if (existingPrg.isDirectory()) {
+              // just in case to catch mistakes
+              throw new IllegalStateException("prg path should be file not directory: " + existingPrg);
+            }
             existingPrg.delete(this);
           }
           return fromOutputPrg.copy(this, toOutputDirectory, fileName);

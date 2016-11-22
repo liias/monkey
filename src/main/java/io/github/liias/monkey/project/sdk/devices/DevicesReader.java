@@ -1,6 +1,5 @@
 package io.github.liias.monkey.project.sdk.devices;
 
-import com.google.common.collect.ImmutableList;
 import com.intellij.openapi.diagnostic.Logger;
 import io.github.liias.monkey.project.runconfig.TargetDevice;
 import io.github.liias.monkey.project.runconfig.TargetSdkVersion;
@@ -17,6 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DevicesReader {
@@ -39,11 +39,11 @@ public class DevicesReader {
   }
 
   public List<TargetSdkVersion> getTargetSdkVersions() {
-    return ImmutableList.<TargetSdkVersion>builder()
-      .add(TargetSdkVersion.VERSION_1_2_X)
-      .add(TargetSdkVersion.VERSION_1_3_X)
-      .add(TargetSdkVersion.VERSION_2_1_X)
-      .build();
+    return Arrays.asList(
+      TargetSdkVersion.VERSION_1_2_X,
+      TargetSdkVersion.VERSION_1_3_X,
+      TargetSdkVersion.VERSION_2_1_X
+    );
   }
 
   public List<TargetDevice> parseDevicesXml() {

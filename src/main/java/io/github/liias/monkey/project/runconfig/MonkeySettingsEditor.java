@@ -1,6 +1,5 @@
 package io.github.liias.monkey.project.runconfig;
 
-import com.google.common.base.Strings;
 import com.intellij.application.options.ModulesComboBox;
 import com.intellij.execution.ui.CommonProgramParametersPanel;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
@@ -20,6 +19,7 @@ import com.intellij.util.ui.UIUtil;
 import io.github.liias.monkey.project.module.MonkeyModuleType;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import io.github.liias.monkey.project.sdk.devices.DevicesReader;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -156,7 +156,7 @@ public class MonkeySettingsEditor extends SettingsEditor<AbstractMonkeyModuleBas
     }
 
     String deploymentTargetId = configuration.getDeploymentTargetId();
-    if (!Strings.isNullOrEmpty(deploymentTargetId)) {
+    if (!StringUtils.isEmpty(deploymentTargetId)) {
       final DeploymentTarget selectedDeploymentTarget = new DeploymentTarget(deploymentTargetId, null);
       this.deploymentTarget.getComponent().setSelectedItem(selectedDeploymentTarget);
     } else {
@@ -164,7 +164,7 @@ public class MonkeySettingsEditor extends SettingsEditor<AbstractMonkeyModuleBas
     }
 
     String deviceDirectoryPath = configuration.getDeviceDirectory();
-    if (!Strings.isNullOrEmpty(deviceDirectoryPath)) {
+    if (!StringUtils.isEmpty(deviceDirectoryPath)) {
       getDeviceDirectoryField().setText(deviceDirectoryPath);
     }
   }

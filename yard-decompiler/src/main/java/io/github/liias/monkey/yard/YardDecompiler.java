@@ -1,6 +1,5 @@
 package io.github.liias.monkey.yard;
 
-import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +18,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang.StringUtils.trimToNull;
 
 public class YardDecompiler {
 
@@ -240,7 +241,7 @@ public class YardDecompiler {
       Element parentClassEl = moduleDocument.select(".box .r1 .inheritName .object_link a").first();
       if (parentClassEl != null) {
         // <a href="View.html" title="Toybox::WatchUi::View (class)">View</a>
-        String parentClassFqn = Strings.emptyToNull(parentClassEl.attr("title"));
+        String parentClassFqn = trimToNull(parentClassEl.attr("title"));
         if (parentClassFqn != null) {
           sdkClass.setParentClassFqn(parentClassFqn.substring(0, parentClassFqn.length() - 8));
         }
@@ -385,8 +386,8 @@ public class YardDecompiler {
     String paramName = methodParamEl.select(".name").first().text();
 
     Element paramTypeEl = methodParamEl.select(".type tt").first(); // typeless has .type, but not tt
-    String paramType = paramTypeEl == null ? null : Strings.emptyToNull(paramTypeEl.text().trim());
-    String paramComment = Strings.emptyToNull(methodParamEl.select(".inline p").text());
+    String paramType = paramTypeEl == null ? null : trimToNull(paramTypeEl.text().trim());
+    String paramComment = trimToNull(methodParamEl.select(".inline p").text());
 
     SdkMethod.SdkMethodParameter param = new SdkMethod.SdkMethodParameter(paramName, paramType);
     param.setDocumentation(paramComment);
@@ -447,20 +448,20 @@ public class YardDecompiler {
     String comment = paragraphs.stream()
       .map(Element::text)
       .collect(Collectors.joining("\n\n"));
-    sdkEntity.setDocumentation(Strings.emptyToNull(comment));
+    sdkEntity.setDocumentation(trimToNull(comment));
   }
 
   private static void findAndSetDeprecated(Element docstringEl, SdkEntity sdkEntity) {
     Element deprecatedEl = docstringEl.select(".deprecated").first();
     if (deprecatedEl != null) {
       String deprecatedText = deprecatedEl.select("div.inline").text();
-      sdkEntity.setDeprecated(Strings.emptyToNull(deprecatedText));
+      sdkEntity.setDeprecated(trimToNull(deprecatedText));
     }
   }
 
   private static void findAndSetSince(Element tagsEl, SdkEntity sdkEntity) {
     for (Element sinceEl : tagsEl.select("ul.since li")) {
-      sdkEntity.setSince(Strings.emptyToNull(sinceEl.text()));
+      sdkEntity.setSince(trimToNull(sinceEl.text()));
     }
   }
 
@@ -501,7 +502,7 @@ public class YardDecompiler {
       return;
     }
     String returnComment = returnCommentEl.text();
-    sdkMethod.setReturnComment(Strings.emptyToNull(returnComment));
+    sdkMethod.setReturnComment(trimToNull(returnComment));
   }
 
   private static void findAndSetReturnType(Element tagsEl, HasReturnType sdkEntityWithReturnType) {
@@ -510,7 +511,7 @@ public class YardDecompiler {
       return;
     }
     String returnType = returnEl.select(".type tt").text();
-    sdkEntityWithReturnType.setReturnType(Strings.emptyToNull(returnType));
+    sdkEntityWithReturnType.setReturnType(trimToNull(returnType));
   }
 
   private static String getBeforeIfExists(String a, String separator) {

@@ -1,12 +1,14 @@
 package io.github.liias.monkey.project.runconfig;
 
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import com.intellij.diagnostic.logging.LogConfigurationPanel;
-import com.intellij.execution.*;
+import com.intellij.execution.CommonProgramRunConfigurationParameters;
+import com.intellij.execution.ExecutionBundle;
+import com.intellij.execution.ExternalizablePath;
 import com.intellij.execution.configuration.EnvironmentVariablesComponent;
-import com.intellij.execution.configurations.*;
-import com.intellij.execution.runners.ExecutionEnvironment;
+import com.intellij.execution.configurations.ConfigurationFactory;
+import com.intellij.execution.configurations.ModuleBasedConfiguration;
+import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.execution.util.ProgramParametersUtil;
 import com.intellij.openapi.components.PathMacroManager;
 import com.intellij.openapi.module.Module;
@@ -21,10 +23,11 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public abstract class AbstractMonkeyModuleBasedConfiguration extends ModuleBasedConfiguration<AbstractMonkeyRunConfigurationModule> implements CommonProgramRunConfigurationParameters {
   private static final SkipDefaultValuesSerializationFilters SERIALIZATION_FILTERS = new SkipDefaultValuesSerializationFilters();
@@ -37,8 +40,9 @@ public abstract class AbstractMonkeyModuleBasedConfiguration extends ModuleBased
 
   @Override
   public Collection<Module> getValidModules() {
-    List<Module> allModules = Lists.newArrayList(ModuleManager.getInstance(getProject()).getModules());
-    return Collections2.filter(allModules, module -> module != null && !module.isDisposed());
+    return Arrays.stream(ModuleManager.getInstance(getProject()).getModules())
+      .filter(module -> module != null && !module.isDisposed())
+      .collect(Collectors.toList());
   }
 
   @NotNull

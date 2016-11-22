@@ -1,6 +1,5 @@
 package io.github.liias.monkey.ide.conf;
 
-import com.google.common.base.Strings;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.options.Configurable;
@@ -8,6 +7,7 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.ui.TextBrowseFolderListener;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,8 +39,8 @@ public class MonkeyConfigurable implements SearchableConfigurable, Configurable.
 
     generateKeyButton.addActionListener(e -> {
       String keyPathStr = keyPathField.getText();
-      if (Strings.isNullOrEmpty(keyPathStr)) {
-        throw new IllegalArgumentException("Please set key output path first (including filename)");
+      if (StringUtils.isEmpty(keyPathStr)) {
+        throw new IllegalArgumentException("Please set Developer Key output path first (including filename)");
       }
       Path path = FileSystems.getDefault().getPath(keyPathStr);
       KeyGenerator.generate(path);

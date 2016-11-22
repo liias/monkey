@@ -1,6 +1,5 @@
 package io.github.liias.monkey.ide.actions.appsettings;
 
-import com.google.common.base.Objects;
 import com.intellij.application.options.ModulesComboBox;
 import com.intellij.openapi.compiler.CompilerPaths;
 import com.intellij.openapi.module.Module;
@@ -19,6 +18,7 @@ import javax.swing.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static io.github.liias.monkey.ide.actions.appsettings.json.Setting.ConfigType;
 
@@ -160,7 +160,7 @@ public class AppSettingsForm {
   }
 
   private static String getTranslated(Map<String, String> translations, String stringId) {
-    return Objects.firstNonNull(translations.get(stringId), stringId);
+    return Optional.ofNullable(translations.get(stringId)).orElse(stringId);
   }
 
   public JPanel getPanel() {

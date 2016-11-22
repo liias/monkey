@@ -1,6 +1,5 @@
 package io.github.liias.monkey.lang.documentation;
 
-import com.google.common.base.Strings;
 import com.intellij.lang.documentation.AbstractDocumentationProvider;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiComment;
@@ -64,7 +63,7 @@ public class MonkeyDocumentationProvider extends AbstractDocumentationProvider {
     if (quickNavigateInfo != null) {
       return "<pre>" + quickNavigateInfo + "</pre>" + docText;
     }
-    return Strings.nullToEmpty(docText);
+    return docText;
   }
 
   private static void appendItems(String title, List<String> items, StringBuilder docTextBuilder) {

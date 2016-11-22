@@ -1,7 +1,6 @@
 package io.github.liias.monkey.lang.ide.parameterInfo;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.intellij.codeInsight.CodeInsightBundle;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.lang.parameterInfo.*;
@@ -147,7 +146,9 @@ public class MonkeyParameterInfoHandler implements ParameterInfoHandlerWithTabAc
   @NotNull
   @Override
   public MonkeyExpression[] getActualParameters(@NotNull MonkeyArguments monkeyArguments) {
-    return Iterables.toArray(monkeyArguments.getExpressionList(), MonkeyExpression.class);
+    return monkeyArguments.getExpressionList()
+      .stream()
+      .toArray(MonkeyExpression[]::new);
   }
 
   @Override
@@ -174,18 +175,18 @@ public class MonkeyParameterInfoHandler implements ParameterInfoHandlerWithTabAc
     // btw, if stopping on a breakpoint here, updateParameterInfo() is not called out in time and index will be -1
     int currentParameterIndex = context.getCurrentParameterIndex();
     boolean grayedOut = currentParameterIndex != -1 &&
-        !componentNameList.isEmpty() && componentNameList.size() <= currentParameterIndex;
+      !componentNameList.isEmpty() && componentNameList.size() <= currentParameterIndex;
     context.setUIComponentEnabled(!grayedOut);
 
     TextRange parameterRange = getParameterRange(componentNameList, currentParameterIndex);
     context.setupUIComponentPresentation(
-        message,
-        parameterRange.getStartOffset(),
-        parameterRange.getEndOffset(),
-        !context.isUIComponentEnabled(),
-        false, //TODO: set deprecated from doccomment?
-        false,
-        context.getDefaultParameterColor()
+      message,
+      parameterRange.getStartOffset(),
+      parameterRange.getEndOffset(),
+      !context.isUIComponentEnabled(),
+      false, //TODO: set deprecated from doccomment?
+      false,
+      context.getDefaultParameterColor()
     );
   }
 
@@ -195,9 +196,9 @@ public class MonkeyParameterInfoHandler implements ParameterInfoHandlerWithTabAc
     }
     int paramsDelimiterLength = PARAMS_DELIMITER.length();
     int startOffset = componentNameList.stream()
-        .limit(index)
-        .mapToInt(p -> p.getTextLength() + paramsDelimiterLength)
-        .sum();
+      .limit(index)
+      .mapToInt(p -> p.getTextLength() + paramsDelimiterLength)
+      .sum();
 
     int paramLength = componentNameList.get(index).getTextLength();
     return new TextRange(startOffset, startOffset + paramLength);

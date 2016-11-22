@@ -1,7 +1,5 @@
 package io.github.liias.monkey.project.module;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.intellij.compiler.CompilerWorkspaceConfiguration;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
@@ -58,11 +56,13 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static io.github.liias.monkey.jps.model.JpsMonkeyModuleType.MONKEY_RESOURCE_ROOT_TYPE;
 import static io.github.liias.monkey.jps.model.JpsMonkeyModuleType.MONKEY_SOURCE_ROOT_TYPE;
 import static io.github.liias.monkey.jps.model.JpsMonkeySdkType.hasMinSdkVersionSupport;
 import static io.github.liias.monkey.project.module.util.MonkeyModuleUtil.MANIFEST_XML;
+import static java.util.Objects.requireNonNull;
 
 public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderListener {
   private static final Logger LOG = Logger.getInstance("#io.github.liias.monkey.project.module.MonkeyModuleBuilder");
@@ -160,21 +160,15 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
   }
 
   private static List<VirtualFile> findResourcePaths(VirtualFile contentRoot) {
-    ArrayList<VirtualFile> resourceDirs = Lists.newArrayList();
-
     VirtualFile[] children = contentRoot.getChildren();
     if (children == null) {
-      return resourceDirs;
+      return Collections.emptyList();
     }
-    for (VirtualFile child : children) {
-      if (!child.isDirectory()) {
-        continue;
-      }
-      if (child.getName().startsWith("resources")) {
-        resourceDirs.add(child);
-      }
-    }
-    return resourceDirs;
+
+    return Arrays.stream(children)
+      .filter(VirtualFile::isDirectory)
+      .filter(child -> child.getName().startsWith("resources"))
+      .collect(Collectors.toList());
   }
 
   @Override
@@ -342,10 +336,10 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
   }
 
   private static void configureManifest(Manifest manifest, Module module, ManifestData manifestData) {
-    Preconditions.checkNotNull(manifestData, "manifestData is null");
-    Preconditions.checkNotNull(manifestData.appType, "appType is null");
-    Preconditions.checkNotNull(manifestData.minSdkVersion, "minSdkVersion is null");
-    Preconditions.checkNotNull(manifestData.targetDeviceId, "targetDeviceId is null");
+    requireNonNull(manifestData, "manifestData is null");
+    requireNonNull(manifestData.appType, "appType is null");
+    requireNonNull(manifestData.minSdkVersion, "minSdkVersion is null");
+    requireNonNull(manifestData.targetDeviceId, "targetDeviceId is null");
 
     final PsiFile manifestFile = getValidatedPsiFile(manifest);
     if (manifestFile == null) {

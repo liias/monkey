@@ -1,10 +1,10 @@
 package io.github.liias.monkey.ide.actions.appsettings.form;
 
-import com.google.common.base.Objects;
 import io.github.liias.monkey.ide.actions.appsettings.json.Setting;
 
 import javax.swing.*;
 import java.util.Map;
+import java.util.Optional;
 
 /*
 valueType configType
@@ -50,7 +50,7 @@ public abstract class FieldModel<V> {
     if (stringId == null) {
       return null;
     }
-    return Objects.firstNonNull(translations.get(stringId), stringId);
+    return Optional.ofNullable(translations.get(stringId)).orElse(stringId);
   }
 
   protected String getConfigPrompt() {
