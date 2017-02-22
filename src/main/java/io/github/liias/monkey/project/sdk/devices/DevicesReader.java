@@ -3,6 +3,7 @@ package io.github.liias.monkey.project.sdk.devices;
 import com.intellij.openapi.diagnostic.Logger;
 import io.github.liias.monkey.project.runconfig.TargetDevice;
 import io.github.liias.monkey.project.runconfig.TargetSdkVersion;
+import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -16,7 +17,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class DevicesReader {
@@ -39,12 +39,7 @@ public class DevicesReader {
   }
 
   public List<TargetSdkVersion> getTargetSdkVersions() {
-    return Arrays.asList(
-      TargetSdkVersion.VERSION_1_2_X,
-      TargetSdkVersion.VERSION_1_3_X,
-      TargetSdkVersion.VERSION_2_1_X,
-      TargetSdkVersion.VERSION_2_2_X
-    );
+    return MonkeySdkType.getTargetSdkVersions(sdkBinPath);
   }
 
   public List<TargetDevice> parseDevicesXml() {

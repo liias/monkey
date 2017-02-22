@@ -3,7 +3,7 @@
 #### 0.3.4
 * Avoid dependency on gradle plugin (issue #5) - Thanks to grego33
 * Highlight constant name in constant declaration
-* Add 2.2.1 base version (issue #4)
+* Add target versions from bin/compilerInfo.xml (adds 2.2.0 base version) (issue #4)
 
 #### 0.3.3
 * Fix adding SDK 2.1.5 (issue #3)

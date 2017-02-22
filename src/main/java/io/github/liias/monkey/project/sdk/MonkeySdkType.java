@@ -6,12 +6,14 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.HashMap;
 import icons.MonkeyIcons;
 import io.github.liias.monkey.project.module.MonkeyConstants;
+import io.github.liias.monkey.project.runconfig.TargetSdkVersion;
 import io.github.liias.monkey.project.sdk.skeleton.SdkSkeleton;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
@@ -20,13 +22,20 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 import static io.github.liias.monkey.Utils.getForWinLinOrMac;
 
 public class MonkeySdkType extends SdkType {
   public static String COMPILER_INFO_XML = "compilerInfo.xml";
+
+  // major compiler versions come from bin/compilerInfo.xml (provided since SDK 2.2.2)
+  private static final List<TargetSdkVersion> OLD_TARGET_SDK_VERSIONS = Arrays.asList(
+    TargetSdkVersion.VERSION_1_2_X,
+    TargetSdkVersion.VERSION_1_3_X,
+    TargetSdkVersion.VERSION_2_1_X,
+    TargetSdkVersion.VERSION_2_2_X
+  );
 
   public MonkeySdkType() {
     super(MonkeyConstants.SDK_TYPE_ID);
@@ -127,6 +136,55 @@ public class MonkeySdkType extends SdkType {
     return version;
   }
 
+  public static List<TargetSdkVersion> getTargetSdkVersions(@Nullable String sdkBinPath) {
+    if (sdkBinPath == null) {
+      return OLD_TARGET_SDK_VERSIONS;
+    }
+
+    final File compilerInfoXml = new File(sdkBinPath, COMPILER_INFO_XML);
+    if (!compilerInfoXml.exists()) {
+      return null;
+    }
+
+    try {
+      DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+      Document doc = dBuilder.parse(compilerInfoXml);
+      //optional, but recommended
+      //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+      doc.getDocumentElement().normalize();
+
+      NodeList targetSdkVersions1 = doc.getElementsByTagName("targetSdkVersions");
+
+      if (targetSdkVersions1.getLength() == 0) {
+        return OLD_TARGET_SDK_VERSIONS;
+      }
+
+      Node targetSdkVersionsNode = targetSdkVersions1.item(0);
+      NodeList childNodes = targetSdkVersionsNode.getChildNodes();
+
+      List<TargetSdkVersion> targetSdkVersions = new ArrayList<>();
+      for (int i = 0; i < childNodes.getLength(); i++) {
+        Node targetVersion = childNodes.item(i);
+        if (targetVersion.getNodeType() != Node.ELEMENT_NODE) {
+          continue;
+        }
+        String targetVersionString = targetVersion.getTextContent();
+
+        String[] number = targetVersionString.split("\\.");
+        int major = Short.parseShort(number[0]);
+        int minor = Short.parseShort(number[1]);
+        String versionWildcard = major + "." + minor + ".x";
+        TargetSdkVersion targetSdkVersion = new TargetSdkVersion(targetVersionString, versionWildcard);
+        targetSdkVersions.add(targetSdkVersion);
+      }
+      return targetSdkVersions;
+
+    } catch (SAXException | ParserConfigurationException | IOException e) {
+      e.printStackTrace();
+    }
+    return OLD_TARGET_SDK_VERSIONS;
+  }
 
   @Nullable
   @Override

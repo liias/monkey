@@ -39,7 +39,7 @@
     <ul>
       <li>Avoid dependency on gradle plugin (issue #5) - Thanks to grego33</li>
       <li>Highlight constant name in constant declaration</li>
-      <li>Add 2.2.1 base version (issue #4)</li>
+      <li>Add target versions from bin/compilerInfo.xml (adds 2.2.0 base version) (issue #4)</li>
     </ul>
 
     <a href="https://github.com/liias/monkey/blob/master/CHANGELOG.md#changelog">Full change log...</a>

@@ -1,15 +1,17 @@
 package io.github.liias.monkey.project.runconfig;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TargetSdkVersion {
   public static final TargetSdkVersion VERSION_1_2_X = new TargetSdkVersion("1.2.1", "1.2.x");
   public static final TargetSdkVersion VERSION_1_3_X = new TargetSdkVersion("1.3.1", "1.3.x");
   public static final TargetSdkVersion VERSION_2_1_X = new TargetSdkVersion("2.1.1", "2.1.x");
-  public static final TargetSdkVersion VERSION_2_2_X = new TargetSdkVersion("2.2.1", "2.2.x");
+  public static final TargetSdkVersion VERSION_2_2_X = new TargetSdkVersion("2.2.0", "2.2.x");
 
   private String id;
   private String name;
 
-  public TargetSdkVersion(String id, String name) {
+  public TargetSdkVersion(@NotNull String id, String name) {
     this.id = id;
     this.name = name;
   }
