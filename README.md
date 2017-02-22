@@ -40,6 +40,7 @@ bugs or is incomplete
 ## How to use the plugin
 
 1. Download latest IDEA Community Edition. In Settings>Plugins search for this one and install.
+1a. Be sure the Gradle plugin is enabled
 2. Create new project or open existing one
 3. Setup SDK and apply it to project
 4. Set target device etc
