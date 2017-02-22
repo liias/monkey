@@ -42,7 +42,8 @@ public class DevicesReader {
     return Arrays.asList(
       TargetSdkVersion.VERSION_1_2_X,
       TargetSdkVersion.VERSION_1_3_X,
-      TargetSdkVersion.VERSION_2_1_X
+      TargetSdkVersion.VERSION_2_1_X,
+      TargetSdkVersion.VERSION_2_2_X
     );
   }
 
