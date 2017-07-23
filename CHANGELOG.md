@@ -1,5 +1,8 @@
 # Changelog
 
+#### 0.3.5
+* Fix parsing SDK 2.3.1 documentation (issue #7) - Thanks to datnguyen87
+
 #### 0.3.4
 * Avoid dependency on gradle plugin (issue #5) - Thanks to grego33
 * Highlight constant name in constant declaration

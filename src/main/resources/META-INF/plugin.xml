@@ -35,11 +35,9 @@
     ]]></description>
 
   <change-notes><![CDATA[
-    <p>0.3.4</p>
+    <p>0.3.5</p>
     <ul>
-      <li>Avoid dependency on gradle plugin (issue #5) - Thanks to grego33</li>
-      <li>Highlight constant name in constant declaration</li>
-      <li>Add target versions from bin/compilerInfo.xml (adds 2.2.0 base version) (issue #4)</li>
+      <li>Fix parsing SDK 2.3.1 documentation (issue #7) - Thanks to datnguyen87</li>
     </ul>
 
     <a href="https://github.com/liias/monkey/blob/master/CHANGELOG.md#changelog">Full change log...</a>
