@@ -337,7 +337,7 @@ public class YardDecompiler {
 
     Elements tagsEl = methodEl.select(".tags");
 
-    for (Element methodParamEl : tagsEl.select("ul.param li")) {
+    for (Element methodParamEl : tagsEl.select("ul.param > li")) {
       SdkMethod.SdkMethodParameter param = parseParam(methodParamEl);
       String paramName = param.getName();
       if (!validParamNames.contains(paramName) &&
@@ -360,7 +360,7 @@ public class YardDecompiler {
         }
       }
 
-      for (Element paramOptionEl : optionsList.select("li")) {
+      for (Element paramOptionEl : optionsList.select("> li")) {
         SdkMethod.SdkMethodParameterOption option = parseParamOption(optionsParameterName, paramOptionEl);
         sdkMethod.addOption(option);
       }
