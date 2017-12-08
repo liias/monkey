@@ -1,6 +1,5 @@
 package io.github.liias.monkey.project.runconfig;
 
-import com.intellij.execution.configurations.ModuleRunProfile;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.execution.runners.DefaultProgramRunner;
@@ -15,6 +14,6 @@ public class MonkeyProgramRunner extends DefaultProgramRunner {
 
   @Override
   public boolean canRun(@NotNull String executorId, @NotNull RunProfile profile) {
-    return DefaultRunExecutor.EXECUTOR_ID.equals(executorId) && profile instanceof ModuleRunProfile;
+    return profile instanceof AbstractMonkeyModuleBasedConfiguration && DefaultRunExecutor.EXECUTOR_ID.equals(executorId);
   }
 }

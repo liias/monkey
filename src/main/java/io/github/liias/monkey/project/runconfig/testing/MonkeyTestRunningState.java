@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Objects.requireNonNull;
-import static org.apache.commons.lang.StringUtils.trimToNull;
+import static org.apache.commons.lang.StringUtils.trimToEmpty;
 
 public class MonkeyTestRunningState extends AbstractMonkeyRunningState {
   public static final Pattern PATTERN_TEST_NAME = Pattern.compile("Executing test (.*)\\.\\.\\.");
@@ -69,7 +69,7 @@ public class MonkeyTestRunningState extends AbstractMonkeyRunningState {
           SuiteNameAndTestName suiteNameAndTestName = new SuiteNameAndTestName(fullyQualifiedTestName);
           String lastSuite = lastSuiteName.get();
 
-          if (!trimToNull(lastSuite).equals(trimToNull(suiteNameAndTestName.suiteName))) {
+          if (!trimToEmpty(lastSuite).equals(trimToEmpty(suiteNameAndTestName.suiteName))) {
             lastSuiteName.set(suiteNameAndTestName.suiteName);
 
             if (lastSuite != null) {
