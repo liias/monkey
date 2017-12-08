@@ -1,5 +1,8 @@
 # Changelog
 
+#### 0.3.6
+* Fix test runner (issue #8, issue #9) - Thanks to zolotov
+
 #### 0.3.5
 * Fix parsing SDK 2.3.1 documentation (issue #7) - Thanks to datnguyen87
 
