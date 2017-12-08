@@ -14,14 +14,13 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiFile;
-import com.intellij.testIntegration.BaseGenerateTestSupportMethodAction;
 import com.intellij.testIntegration.TestFramework;
 import com.intellij.testIntegration.TestIntegrationUtils;
 import io.github.liias.monkey.lang.file.MonkeyFileType;
 import org.jetbrains.annotations.NotNull;
 
 public class MonkeyGenerateTestSupportMethodAction extends BaseGenerateAction {
-  protected static final Logger LOG = Logger.getInstance("#" + BaseGenerateTestSupportMethodAction.class.getName());
+  protected static final Logger LOG = Logger.getInstance("#" + MonkeyGenerateTestSupportMethodAction.class.getName());
 
   public MonkeyGenerateTestSupportMethodAction() {
     super(new MyHandler(TestIntegrationUtils.MethodKind.TEST));
