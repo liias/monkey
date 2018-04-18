@@ -54,7 +54,7 @@ public class MonkeyBuilder extends TargetBuilder<MonkeySourceRootDescriptor, Mon
   private static final String COMPILER_OUTPUT_TYPE_WARNING = "WARNING";
 
   public MonkeyBuilder() {
-    super(Arrays.asList(MonkeyBuildTargetType.PRODUCTION, MonkeyBuildTargetType.TESTS));
+    super(Arrays.asList(MonkeyBuildTargetType.PRODUCTION));
     ResourcesBuilder.registerEnabler(module -> module.getModuleType() != JpsMonkeyModuleType.INSTANCE);
   }
 

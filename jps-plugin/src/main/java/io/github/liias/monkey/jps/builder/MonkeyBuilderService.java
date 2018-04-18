@@ -15,7 +15,7 @@ public class MonkeyBuilderService extends BuilderService {
   @NotNull
   @Override
   public List<? extends BuildTargetType<?>> getTargetTypes() {
-    return Arrays.asList(MonkeyBuildTargetType.PRODUCTION, MonkeyBuildTargetType.TESTS);
+    return Arrays.asList(MonkeyBuildTargetType.PRODUCTION);
   }
 
   @NotNull
