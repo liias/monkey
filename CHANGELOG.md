@@ -1,6 +1,9 @@
 # Changelog
 
 #### 0.3.7
+* Disable running unit tests to avoid double-compiling
+* Fix compatibility with IDEA 2018.1
+* Use working configuration for sample watch app project
 * Fix NPE in project structure dialog (issue #10) - Thanks to CosminMihuMDC
 
 #### 0.3.6
