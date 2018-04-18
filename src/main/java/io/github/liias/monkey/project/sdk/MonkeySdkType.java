@@ -3,7 +3,6 @@ package io.github.liias.monkey.project.sdk;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.util.containers.HashMap;
 import icons.MonkeyIcons;
 import io.github.liias.monkey.project.module.MonkeyConstants;
 import io.github.liias.monkey.project.runconfig.TargetSdkVersion;
@@ -143,7 +142,7 @@ public class MonkeySdkType extends SdkType {
 
     final File compilerInfoXml = new File(sdkBinPath, COMPILER_INFO_XML);
     if (!compilerInfoXml.exists()) {
-      return null;
+      return OLD_TARGET_SDK_VERSIONS;
     }
 
     try {
@@ -154,13 +153,13 @@ public class MonkeySdkType extends SdkType {
       //read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
       doc.getDocumentElement().normalize();
 
-      NodeList targetSdkVersions1 = doc.getElementsByTagName("targetSdkVersions");
+      NodeList targetSdkVersionsNodeList = doc.getElementsByTagName("targetSdkVersions");
 
-      if (targetSdkVersions1.getLength() == 0) {
+      if (targetSdkVersionsNodeList.getLength() == 0) {
         return OLD_TARGET_SDK_VERSIONS;
       }
 
-      Node targetSdkVersionsNode = targetSdkVersions1.item(0);
+      Node targetSdkVersionsNode = targetSdkVersionsNodeList.item(0);
       NodeList childNodes = targetSdkVersionsNode.getChildNodes();
 
       List<TargetSdkVersion> targetSdkVersions = new ArrayList<>();
