@@ -31,7 +31,7 @@ public abstract class AbstractMonkeyModuleConfigurationProducer extends RunConfi
       configuration.setName(contextModule.getName());
     }
 
-    configuration.setTargetDeviceId(TargetDevice.SQUARE_WATCH.getId());
+    configuration.setTargetDeviceId(TargetDevice.DEFAULT_DEVICE.getId());
 
     return true;
   }

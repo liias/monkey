@@ -68,9 +68,9 @@ public class MonkeyModuleBuilder extends ModuleBuilder implements ModuleBuilderL
   private static final Logger LOG = Logger.getInstance("#io.github.liias.monkey.project.module.MonkeyModuleBuilder");
   public static final String PROJECT_INFO_XML = "projectInfo.xml";
   public static final String FILE_TYPE_SOURCE = "source";
-  public static final TargetDevice DEFAULT_TARGET_DEVICE = TargetDevice.SQUARE_WATCH;
-  public static final TargetSdkVersion DEFAULT_TARGET_SDK_VERSION = TargetSdkVersion.VERSION_1_2_X;
-  public static final String DEFAULT_MIN_SDK_VERSION = "1.2.1";
+  public static final TargetDevice DEFAULT_TARGET_DEVICE = TargetDevice.DEFAULT_DEVICE;
+  public static final TargetSdkVersion DEFAULT_TARGET_SDK_VERSION = TargetSdkVersion.VERSION_1_3_X;
+  public static final String DEFAULT_MIN_SDK_VERSION = "1.3.1";
 
   // Not null only if new project where we need to generate content based on this type
   @Nullable
