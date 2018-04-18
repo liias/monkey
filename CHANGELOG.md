@@ -1,5 +1,8 @@
 # Changelog
 
+#### 0.3.7
+* Fix NPE in project structure dialog (issue #10) - Thanks to CosminMihuMDC
+
 #### 0.3.6
 * Fix test runner (issue #8, issue #9) - Thanks to zolotov
 
