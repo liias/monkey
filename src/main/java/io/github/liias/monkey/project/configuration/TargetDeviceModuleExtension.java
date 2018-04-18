@@ -13,7 +13,7 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TargetDeviceModuleExtension extends ModuleExtension<TargetDeviceModuleExtension> {
+public class TargetDeviceModuleExtension extends ModuleExtension {
   // must be same as fields in JpsMonkeyModuleProperties
   //JpsMonkeyModelSerializerExtension.MODULE_TARGET_DEVICE_ID_ATTRIBUTE
   private static final String TARGET_DEVICE_ID_ATTRIBUTE = JpsMonkeyModelSerializerExtension.MODULE_TARGET_DEVICE_ID_ATTRIBUTE;

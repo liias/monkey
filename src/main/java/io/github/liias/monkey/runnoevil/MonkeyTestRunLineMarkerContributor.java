@@ -2,7 +2,6 @@ package io.github.liias.monkey.runnoevil;
 
 import com.intellij.execution.lineMarker.ExecutorAction;
 import com.intellij.execution.lineMarker.RunLineMarkerContributor;
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.Function;
@@ -48,9 +47,5 @@ public class MonkeyTestRunLineMarkerContributor extends RunLineMarkerContributor
   private static Info getInfo(String url, Project project, boolean isClass) {
     Icon icon = getTestStateIcon(url, project, isClass);
     return new Info(icon, TOOLTIP_PROVIDER, ExecutorAction.getActions(1));
-  }
-
-  private static Icon getTestStateIcon(String url, Project project, boolean isClass) {
-    return isClass ? AllIcons.RunConfigurations.TestState.Run_run : AllIcons.RunConfigurations.TestState.Run;
   }
 }

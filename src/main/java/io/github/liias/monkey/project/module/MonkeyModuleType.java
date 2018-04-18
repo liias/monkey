@@ -40,11 +40,6 @@ public class MonkeyModuleType extends ModuleType<MonkeyModuleBuilder> {
   }
 
   @Override
-  public Icon getBigIcon() {
-    return MonkeyIcons.MODULE24;
-  } //24
-
-  @Override
   public Icon getNodeIcon(@Deprecated boolean isOpened) {
     return MonkeyIcons.MODULE16;
   } // 16
