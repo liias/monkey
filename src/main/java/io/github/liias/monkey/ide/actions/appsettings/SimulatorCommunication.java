@@ -15,6 +15,7 @@ import io.github.liias.monkey.deserializer.type.MonkeyType;
 import io.github.liias.monkey.deserializer.type.MonkeyTypeHash;
 import io.github.liias.monkey.project.dom.manifest.Manifest;
 import io.github.liias.monkey.project.module.util.MonkeyModuleUtil;
+import io.github.liias.monkey.project.sdk.SdkHelper;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import io.github.liias.monkey.project.sdk.tools.SimulatorHelper;
 import org.apache.sanselan.util.IOUtils;
@@ -32,7 +33,6 @@ import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.github.liias.monkey.Utils.createGeneralCommandLine;
-import static io.github.liias.monkey.Utils.getForWinLinOrMac;
 
 public class SimulatorCommunication {
   private static final Logger LOG = Logger.getInstance("#io.github.liias.monkey.ide.actions.appsettings.SimulatorCommunication");
@@ -142,8 +142,8 @@ public class SimulatorCommunication {
   }
 
   // with shell we can poll if simulator is running and ready
-  private GeneralCommandLine createShellCmd(int port, String outputDir, String command, String fromPath, String toPath) {
-    String shellExecutableName = getForWinLinOrMac("shell.exe", "shell");
+  private GeneralCommandLine createShellCmd(int port, String outputDir, String command, String fromPath, String toPath) throws ExecutionException {
+    String shellExecutableName = SdkHelper.get(SdkHelper.SHELL_CMD);
     String sdkBinPath = MonkeySdkType.getBinPath(sdk);
     String exePath = sdkBinPath + shellExecutableName;
 

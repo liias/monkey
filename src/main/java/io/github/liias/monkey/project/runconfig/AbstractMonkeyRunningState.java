@@ -22,6 +22,7 @@ import com.intellij.openapi.util.ThrowableComputable;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.impl.VirtualDirectoryImpl;
+import io.github.liias.monkey.project.sdk.SdkHelper;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import io.github.liias.monkey.project.sdk.tools.SimulatorHelper;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +33,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import static io.github.liias.monkey.Utils.createGeneralCommandLine;
-import static io.github.liias.monkey.Utils.getForWinLinOrMac;
 import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractMonkeyRunningState extends CommandLineState {
@@ -171,7 +171,7 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
     final Sdk sdk = getMonkeyParameters().getSdk();
     String sdkBinPath = MonkeySdkType.getBinPath(sdk);
 
-    String simulatorExecutableName = getForWinLinOrMac("simulator.exe", "ConnectIQ.app");
+    String simulatorExecutableName = SdkHelper.get(SdkHelper.SIMULATOR_CMD);
     String exePath = sdkBinPath + simulatorExecutableName;
     return createGeneralCommandLine(sdkBinPath, exePath).withRedirectErrorStream(true);
   }
@@ -187,11 +187,14 @@ public abstract class AbstractMonkeyRunningState extends CommandLineState {
 
     Sdk sdk = monkeyParameters.getSdk();
 
-    GeneralCommandLine generalCommandLine = createGeneralCommandLine(MonkeySdkType.getBinPath(sdk), MonkeySdkType.getMonkeydoBatPath(sdk))
+    String sdkBinPath = MonkeySdkType.getBinPath(sdk);
+    String monkeydoExecutableName = SdkHelper.get(SdkHelper.MONKEYDO_CMD);
+    String exePath = sdkBinPath + monkeydoExecutableName;
+    GeneralCommandLine generalCommandLine = createGeneralCommandLine(sdkBinPath, exePath)
       .withParameters(prgPath, getConfiguration().getTargetDeviceId());
 
     if (isForTests()) {
-      generalCommandLine.addParameter(getForWinLinOrMac("/t", "-t"));
+      generalCommandLine.addParameter(SdkHelper.get(SdkHelper.MONKEYDO_TEST_PARAM));
       //if (testId != null) {
       //  generalCommandLine.addParameter(testId);
       //}
