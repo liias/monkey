@@ -1,5 +1,8 @@
 # Changelog
 
+#### 0.3.8
+* Run native binaries on Linux instead of using wine - Thanks to snaggen
+
 #### 0.3.7
 * Disable running unit tests to avoid double-compiling
 * Fix compatibility with IDEA 2018.1

@@ -35,12 +35,9 @@
     ]]></description>
 
   <change-notes><![CDATA[
-    <p>0.3.7</p>
+    <p>0.3.8</p>
     <ul>
-      <li>Disable running unit tests to avoid double-compiling</li>
-      <li>Fix compatibility with IDEA 2018.1</li>
-      <li>Use working configuration for sample watch app project</li>
-      <li>Fix NPE in project structure dialog (issue #10) - Thanks to CosminMihuMDC</li>
+      <li>Run native binaries on Linux instead of using wine - Thanks to snaggen</li>
     </ul>
 
     <a href="https://github.com/liias/monkey/blob/master/CHANGELOG.md#changelog">Full change log...</a>
