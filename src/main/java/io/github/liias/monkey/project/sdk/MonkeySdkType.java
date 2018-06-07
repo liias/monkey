@@ -23,8 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static io.github.liias.monkey.Utils.getForWinLinOrMac;
-
 public class MonkeySdkType extends SdkType {
   public static String COMPILER_INFO_XML = "compilerInfo.xml";
 
@@ -199,11 +197,6 @@ public class MonkeySdkType extends SdkType {
 
   @Override
   public void saveAdditionalData(@NotNull SdkAdditionalData additionalData, @NotNull Element additional) {
-  }
-
-  public static String getMonkeydoBatPath(@NotNull Sdk sdk) {
-    String monkeydo = getForWinLinOrMac("monkeydo.bat", "monkeydo");
-    return getBinPath(sdk) + monkeydo;
   }
 
   public VirtualFile getBinDir(@NotNull Sdk sdk) {

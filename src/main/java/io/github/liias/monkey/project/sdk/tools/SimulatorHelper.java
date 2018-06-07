@@ -5,6 +5,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.projectRoots.Sdk;
+import io.github.liias.monkey.project.sdk.SdkHelper;
 import io.github.liias.monkey.project.sdk.MonkeySdkType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,6 @@ import java.io.InputStreamReader;
 import java.util.Optional;
 
 import static io.github.liias.monkey.Utils.createGeneralCommandLine;
-import static io.github.liias.monkey.Utils.getForWinLinOrMac;
 
 public class SimulatorHelper {
   public static final int SIMULATOR_PORT_MIN = 1234;
@@ -32,7 +32,7 @@ public class SimulatorHelper {
   @NotNull
   private final String outputDir;
 
-  public SimulatorHelper(@Nullable ConsoleView console, @NotNull Sdk sdk, @NotNull String outputDir) {
+  public SimulatorHelper(@Nullable ConsoleView console, @NotNull Sdk sdk, @NotNull String outputDir) throws ExecutionException {
     this.console = console;
     this.sdk = sdk;
     this.outputDir = outputDir;
@@ -69,8 +69,8 @@ public class SimulatorHelper {
   }
 
   // with shell we can poll if simulator is running and ready
-  private GeneralCommandLine createShellCmd(int port) {
-    String shellExecutableName = getForWinLinOrMac("shell.exe", "shell");
+  private GeneralCommandLine createShellCmd(int port) throws ExecutionException {
+    String shellExecutableName = SdkHelper.get(SdkHelper.SHELL_CMD);
     String sdkBinPath = MonkeySdkType.getBinPath(sdk);
     String exePath = sdkBinPath + shellExecutableName;
 
