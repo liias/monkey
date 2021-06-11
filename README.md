@@ -4,6 +4,10 @@
 
 This unofficial [Monkey C plugin](https://plugins.jetbrains.com/plugin/8253) adds support for [Monkey C language](https://developer.garmin.com/connect-iq/programmers-guide/monkey-c/) and [Garmin Connect IQ SDK](https://developer.garmin.com/connect-iq/overview/) for IntelliJ IDEA.
 
+# NOT MAINTAINED
+
+**THIS PROJECT IS NOT MAINTAINED ANYMORE** Please use other tools instead, e.g https://marketplace.visualstudio.com/items?itemName=garmin.monkey-c
+
 ### Features:
 
 * (WIP) Monkey C grammar validation
